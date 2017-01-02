@@ -1,0 +1,24 @@
+Package: spatstat.core
+Version: 1.0-0
+Date: 2017-01-02
+Title: EXPERIMENTAL Subset of Spatstat
+Authors@R: c(person("Adrian", "Baddeley", 
+                    role = c("aut", "cre"),
+       	            email = "Adrian.Baddeley@curtin.edu.au"),
+	     person("Rolf", "Turner", 
+                    role = "aut",
+ 	            email="r.turner@auckland.az.nz"),
+	     person("Ege",   "Rubak", 
+                    role = "aut",
+		    email = "rubak@math.aau.dk"))
+Maintainer: Adrian Baddeley <Adrian.Baddeley@curtin.edu.au>
+Depends: R (>= 3.3.0), stats, graphics, grDevices, utils, methods
+Imports: spatstat.utils (>= 1.0-5)
+Suggests: spatstat
+Description: This is an experimental package containing a subset of spatstat.
+License: GPL (>= 2)
+URL: http://www.spatstat.org
+LazyData: true
+NeedsCompilation: yes
+ByteCompile: true
+BugReports: https://github.com/spatstat/spatstat/issues

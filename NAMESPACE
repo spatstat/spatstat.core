@@ -1,0 +1,66 @@
+# spatstat.utils NAMESPACE file
+
+import(stats,graphics,grDevices,utils,methods)
+import(spatstat.utils)
+
+# Do not edit the following.
+# It is generated automatically.
+
+
+
+
+# .................................................. 
+# Automatically-generated list of documented objects 
+# .................................................. 
+export("col2hex")
+export("colourmap")
+export("colouroutputs<-")
+export("colouroutputs")
+export("complementarycolour")
+export("do.call.plotfun")
+export("existsSpatstatVariable")
+export("getSpatstatVariable")
+export("interp.colourmap")
+export("interp.colours")
+export("is.colour")
+export("is.grey")
+export("lut")
+export("paletteindex")
+export("paletteindex")
+export("parbreak")
+export("plot.colourmap")
+export("print.colourmap")
+export("print.lut")
+export("print.summary.lut")
+export("putSpatstatVariable")
+export("reset.spatstat.options")
+export("rgb2hex")
+export("rgb2hsva")
+export("ruletextline")
+export("samecolour")
+export("spatstat.options")
+export("summary.lut")
+export("to.grey")
+export("to.opaque")
+export("to.transparent")
+export("tweak.colourmap")
+export("warn.once")
+export("waxlyrical")
+
+# .......  Special cases ........... 
+# .......  End of special cases  ... 
+
+# ......................................... 
+# Automatically generated list of S3 methods
+# ......................................... 
+S3method("plot", "colourmap")
+  S3method("print", "colourmap")
+  S3method("print", "lut")
+  S3method("print", "summary.lut")
+  S3method("summary", "lut")
+# ......................................... 
+#      Assignment methods                   
+# ......................................... 
+# ......................................... 
+#      End of methods                       
+# ......................................... 
