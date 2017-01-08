@@ -1,7 +1,7 @@
 Package: spatstat.core
-Version: 1.0-0
-Date: 2017-01-02
-Title: EXPERIMENTAL Subset of Spatstat
+Version: 1.1-0
+Date: 2017-01-08
+Title: EXPERIMENTAL Subset of Spatstat Core Functions
 Authors@R: c(person("Adrian", "Baddeley", 
                     role = c("aut", "cre"),
        	            email = "Adrian.Baddeley@curtin.edu.au"),
@@ -21,4 +21,4 @@ URL: http://www.spatstat.org
 LazyData: true
 NeedsCompilation: yes
 ByteCompile: true
-BugReports: https://github.com/spatstat/spatstat/issues
+BugReports: https://github.com/spatstat/spatstat.core/issues
