@@ -3,7 +3,7 @@
 #
 #     Spatstat options and other internal states
 #
-#    $Revision: 1.77 $   $Date: 2016/12/06 02:23:48 $
+#    $Revision: 1.87 $   $Date: 2020/03/26 03:10:54 $
 #
 #
 
@@ -81,13 +81,12 @@ warn.once <- function(key, ...) {
 
 ".Spat.Stat.Opt.Table" <-
   list(
-       allow.logi.influence=list(
-         ## whether leverage/influence calculations are permitted
-         ## on a fitted model with method='logi'
+       areainter.polygonal = list(
+         ## use polygonal calculations in AreaInter
          default=FALSE,
-         check=function(x) { is.logical(x) && length(x) == 1 },
+         check=function(x) { is.logical(x) && length(x) == 1},
          valid="a single logical value"
-       ),
+         ),
        checkpolygons = list(
          ## superseded
          superseded=TRUE,
@@ -107,6 +106,12 @@ warn.once <- function(key, ...) {
        closepairs.newcode=list(
          ## use new code for 'closepairs'
          default=TRUE,
+         check=function(x) { is.logical(x) && length(x) == 1 },
+         valid="a single logical value"
+       ),
+       closepairs.altcode=list(
+         ## use alternative code for 'closepairs'
+         default=FALSE,
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"
        ),
@@ -138,7 +143,8 @@ warn.once <- function(key, ...) {
          ## maximum size of matrix in dppeigen
          default=2^24, # 16,777,216
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 1024
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x > 1024)
          },
          valid="a single integer, greater than 1024"
        ),
@@ -152,7 +158,7 @@ warn.once <- function(key, ...) {
          ## default area expansion factor
          default=2,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && x > 1
+           is.numeric(x) && length(x) == 1 && all(x > 1)
          },
          valid="a single numeric value, greater than 1"
        ),
@@ -186,6 +192,12 @@ warn.once <- function(key, ...) {
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"
        ),
+       fast.trigraph=list(
+         ## whether to use C function triograph or trigraph in edges2triangles
+         default=TRUE,
+         check=function(x) { is.logical(x) && length(x) == 1 },
+         valid="a single logical value"
+       ),
        fixpolygons = list(
          ## whether to repair polygons automatically
          default=TRUE,
@@ -206,7 +218,8 @@ warn.once <- function(key, ...) {
          ## threshold to trigger a warning from rpoispp 
          default=1e6,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 1024
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x > 1024)
          },
          valid="a single integer, greater than 1024"
        ),
@@ -236,7 +249,7 @@ warn.once <- function(key, ...) {
          ## maximum edge correction weight 
          default=100,
          check=function(x){
-           is.numeric(x) && length(x) == 1 && is.finite(x) && x >= 1
+           is.numeric(x) && length(x) == 1 && is.finite(x) && all(x >= 1)
          },
          valid="a finite numeric value, not less than 1"
        ),
@@ -244,7 +257,8 @@ warn.once <- function(key, ...) {
          ## maximum size of matrix of pairs of points in mpl.R
          default=2^24, # 16,777,216
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 1024
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x > 1024)
          },
          valid="a single integer, greater than 1024"
        ),
@@ -258,7 +272,8 @@ warn.once <- function(key, ...) {
          ## number of values of bandwidth to try in bandwidth selection
          default=32,
          check=function(x) {
-           is.numeric(x) && (length(x) == 1) && (x == ceiling(x)) && (x > 2)
+           is.numeric(x) && (length(x) == 1) &&
+             all(x == ceiling(x)) && all(x > 2)
          },
          valid="a single integer, greater than 2"
        ),
@@ -274,7 +289,7 @@ warn.once <- function(key, ...) {
          ## number of grid points used to calculate area in area-interaction
          default=128,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 1
+           is.numeric(x) && length(x) == 1 && all(x == ceiling(x)) && all(x > 1)
          },
          valid="a single integer, greater than 1"
        ),
@@ -282,7 +297,7 @@ warn.once <- function(key, ...) {
          ## default pixel dimensions
          default=128,
          check=function(x){
-           is.numeric(x) && (length(x) %in% c(1,2)) && is.finite(x) &&
+           is.numeric(x) && (length(x) %in% c(1,2)) && all(is.finite(x)) &&
            all(x == ceiling(x)) && all(x > 1) 
          },
          valid="an integer, or a pair of integers, greater than 1"
@@ -291,7 +306,8 @@ warn.once <- function(key, ...) {
          ## default total number of voxels
          default=2^22,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 2^12
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x > 2^12)
          },
          valid="a single integer, greater than 2^12"
        ),
@@ -341,13 +357,13 @@ warn.once <- function(key, ...) {
          ## under what conditions to print estimated SE in print.ppm
          default="poisson",
          check=function(x) { is.character(x) && length(x) == 1 &&
-                             x %in% c("always", "poisson", "never") },
+                             all(x %in% c("always", "poisson", "never")) },
          valid="one of the strings \'always\', \'poisson\' or \'never\'"
        ),
        progress = list(
          ## how to display progress reports
          default="tty",
-         check=function(x){ x %in% c("tty", "tk", "txtbar") },
+         check=function(x){ all(x %in% c("tty", "tk", "txtbar")) },
          valid="one of the strings 'tty', 'tk' or 'txtbar'"
          ),
        project.fast=list(
@@ -360,7 +376,8 @@ warn.once <- function(key, ...) {
          ## size of point grid for computing areas in psstA
          default=32,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x >= 8
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x >= 8)
          },
          valid="a single integer, greater than or equal to 8"
        ),
@@ -368,7 +385,8 @@ warn.once <- function(key, ...) {
          ## number of 'r' values to consider in psstA
          default=30,
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x >= 4
+           is.numeric(x) && length(x) == 1 &&
+             all(x == ceiling(x)) && all(x >= 4)
          },
          valid="a single integer, greater than or equal to 4"
        ),
@@ -389,7 +407,7 @@ warn.once <- function(key, ...) {
          ## default value of parameter 'nrep' in rmh
          default=5e5, 
          check=function(x) {
-           is.numeric(x) && length(x) == 1 && (x == ceiling(x)) && x > 0
+           is.numeric(x) && length(x) == 1 && all(x == ceiling(x)) && all(x > 0)
          },
          valid="a single integer, greater than 0"
        ),
@@ -397,14 +415,14 @@ warn.once <- function(key, ...) {
          ## default value of parameter 'p' in rmh
          default=0.9,
          check=function(x) { is.numeric(x) && length(x) == 1 &&
-                             x >= 0 && x <= 1 },
+                             all(x >= 0) && all(x <= 1) },
          valid="a single numerical value, between 0 and 1"
        ),
        rmh.q=list(
          ## default value of parameter 'q' in rmh
          default=0.9,
          check=function(x) { is.numeric(x) && length(x) == 1 &&
-                             x > 0 && x < 1 },
+                             all(x > 0) && all(x < 1) },
          valid="a single numerical value, strictly between 0 and 1"
        ),
        scalable = list(
@@ -422,7 +440,7 @@ warn.once <- function(key, ...) {
        terse = list(
          ## Level of terseness in printed output (higher => more terse)
          default=0,
-         check=function(x) { length(x) == 1 && (x %in% 0:4) },
+         check=function(x) { length(x) == 1 && all(x %in% 0:4) },
          valid="an integer between 0 and 4"
        ),
        transparent=list(
@@ -435,7 +453,7 @@ warn.once <- function(key, ...) {
          default="(",
          check=function(x) {
            is.character(x) && (length(x) == 1) &&
-             (x %in% c("(", "[", "{", ""))
+             all(x %in% c("(", "[", "{", ""))
          },
          valid="one of the strings '(', '[', '{' or '' "
        ),
@@ -459,6 +477,12 @@ warn.once <- function(key, ...) {
        ),
        kppm.canonical=list(
          ## whether to use 'canonical' parameters in kppm
+         default=FALSE,
+         check=function(x) { is.logical(x) && length(x) == 1 },
+         valid="a single logical value"
+       ),
+       kppm.adjusted=list(
+         ## experimental
          default=FALSE,
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"

@@ -1,7 +1,7 @@
 #
 #  colourtools.R
 #
-#   $Revision: 1.18 $   $Date: 2017/01/02 04:47:50 $
+#   $Revision: 1.21 $   $Date: 2019/04/05 09:20:59 $
 #
 
 
@@ -97,6 +97,18 @@ to.transparent <- function(x, fraction) {
     return(to.opaque(x))
   rgb(t(col2rgb(x))/255, alpha=fraction, maxColorValue=1)
 }
+
+to.saturated <- function(x, s=1) {
+  y <- rgb2hsv(col2rgb(x))
+  ## map grey to black, otherwise saturate the colour
+  notwhite <- !(y["h",] == 0 & y["s",] == 0 & y["v", ] == 1)
+  isgrey <- (y["s", ] == 0) 
+  y["v",  isgrey & notwhite] <- 0
+  y["s", !isgrey & notwhite] <- s
+  ## convert back
+  z <- hsv(y["h",], y["s",], y["v",])
+  return(z)
+}
   
 to.grey <- function(x, weights=c(0.299, 0.587, 0.114), transparent=FALSE) {
   if(is.null(x)) return(NULL)
@@ -121,7 +133,7 @@ to.grey <- function(x, weights=c(0.299, 0.587, 0.114), transparent=FALSE) {
     yy <- col2rgb(x, alpha=TRUE)
     y <- yy[1:3, , drop=FALSE]
     g <- (weights %*% y)/(255 * sum(weights))
-    z <- grey(g, alpha=y[4L,])
+    z <- grey(g, alpha=yy[4L,]/255.0)
   }
   return(z)
 }
@@ -182,3 +194,13 @@ do.call.plotfun <- function(fun, arglist, ...) {
   do.call.matched(fun, arglist, ...)
 }
 
+gammabreaks <- function(ra, n, gamma=1) {
+  # make breaks for x which are evenly spaced on the scale y = x^gamma
+  check.1.real(gamma)
+  stopifnot(gamma > 0)
+  y <- seq(from=0, to=1, length.out=n)
+  breaks <- ra[1L] + diff(ra) * y^(1/gamma)
+  breaks[1L] <- ra[1L]
+  breaks[n]  <- ra[2L]
+  return(breaks)
+}

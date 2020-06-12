@@ -5,7 +5,7 @@
   Create a lookup table.
 }
 \usage{
-lut(outputs, ..., range=NULL, breaks=NULL, inputs=NULL)
+lut(outputs, ..., range=NULL, breaks=NULL, inputs=NULL, gamma=1)
 }
 \arguments{
   \item{outputs}{Vector of output values}
@@ -26,6 +26,11 @@ lut(outputs, ..., range=NULL, breaks=NULL, inputs=NULL)
     A numeric vector of length equal to \code{length(outputs)+1}.
     Incompatible with \code{range} or \code{inputs}.
   }
+  \item{gamma}{
+    Exponent for gamma correction, when \code{range} is given.
+    A single positive number.
+    See Details.
+  }
 }
 \details{
   A lookup table is a function, mapping input values to output values.
@@ -42,24 +47,36 @@ lut(outputs, ..., range=NULL, breaks=NULL, inputs=NULL)
 
   Exactly one of the arguments \code{range}, \code{inputs} or \code{breaks}
   must be specified by name.
-
-  If \code{inputs} is given, then it should be a vector or factor,
-  of the same length as \code{outputs}. The entries of \code{inputs} can be
-  any atomic type (e.g. numeric, logical, character, complex) or factor
-  values. The resulting lookup table associates the value \code{inputs[i]}
-  with the value \code{outputs[i]}.
-
-  If \code{range} is given, then it determines the interval of the real
-  number line that will be mapped. It should be a numeric vector of
-  length 2. 
-
-  If \code{breaks} is given, then it determines intervals
-  of the real number line
-  which are mapped to each output value. It should be a numeric vector,
-  of length at least 2, with entries that are in increasing order.
-  Infinite values are allowed. Any number in the range
-  between \code{breaks[i]} and \code{breaks[i+1]} will be mapped to the
-  value \code{outputs[i]}. 
+  \itemize{
+    \item 
+    If \code{inputs} is given, then it should be a vector or factor,
+    of the same length as \code{outputs}. The entries of \code{inputs} can be
+    any atomic type (e.g. numeric, logical, character, complex) or factor
+    values. The resulting lookup table associates the value \code{inputs[i]}
+    with the value \code{outputs[i]}.
+    The argument \code{outputs} should have the same length as \code{inputs}.
+    \item
+    If \code{range} is given, then it determines the interval of the real
+    number line that will be mapped. It should be a numeric vector of
+    length 2. 
+    The interval will be divided evenly into bands, each of which is
+    mapped to an entry of \code{outputs}. (If \code{gamma} is given,
+    then the bands are equally spaced on a scale where the original values
+    are raised to the power \code{gamma}.)
+    \item
+    If \code{breaks} is given, then it determines intervals
+    of the real number line
+    which are mapped to each output value. It should be a numeric vector,
+    of length at least 2, with entries that are in increasing order.
+    Infinite values are allowed. Any number in the range
+    between \code{breaks[i]} and \code{breaks[i+1]} will be mapped to the
+    value \code{outputs[i]}. 
+    The argument \code{outputs} should have length equal to
+    \code{length(breaks) - 1}.
+  }
+  It is also permissible for \code{outputs} to be a single value,
+  representing a trivial lookup table in which all data values are mapped to
+  the same output value.
 
   The result is an object of class \code{"lut"}. 
   There is a \code{print} method for this class.
@@ -87,11 +104,8 @@ lut(outputs, ..., range=NULL, breaks=NULL, inputs=NULL)
   ct <- lut(c(0,1), inputs=c(FALSE, TRUE))
   ct(TRUE)
 }
-\author{\adrian
-  
-  
-  and \rolf
-  
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{manip}

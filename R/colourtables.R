@@ -3,10 +3,10 @@
 #
 # support for colour maps and other lookup tables
 #
-# $Revision: 1.37 $ $Date: 2016/02/16 01:39:12 $
+# $Revision: 1.46 $ $Date: 2019/12/10 01:08:19 $
 #
 
-colourmap <- function(col, ..., range=NULL, breaks=NULL, inputs=NULL) {
+colourmap <- function(col, ..., range=NULL, breaks=NULL, inputs=NULL, gamma=1) {
   if(nargs() == 0) {
     ## null colour map
     f <- lut()
@@ -14,13 +14,13 @@ colourmap <- function(col, ..., range=NULL, breaks=NULL, inputs=NULL) {
     ## validate colour data 
     col2hex(col)
     ## store without conversion
-    f <- lut(col, ..., range=range, breaks=breaks, inputs=inputs)
+    f <- lut(col, ..., range=range, breaks=breaks, inputs=inputs, gamma=gamma)
   }
   class(f) <- c("colourmap", class(f))
   f
 }
 
-lut <- function(outputs, ..., range=NULL, breaks=NULL, inputs=NULL) {
+lut <- function(outputs, ..., range=NULL, breaks=NULL, inputs=NULL, gamma=1) {
   if(nargs() == 0) {
     ## null lookup table
     f <- function(x, what="value"){NULL}
@@ -28,23 +28,28 @@ lut <- function(outputs, ..., range=NULL, breaks=NULL, inputs=NULL) {
     attr(f, "stuff") <- list(n=0)
     return(f)
   }
+  if(is.null(gamma)) gamma <- 1
   n <- length(outputs)
   given <- c(!is.null(range), !is.null(breaks), !is.null(inputs))
-  names(given) <- c("range", "breaks", "inputs")
+  names(given) <- nama <- c("range", "breaks", "inputs")
   ngiven <- sum(given)
-  if(ngiven == 0)
+  if(ngiven == 0L)
     stop(paste("One of the arguments",
-               sQuote("range"), ",", sQuote("breaks"), "or", sQuote("inputs"),
+               commasep(sQuote(nama), "or"),
                "should be given"))
   if(ngiven > 1L) {
-    offending <- names(breaks)[given]
+    offending <- nama[given]
     stop(paste("The arguments",
                commasep(sQuote(offending)),
                "are incompatible"))
   }
   if(!is.null(inputs)) {
-    # discrete set of input values mapped to output values
-    stopifnot(length(inputs) == length(outputs))
+    #' discrete set of input values mapped to output values
+    if(n == 1L) {
+      #' constant output
+      n <- length(inputs)
+      outputs <- rep(outputs, n)
+    } else stopifnot(length(inputs) == length(outputs))
     stuff <- list(n=n, discrete=TRUE, inputs=inputs, outputs=outputs)
     f <- function(x, what="value") {
       m <- match(x, stuff$inputs)
@@ -53,50 +58,49 @@ lut <- function(outputs, ..., range=NULL, breaks=NULL, inputs=NULL) {
       cout <- stuff$outputs[m]
       return(cout)
     }
-  } else if(!is.null(range) && inherits(range, c("Date", "POSIXt"))) {
-    # date/time interval mapped to colours
-    timeclass <- if(inherits(range, "Date")) "Date" else "POSIXt"
-    if(is.null(breaks)) {
-      breaks <- seq(from=range[1L], to=range[2L], length.out=length(outputs)+1L)
-    } else {
-      if(!inherits(breaks, timeclass))
-        stop(paste("breaks should belong to class", dQuote(timeclass)),
-             call.=FALSE)
-      stopifnot(length(breaks) >= 2)
-      stopifnot(length(breaks) == length(outputs) + 1L)
-      if(!all(diff(breaks) > 0))
-        stop("breaks must be increasing")
-    }
-    stuff <- list(n=n, discrete=FALSE, breaks=breaks, outputs=outputs)
-    f <- function(x, what="value") {
-      x <- as.vector(as.numeric(x))
-      z <- findInterval(x, stuff$breaks,
-                        rightmost.closed=TRUE)
-      if(what == "index")
-        return(z)
-      cout <- stuff$outputs[z]
-      return(cout)
-    }
   } else {
-    # interval of real line mapped to colours
+    #' range of numbers, or date/time interval, mapped to colours
+    #' determine type of domain
+    timeclasses <- c("Date", "POSIXt")
+    is.time <- inherits(range, timeclasses) || inherits(breaks, timeclasses)
+    #' determine breaks
     if(is.null(breaks)) {
-      breaks <- seq(from=range[1L], to=range[2L], length.out=length(outputs)+1L)
+      breaks <- gammabreaks(range, n + 1L, gamma)
+      gamma.used <- gamma
     } else {
-      stopifnot(is.numeric(breaks) && length(breaks) >= 2L)
-      stopifnot(length(breaks) == length(outputs) + 1L)
+      stopifnot(length(breaks) >= 2)
+      if(length(outputs) == 1L) {
+        n <- length(breaks) - 1L
+        outputs <- rep(outputs, n)
+      } else stopifnot(length(breaks) == length(outputs) + 1L)
       if(!all(diff(breaks) > 0))
         stop("breaks must be increasing")
+      gamma.used <- NULL
     }
-    stuff <- list(n=n, discrete=FALSE, breaks=breaks, outputs=outputs)
-    f <- function(x, what="value") {
-      stopifnot(is.numeric(x))
-      x <- as.vector(x)
-      z <- findInterval(x, stuff$breaks,
-                        rightmost.closed=TRUE)
-      if(what == "index")
-        return(z)
-      cout <- stuff$outputs[z]
-      return(cout)
+    stuff <- list(n=n, discrete=FALSE, breaks=breaks, outputs=outputs,
+                  gamma=gamma.used)
+    #' use appropriate function
+    if(is.time) {
+      f <- function(x, what="value") {
+        x <- as.vector(as.numeric(x))
+        z <- findInterval(x, stuff$breaks,
+                          rightmost.closed=TRUE)
+        if(what == "index")
+          return(z)
+        cout <- stuff$outputs[z]
+        return(cout)
+      }
+    } else {
+      f <- function(x, what="value") {
+        stopifnot(is.numeric(x))
+        x <- as.vector(x)
+        z <- findInterval(x, stuff$breaks,
+                          rightmost.closed=TRUE)
+        if(what == "index")
+          return(z)
+        cout <- stuff$outputs[z]
+        return(cout)
+      }
     }
   }
   attr(f, "stuff") <- stuff
@@ -132,6 +136,8 @@ print.lut <- function(x, ...) {
   }
   colnames(out)[2L] <- outputname
   print(out)
+  if(!is.null(gamma <- stuff$gamma) && gamma != 1)
+    cat(paste("Generated using gamma =", gamma, "\n"))
   invisible(NULL)
 }
 
@@ -190,20 +196,30 @@ plot.colourmap <- local({
                   "tck", "tcl", "xpd")
 
   linmap <- function(x, from, to) {
-    to[1L] + diff(to) * (x - from[1L])/diff(from)
+    dFrom <- as.numeric(diff(from))
+    dTo <- as.numeric(diff(to))
+    b <- dTo/dFrom
+    if(is.nan(b)) b <- 0
+    if(!is.finite(b)) stop("Internal error: Cannot map zero width interval")
+    to[1L] + b * (x - from[1L])
   }
+
+  ensurenumeric <- function(x) { if(is.numeric(x)) x else as.numeric(x) }
 
   # rules to determine the ribbon dimensions when one dimension is given
   widthrule <- function(heightrange, separate, n, gap) {
-    if(separate) 1 else diff(heightrange)/10
+    dh <- diff(heightrange)
+    if(separate || dh == 0) 1 else dh/10
   }
   heightrule <- function(widthrange, separate, n, gap) {
-    (if(separate) (n + (n-1)*gap) else 10) * diff(widthrange) 
+    dw <- diff(widthrange)
+    if(dw == 0) 1 else (dw * (if(separate) (n + (n-1)*gap) else 10))
   }
 
   plot.colourmap <- function(x, ..., main,
                              xlim=NULL, ylim=NULL, vertical=FALSE, axis=TRUE,
-                             labelmap=NULL, gap=0.25, add=FALSE) {
+                             labelmap=NULL, gap=0.25, add=FALSE,
+                             increasing=NULL) {
     if(missing(main))
       main <- short.deparse(substitute(x))
     stuff <- attr(x, "stuff")
@@ -226,13 +242,20 @@ plot.colourmap <- local({
       labelmap <- function(x) { x * labscal }
     } else stopifnot(is.function(labelmap))
 
-    # determine pixel entries 'v' and colour map breakpoints 'bks'
-    # to be passed to 'image.default'
+    if(is.null(increasing))
+      increasing <- !(discrete && vertical)
+    reverse <- !increasing
+
+    #' determine pixel entries 'v' and colour map breakpoints 'bks'
+    #' to be passed to 'image.default'
+    trivial <- FALSE
     if(!discrete) {
       # real numbers: continuous ribbon
       bks <- stuff$breaks
       rr <- range(bks)
-      v <- seq(from=rr[1L], to=rr[2L], length.out=max(n+1L, 1024))
+      trivial <- (diff(rr) == 0)
+      v <- if(trivial) rr[1] else
+           seq(from=rr[1L], to=rr[2L], length.out=max(n+1L, 1024))
     } else if(!separate) {
       # discrete values: blocks of colour, run together
       v <- (1:n) - 0.5
@@ -275,9 +298,11 @@ plot.colourmap <- local({
                                             axes=FALSE, xlab="", ylab="",
                                             asp=1.0),
                                        list(...)))
-    
+
     if(separate) {
       # ................ plot separate blocks of colour .................
+      if(reverse) 
+        col <- rev(col)
       if(!vertical) {
         # horizontal arrangement of blocks
         xleft <- linmap(vleft, rr, xlim)
@@ -287,7 +312,9 @@ plot.colourmap <- local({
         for(i in 1:n) {
           x <- c(xleft[i], xright[i])
           do.call.matched(image.default,
-                      resolve.defaults(list(x=x, y=y, z=z, add=TRUE),
+                          resolve.defaults(list(x=ensurenumeric(x),
+                                                y=ensurenumeric(y),
+                                                z=z, add=TRUE),
                                        list(...),
                                        list(col=col[i])),
                       extrargs=imageparams)
@@ -302,7 +329,9 @@ plot.colourmap <- local({
         for(i in 1:n) {
           y <- c(ylow[i], yupp[i])
           do.call.matched(image.default,
-                      resolve.defaults(list(x=x, y=y, z=z, add=TRUE),
+                          resolve.defaults(list(x=ensurenumeric(x),
+                                                y=ensurenumeric(y),
+                                                z=z, add=TRUE),
                                        list(...),
                                        list(col=col[i])),
                       extrargs=imageparams)
@@ -322,10 +351,28 @@ plot.colourmap <- local({
         z <- matrix(v, nrow=1L)
         x <- xlim
       }
+      #' deal with Date or integer values
+      x <- ensurenumeric(x)
+      if(!trivial) {
+        if(any(diff(x) == 0)) 
+          x <- seq(from=x[1L], to=x[length(x)], length.out=length(x))
+        y <- ensurenumeric(y)
+        if(any(diff(y) == 0)) 
+          y <- seq(from=y[1L], to=y[length(y)], length.out=length(y))
+        bks <- ensurenumeric(bks)
+        if(any(diff(bks) <= 0)) {
+          ok <- (diff(bks) > 0)
+          bks <- bks[ok]
+          col <- col[ok]
+        }
+      }
+      if(reverse)
+        col <- rev(col)
       do.call.matched(image.default,
                       resolve.defaults(list(x=x, y=y, z=z, add=TRUE),
                                        list(...),
-                                       list(breaks=bks, col=col)),
+                                       list(breaks=ensurenumeric(bks),
+                                            col=col)),
                       extrargs=imageparams)
     }
     if(axis) {
@@ -340,6 +387,8 @@ plot.colourmap <- local({
           at <- linmap(la, rr, xlim)
           la <- labelmap(la)
         }
+        if(reverse)
+          at <- rev(at)
         # default axis position is below the ribbon (side=1)
         sidecode <- resolve.1.default("side", list(...), list(side=1L))
         if(!(sidecode %in% c(1L,3L)))
@@ -351,7 +400,8 @@ plot.colourmap <- local({
         # draw axis
         do.call.matched(graphics::axis,
                         resolve.defaults(list(...),
-                                         list(side = 1L, pos = pos, at = at),
+                                         list(side = 1L, pos = pos,
+                                              at = ensurenumeric(at)),
                                          list(labels=la, lwd=lwd0)),
                         extrargs=axisparams)
       } else {
@@ -364,6 +414,8 @@ plot.colourmap <- local({
           at <- linmap(la, rr, ylim)
           la <- labelmap(la)
         }
+        if(reverse)
+          at <- rev(at)
         # default axis position is to the right of ribbon (side=4)
         sidecode <- resolve.1.default("side", list(...), list(side=4))
         if(!(sidecode %in% c(2L,4L)))
@@ -377,7 +429,8 @@ plot.colourmap <- local({
         # draw axis
         do.call.matched(graphics::axis,
                         resolve.defaults(list(...),
-                                         list(side=4, pos=pos, at=at),
+                                         list(side=4, pos=pos,
+                                              at=ensurenumeric(at)),
                                          list(labels=la, lwd=lwd0, las=las0)),
                         extrargs=axisparams)
       }
