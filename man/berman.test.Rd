@@ -2,8 +2,6 @@
 \alias{berman.test}
 \alias{berman.test.ppm}
 \alias{berman.test.ppp}
-\alias{berman.test.lppm}
-\alias{berman.test.lpp}
 \title{Berman's Tests for Point Process Model} 
 \description{
   Tests the goodness-of-fit of a Poisson point process model
@@ -20,13 +18,6 @@ berman.test(...)
                          which = c("Z1", "Z2"),
                alternative = c("two.sided", "less", "greater"), ...)
 
-\method{berman.test}{lpp}(X, covariate,
-                         which = c("Z1", "Z2"),
-        alternative = c("two.sided", "less", "greater"), ...)
-
-\method{berman.test}{lppm}(model, covariate,
-                         which = c("Z1", "Z2"),
-               alternative = c("two.sided", "less", "greater"), ...)
 }
 \arguments{
   \item{X}{
@@ -148,12 +139,8 @@ berman.test(...)
   The meaning of a one-sided test must be carefully scrutinised: see
   the printed output.
 }
-\author{\adrian
-  
-  ,
-  \rolf
-  
-  and \ege.
+\author{
+  \spatstatAuthors.
 }
 \seealso{
   \code{\link{cdf.test}},

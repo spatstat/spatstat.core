@@ -1,15 +1,21 @@
 #
 #   pairs.im.R
 #
-#   $Revision: 1.17 $   $Date: 2020/04/04 04:22:50 $
+#   $Revision: 1.18 $   $Date: 2020/06/13 09:20:27 $
 #
 
 pairs.listof <- pairs.solist <- function(..., plot=TRUE) {
   argh <- expandSpecialLists(list(...), special=c("solist", "listof"))
-  haslines <- any(sapply(argh, inherits, what="linim"))
   names(argh) <- good.names(names(argh), "V", seq_along(argh))
+  haslines <- any(sapply(argh, inherits, what="linim"))
   if(haslines) {
-    do.call(pairs.linim, append(argh, list(plot=plot)))
+    if(!requireNamespace("spatstat.linnet")) {
+      warning(paste("the pairs() plot for images on a linear network",
+                    "requires the package 'spatstat.linnet'"),
+              call.=FALSE)
+      return(NULL)
+    }
+    do.call(spatstat.linnet::pairs.linim, append(argh, list(plot=plot)))
   } else {
     do.call(pairs.im, append(argh, list(plot=plot)))
   }

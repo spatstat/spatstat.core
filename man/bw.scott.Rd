@@ -33,7 +33,7 @@
 \details{
   These functions select a bandwidth \code{sigma}
   for the kernel estimator of point process intensity
-  computed by \code{\link{density.ppp}} or \code{\link{density.lpp}}
+  computed by \code{\link{density.ppp}}
   or other appropriate functions.
   They can be applied to a point pattern
   belonging to any class \code{"ppp"}, \code{"lpp"}, \code{"pp3"}
@@ -90,7 +90,6 @@
    plot(density(hickory, b))
   }
   bw.scott.iso(hickory)
-  bw.scott(chicago)
   bw.scott(osteo$pts[[1]])
 }
 \references{
@@ -99,16 +98,6 @@
     Visualization}. 
   New York: Wiley.
 
-  McSwiggan, G., Baddeley, A. and Nair, G. (2016)
-  Kernel density estimation on a linear network.
-  \emph{Scandinavian Journal of Statistics} \bold{44} (2) 324--345.
-
-  Rakshit, S., Davies, T., Moradi, M., McSwiggan, G.,
-  Nair, G., Mateu, J. and Baddeley, A. (2019)
-  Fast kernel smoothing of point patterns on a large
-  network using 2D convolution.
-  \emph{International Statistical Review} \bold{87} (3) 531--556.
-  DOI: 10.1111/insr.12327.
 }
 \author{
   \spatstatAuthors.

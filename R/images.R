@@ -1,7 +1,7 @@
 #
 #       images.R
 #
-#      $Revision: 1.157 $     $Date: 2019/08/31 05:19:39 $
+#      $Revision: 1.159 $     $Date: 2020/06/13 08:52:48 $
 #
 #      The class "im" of raster images
 #
@@ -280,12 +280,18 @@ shift.im <- function(X, vec=c(0,0), ..., origin=NULL) {
 
       if(inherits(i, "linnet")) {
         #' linear network
+        if(!requireNamespace("spatstat.linnet")) {
+          warning(paste("X[L] where L is a linear network",
+                        "requires the package 'spatstat.linnet'"),
+                  call.=FALSE)
+          return(NULL)
+        }
         if(jtype == "given")
           warning("Argument j ignored")
         W <- raster %orifnull% as.owin(x)
         M <- as.mask.psp(as.psp(i), W=W, ...)
         xM <- x[M, drop=drop]
-        if(is.im(xM)) xM <- linim(i, xM)
+        if(is.im(xM)) xM <- spatstat.linnet::linim(i, xM)
         return(xM)
       }
       

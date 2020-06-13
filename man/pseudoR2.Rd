@@ -26,8 +26,8 @@
     when computing the deviance difference. See Details.
   }
   \item{\dots}{
-    Additional arguments passed to \code{\link{deviance.ppm}}
-    or \code{\link{deviance.lppm}}.
+    Additional arguments passed to 
+    \code{\link{deviance.ppm}}.
   }
 }
 \details{

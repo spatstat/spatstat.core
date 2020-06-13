@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.86 $  $Date: 2020/03/16 10:28:51 $
+#'  $Revision: 1.88 $  $Date: 2020/06/13 08:55:54 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -685,7 +685,13 @@ simulate.rhohat <- function(object, nsim=1, ..., drop=TRUE) {
   trap.extra.arguments(..., .Context="in simulate.rhohat")
   lambda <- predict(object)
   if(is.linim(lambda) || (is.solist(lambda) && all(sapply(lambda, is.linim)))) {
-    result <- rpoislpp(lambda, nsim=nsim, drop=drop)
+    if(!requireNamespace("spatstat.linnet")) {
+      warning(paste("Cannot generate simulations on a network;",
+                    "this requires the package 'spatstat.linnet'"),
+              call.=FALSE)
+      return(NULL)
+    }
+    result <- spatstat.linnet::rpoislpp(lambda, nsim=nsim, drop=drop)
   } else {
     result <- rpoispp(lambda, nsim=nsim, drop=drop)
   }

@@ -1,5 +1,4 @@
 \name{lengths_psp}
-\alias{lengths.psp}
 \alias{lengths_psp}
 \title{Lengths of Line Segments}
 \description{
@@ -7,7 +6,6 @@
   in a line segment pattern.
 }
 \usage{
-  lengths.psp(x, squared=FALSE)
   lengths_psp(x, squared=FALSE)
 }
 \arguments{
@@ -32,14 +30,12 @@
   \code{sqrt(min(lengths.psp(x, squared=TRUE)))}
   is faster than \code{min(lengths.psp(x))}.
 
-  The functions \code{lengths.psp} and \code{lengths_psp} are
-  identical. We recommend using the newer name \code{lengths_psp}.
 }
 \section{Change of name}{
   The name of this function has changed from \code{lengths.psp}
   to \code{lengths_psp}, because the old name \code{lengths.psp}
   could be misinterpreted as a method for \code{\link[base]{lengths}}.
-  
+
   The older function name \code{lengths.psp} is retained temporarily,
   for consistency with older code and documentation.
   

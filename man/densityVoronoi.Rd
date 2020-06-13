@@ -113,7 +113,6 @@ densityVoronoi(X, \dots)
   estimates of the intensity of \code{X}.
 }
 \seealso{
-  \code{\link{densityVoronoi.lpp}},
   \code{\link{adaptive.density}},
   \code{\link{density.ppp}},
   \code{\link{dirichlet}},

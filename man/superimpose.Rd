@@ -55,7 +55,7 @@
   for the class \code{ppp} of point patterns, the class \code{psp}
   of line segment patterns, and a default method. There is also
   a method for \code{lpp}, described separately in
-  \code{\link{superimpose.lpp}}.
+  \code{superimpose.lpp}.
 
   The dispatch to a method is initially determined
   by the class of the \emph{first} argument in \code{\dots}.
@@ -148,7 +148,6 @@
 }
 
 \seealso{
-  \code{\link{superimpose.lpp}},
   \code{\link{concatxy}}, \code{\link{quadscheme}}.
 }
 \examples{
@@ -188,11 +187,9 @@
    }
   }
 }
-\author{\adrian
-  
-  
-  and \rolf
-  
+\author{
+  \adrian
+  and \rolf.
 }
 \keyword{spatial}
 \keyword{manip}
