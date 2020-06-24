@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.88 $  $Date: 2020/06/13 08:55:54 $
+#'  $Revision: 1.89 $  $Date: 2020/06/16 03:13:16 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -137,7 +137,6 @@ rhohat.ppm <- function(object, covariate, ...,
                confidence=confidence, positiveCI=positiveCI,
                modelcall=modelcall, callstring=callstring)
 }
-
 
 rhohatEngine <- function(model, covariate,
                          reference=c("Lebesgue", "model", "baseline"),

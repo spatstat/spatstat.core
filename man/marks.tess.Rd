@@ -42,7 +42,7 @@
   These functions extract or change the marks
   attached to each of the tiles in the tessellation \code{x}.
   They are methods for the generic functions
-  \code{\link{marks}} and \code{\link{marks<-}}
+  \code{\link{marks}}, \code{\link{marks<-}} and \code{\link{unmark}}
   for the class \code{"tess"} of tessellations
     
   The expression \code{marks(x)} extracts the marks of \code{x}.

@@ -75,6 +75,7 @@
 \alias{cliprect.psp}
 \alias{clippoly.psp}
 \alias{closethresh}
+\alias{cocoEngine}
 \alias{coef.summary.kppm}
 \alias{coef.summary.ppm}
 \alias{coef.vblogit} 
@@ -716,7 +717,6 @@
 \alias{predict.profilepl}
 
 
-
 %%%%%%%
 \description{
   Internal spatstat.core functions.
@@ -803,6 +803,7 @@ clip.psp(x, window, check, fragments)
 cliprect.psp(x, window, fragments)
 clippoly.psp(s, window, fragments)
 closethresh(X,R,S,twice,\dots)
+cocoEngine(nv, ie, je, algoname)
 \method{coef}{summary.kppm}(object, \dots)
 \method{coef}{summary.ppm}(object, \dots)
 \method{coef}{vblogit}(object, \dots) 
@@ -1576,6 +1577,7 @@ allElementsIdentical(x, entry)
 %%
 \method{as.ppm}{rppm}(object)
 \method{predict}{profilepl}(object, \dots)
+
 }
 \details{
   These internal \pkg{spatstat.core} functions are not usually called

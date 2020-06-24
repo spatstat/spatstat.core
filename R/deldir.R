@@ -3,7 +3,7 @@
 #'
 #' Interface to deldir package
 #'
-#'  $Revision: 1.33 $ $Date: 2020/06/12 06:04:42 $
+#'  $Revision: 1.34 $ $Date: 2020/06/14 10:34:23 $
 #'
 
 #' ..............................................
@@ -337,7 +337,6 @@ dirichletEdges <- function(X) {
     return(edges(W))
   return(as.psp(dd$dirsgs[,1:4], window=W))
 }
-
 
 
 ## deprecated older names

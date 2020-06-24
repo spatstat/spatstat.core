@@ -3,7 +3,7 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.34 $ $Date: 2020/06/12 01:58:23 $
+#' $Revision: 1.35 $ $Date: 2020/06/14 10:37:28 $
 #'
 
 evalCovar <- function(model, covariate, ...) {

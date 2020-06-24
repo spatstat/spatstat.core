@@ -1,2 +1,2 @@
 date version nhelpfiles nobjects ndatasets Rlines srclines
-"2017-06-13" "1.2-2" 932 2350 0 104215 28444
+"2020-06-24" "1.2-5" 932 2351 0 104190 28444
