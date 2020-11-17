@@ -43,6 +43,7 @@
 \alias{bermantestCalc}
 \alias{bermantestEngine}
 \alias{bdry.mask}
+\alias{bigvaluerule}
 \alias{bind.ratfv}
 \alias{blankcoefnames}
 \alias{bounding.box3}
@@ -159,6 +160,7 @@
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
 \alias{fakemaintitle}
+\alias{fakeNeyScot}
 \alias{family.vblogit} 
 \alias{f3engine}
 \alias{f3Cengine}
@@ -253,10 +255,12 @@
 \alias{is.infline}
 \alias{is.interact}
 \alias{is.marked.default}    
+\alias{is.marked.mppm}    
 \alias{is.marked.msr}    
 \alias{is.marked.psp}    
 \alias{is.marked.quad}
 \alias{is.mppm}
+\alias{is.multitype.mppm}    
 \alias{is.multitype.msr}    
 \alias{is.multitype.quad}    
 \alias{is.multitype.default}    
@@ -375,6 +379,7 @@
 \alias{numeric.columns}
 \alias{objsurfEngine}
 \alias{onecolumn}
+\alias{optimConverged}
 \alias{optimStatus}
 \alias{outdated.interact}
 \alias{oversize.quad}    
@@ -547,6 +552,7 @@
 \alias{rebadge.fv}
 \alias{rebadge.as.crossfun}
 \alias{rebadge.as.dotfun}
+\alias{rebadgeLabels}
 \alias{rebound}
 \alias{rebound.im}
 \alias{rebound.ppp}
@@ -586,6 +592,7 @@
 \alias{rpoint.multi}
 \alias{safedeldir}
 \alias{safelookup}
+\alias{safevalue}
 \alias{scalardilate.breakpts}
 \alias{scalardilate.diagramobj}
 \alias{scalardilate.msr}
@@ -711,6 +718,7 @@
 %%
 \alias{as.ppplist}
 \alias{as.imlist}
+\alias{as.linimlist}
 \alias{allElementsIdentical}
 %%
 \alias{as.ppm.rppm}
@@ -767,6 +775,7 @@ bermantestCalc(fram, which, alternative, \dots)
 bermantestEngine(model, covariate, which, alternative, \dots,
                  modelname, covname, dataname)
 bdry.mask(W)
+bigvaluerule(objfun, objargs, startpar, \dots)
 bind.ratfv(x, numerator, denominator, labl, desc, preferred,
            ratio, quotient)
 blankcoefnames(x)
@@ -846,7 +855,8 @@ densitycrossEngine(Xdata, Xquery, sigma, \dots,
 densitypointsEngine(x, sigma, \dots,
                     kernel, scalekernel,
                     weights, edge, varcov,
-                    leaveoneout, diggle, sorted, spill, cutoff)
+                    leaveoneout, diggle, sorted, spill, cutoff,
+                    debug)
 diagnose.ppm.engine(object, \dots, type, typename, opt,
                          sigma, rbord, compute.sd, compute.cts,
                          envelope, nsim, nrank,
@@ -865,7 +875,7 @@ digital.volume(range, nval, vside)
 distributecbind(x)
 dist2dpath(dist, method="C")
 do.as.im(x, action, \dots, W, eps, dimyx, xy, na.replace)
-do.call.plotfun(fun, arglist, \dots)
+do.call.plotfun(fun, arglist, \dots, envir)
 doMultiStraussHard(iradii, hradii, types)
 dppmFixIntensity(DPP, lambda, po)
 dppmFixAlgorithm(algorithm, changealgorithm, clusters, startpar)
@@ -924,6 +934,7 @@ ExpSmoothLog(X, \dots, at, weights)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
 fakemaintitle(bb, main, \dots)
+fakeNeyScot(Y, lambda, win, saveLambda, saveparents)
 \method{family}{vblogit}(object, \dots)
 f3engine(x, y, z, box, vside, range, nval, correction)
 f3Cengine(x, y, z, box, vside, rmax, nrval)
@@ -1020,11 +1031,13 @@ is.imlist(x)
 is.infline(x)
 is.interact(x)
 \method{is.marked}{default}(\dots)  
+\method{is.marked}{mppm}(X, \dots)
 \method{is.marked}{msr}(X, \dots)
 \method{is.marked}{psp}(X, \dots)
 \method{is.marked}{quad}(X, na.action="warn", \dots)
 is.mppm(x)
 \method{is.multitype}{default}(X, \dots)  
+\method{is.multitype}{mppm}(X, \dots)
 \method{is.multitype}{msr}(X, \dots)
 \method{is.multitype}{quad}(X, na.action="warn", \dots)
 \method{is.poisson}{mppm}(x)
@@ -1049,11 +1062,11 @@ Kpcf.kppm(model, what)
 killinteraction(model)
 km.rs.opt(o, cc, d, breaks, KM, RS)
 kppmComLik(X, Xname, po, clusters, control, weightfun, rmax,
-           algorithm, DPP, \dots)
+           algorithm, DPP, \dots, pint)
 kppmMinCon(X, Xname, po, clusters, control, statistic, statargs,
            algorithm, DPP, \dots)
 kppmPalmLik(X, Xname, po, clusters, control, weightfun, rmax, 
-           algorithm, DPP, \dots)
+           algorithm, DPP, \dots, pint)
 kraever(package, fatal)
 kraeverRandomFields()
 \method{labels}{ppm}(object, \dots)
@@ -1173,6 +1186,7 @@ objsurfEngine(objfun, optpar, objargs,
               \dots, dotargs, objname,
               ngrid, ratio, verbose)
 onecolumn(m)
+optimConverged(x)
 optimStatus(x, call)
 printStatus(x, errors.only)
 printStatusList(stats)
@@ -1385,6 +1399,7 @@ rebadge.fv(x, new.ylab, new.fname, tags, new.desc, new.labl, new.yexp,
            new.dotnames, new.preferred, new.formula, new.tags)
 rebadge.as.crossfun(x, main, sub, i, j)
 rebadge.as.dotfun(x, main, sub, i)
+rebadgeLabels(x, new.fname)
 rebound(x, rect)
 \method{rebound}{im}(x, rect)  
 \method{rebound}{ppp}(x, rect) 
@@ -1432,6 +1447,7 @@ runifpoisppOnLines(lambda, L, nsim, drop)
 runifrect(n, win, nsim, drop)
 safedeldir(X)
 safelookup(Z, x, factor, warn)
+safevalue(x, default)
 \method{scalardilate}{breakpts}(X, f, \dots)
 \method{scalardilate}{diagramobj}(X, f, \dots)
 \method{scalardilate}{msr}(X, f, \dots)
@@ -1443,7 +1459,7 @@ scanBinomLRTS(nZ, nG, muZ, muG, alternative)
 second.moment.calc(x, sigma, edge, what, \dots,
                    varcov, expand, obswin, npts, debug)
 second.moment.engine(x, sigma, edge, what, \dots,
-      kernel, scalekernel, obswin, varcov, npts, debug)
+      kernel, scalekernel, obswin, varcov, npts, debug, fastgauss)
 sewpcf(d, w, denargs, lambda2area, divisor)
 sewsmod(d, ff, wt, Ef, rvals, method="smrep", \dots, nwtsteps=500)
 \method{shift}{diagramobj}(X, \dots)
@@ -1467,7 +1483,7 @@ smoothcrossEngine(Xdata, Xquery, values, sigma, \dots,
                     kernel, scalekernel, sorted, cutoff)
 smoothpointsEngine(x, values, sigma, \dots,
                    kernel, scalekernel,
-                   weights, varcov, leaveoneout, sorted, cutoff)
+                   weights, varcov, leaveoneout, sorted, cutoff, debug)
 smudge(X)
 \method{sort}{im}(x, \dots)
 spatstat.deldir.setopt(use.trigrafS, use.trigraf, debug.delaunay)
@@ -1573,6 +1589,7 @@ spatstatDiagnostic(msg)
 %%
 as.ppplist(x, check)
 as.imlist(x, check)
+as.linimlist(x, check)
 allElementsIdentical(x, entry)
 %%
 \method{as.ppm}{rppm}(object)

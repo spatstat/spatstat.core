@@ -1,9 +1,8 @@
 ##
 ##   Math.imlist.R
 ##
-##   $Revision: 1.6 $ $Date: 2020/05/09 03:32:49 $
+##   $Revision: 1.7 $ $Date: 2020/10/31 05:06:19 $
 ##
-##  'Ops' method is now in Ops.im.R
 
 Math.imlist <- function(x, ...){
   solapply(x, .Generic, ...)

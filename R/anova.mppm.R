@@ -1,7 +1,7 @@
 #
 # anova.mppm.R
 #
-# $Revision: 1.17 $ $Date: 2020/05/17 04:59:58 $
+# $Revision: 1.21 $ $Date: 2020/11/04 02:45:48 $
 #
 
 anova.mppm <- local({
@@ -19,15 +19,17 @@ anova.mppm <- local({
   
   anova.mppm <- function(object, ..., test=NULL, adjust=TRUE,
                          fine=FALSE, warn=TRUE) {
+    thecall <- sys.call()
+
     gripe <- if(warn) do.gripe else dont.gripe
     argh <- list(...)
-
+    
     ## trap outmoded usage
     if("override" %in% names(argh)) {
       gripe("Argument 'override' is superseded and was ignored")
       argh <- argh[-which(names(argh) == "override")]
     }
-   
+
     ## list of models
     objex <- append(list(object), argh)
 
@@ -39,9 +41,19 @@ anova.mppm <- local({
     pois <- all(sapply(objex, is.poisson.mppm))
     gibbs <- !pois
 
-    ## handle anova for a single object
+    ## single/multiple objects given
+    singleobject <- (length(objex) == 1L)
     expandedfrom1 <- FALSE
-    if(length(objex) == 1 && gibbs) {
+    if(!singleobject) {
+      ## several objects given
+      ## require short names of models for output
+      argnames <- names(thecall) %orifnull% rep("", length(thecall))
+      retain <- is.na(match(argnames,
+                            c("test", "adjust", "fine", "warn", "override")))
+      shortcall <- thecall[retain]
+      modelnames <- vapply(as.list(shortcall[-1L]), short.deparse, "")
+    } else if(gibbs) {
+      ## single Gibbs model given.
       ## we can't rely on anova.glm in this case
       ## so we have to re-fit explicitly
       Terms <- drop.scope(object)
@@ -72,6 +84,9 @@ anova.mppm <- local({
 
     ## Choice of test
     if(fitter == "glmmPQL") {
+#      HACK <- spatstat.options("developer")
+#      if(!HACK) 
+#        stop("Sorry, analysis of deviance is currently not supported for models with random effects, due to changes in the nlme package", call.=FALSE)
       ## anova.lme requires different format of `test' argument
       ## and does not recognise 'dispersion'
       if(is.null(test))
@@ -110,9 +125,15 @@ anova.mppm <- local({
     ## Finally do the appropriate ANOVA
     opt <- list(test=test)
     if(fitter == "glmmPQL") {
-      ## HACK: anova.lme forbids other classes
-      ##       and does not recognise 'dispersion'
-      fitz <- lapply(fitz, drop1class)
+      ## anova.lme does not recognise 'dispersion' argument
+      ## Disgraceful hack:
+      ## Modify object to conform to requirements of anova.lme
+      fitz <- lapply(fitz, stripGLMM)
+      for(i in seq_along(fitz)) {
+        call.i <- getCall(objex[[i]])
+        names(call.i) <- sub("formula", "fixed", names(call.i))
+        fitz[[i]]$call <- call.i
+      }
       warning("anova is not strictly valid for penalised quasi-likelihood fits")
     } else {
       ## normal case
@@ -121,6 +142,9 @@ anova.mppm <- local({
     result <- try(do.call(anova, append(fitz, opt)))
     if(inherits(result, "try-error"))
       stop("anova failed")
+    if(fitter == "glmmPQL" &&
+       !singleobject && length(modelnames) == nrow(result))
+      row.names(result) <- modelnames
   
     ## Remove approximation-dependent columns if present
     result[, "Resid. Dev"] <- NULL
@@ -269,8 +293,8 @@ anova.mppm <- local({
     return(result)
   }
 
-  drop1class <- function(object) {
-    class(object) <- class(object)[-1L];
+  stripGLMM <- function(object) {
+    oldClass(object) <- setdiff(oldClass(object), "glmmPQL")
     return(object)
   }
     

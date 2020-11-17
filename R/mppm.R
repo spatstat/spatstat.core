@@ -1,7 +1,7 @@
 #
 # mppm.R
 #
-#  $Revision: 1.98 $   $Date: 2020/05/17 09:30:00 $
+#  $Revision: 1.100 $   $Date: 2020/11/17 01:30:18 $
 #
 
 mppm <- local({
@@ -591,6 +591,14 @@ data.mppm <- function(x) {
   solapply(x$Y, getElement, name="data")
 }
 
+is.marked.mppm <- function(X, ...) {
+  any(sapply(data.mppm(X), is.marked))
+}
+  
+is.multitype.mppm <- function(X, ...) {
+  any(sapply(data.mppm(X), is.multitype))
+}
+  
 windows.mppm <- function(x) {
   solapply(data.mppm(x), Window)
 }
@@ -642,8 +650,9 @@ simulate.mppm <- function(object, nsim=1, ..., verbose=TRUE) {
     state <- list()
   }
   for(irow in seq_len(nr)) {
+    model.i <- subs[[irow]]
     sims[[irow]] <- do.call(simulate,
-                            resolve.defaults(list(object=subs[[irow]],
+                            resolve.defaults(list(object=quote(model.i),
                                                   nsim=nsim, drop=FALSE),
                                              list(...),
                                              list(progress=FALSE)))

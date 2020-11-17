@@ -16,21 +16,16 @@ cat(paste("--------- Executing",
 #'
 #'  AUC and ROC code
 #'
-#'  $Revision: 1.4 $ $Date: 2020/04/28 12:58:26 $
+#'  $Revision: 1.6 $ $Date: 2020/11/02 06:26:45 $
 
 local({
   if(FULLTEST) {
-    A <- roc(spiders, "x")
-    B <- auc(spiders, "y")
     fit <- kppm(redwood ~ I(y-x))
     a <- roc(fit)
     b <- auc(fit)
     fet <- ppm(amacrine~x+y+marks)
     d <- roc(fet)
     e <- auc(fet)
-    fut <- lppm(spiders ~ I(y-x))
-    f <- roc(fut)
-    g <- auc(fut)
   }
 })
 ## badwindowcheck.R
@@ -318,7 +313,7 @@ reset.spatstat.options()
 #'   Tests of "click*" functions
 #'   using queueing feature of spatstatLocator
 #'
-#'   $Revision: 1.6 $ $Date: 2020/06/12 06:10:26 $
+#'   $Revision: 1.7 $ $Date: 2020/11/02 06:53:30 $
 
 local({
   #' clickppp

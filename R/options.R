@@ -3,7 +3,7 @@
 #
 #     Spatstat options and other internal states
 #
-#    $Revision: 1.87 $   $Date: 2020/03/26 03:10:54 $
+#    $Revision: 1.89 $   $Date: 2020/10/14 02:20:30 $
 #
 #
 
@@ -262,6 +262,12 @@ warn.once <- function(key, ...) {
          },
          valid="a single integer, greater than 1024"
        ),
+       mincon.trace = list(
+         ## tracing debugger in mincontrast
+         default=FALSE,
+         check=function(x) { is.logical(x) && length(x) == 1},
+         valid="a single logical value"
+         ),
        monochrome = list(
          ## switch for monochrome colour scheme
          default=FALSE,
@@ -475,15 +481,21 @@ warn.once <- function(key, ...) {
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"
        ),
+       kppm.adjusted=list(
+         ## experimental
+         default=FALSE,
+         check=function(x) { is.logical(x) && length(x) == 1 },
+         valid="a single logical value"
+       ),
        kppm.canonical=list(
          ## whether to use 'canonical' parameters in kppm
          default=FALSE,
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"
        ),
-       kppm.adjusted=list(
-         ## experimental
-         default=FALSE,
+       kppm.strict=list(
+         ## whether to apply domain limits for cluster parameters in kppm
+         default=TRUE,
          check=function(x) { is.logical(x) && length(x) == 1 },
          valid="a single logical value"
        ),

@@ -4,7 +4,7 @@
 #	Compute estimates of cross-type K functions
 #	for multitype point patterns
 #
-#	$Revision: 5.50 $	$Date: 2019/10/16 03:09:01 $
+#	$Revision: 5.52 $	$Date: 2020/10/30 03:59:52 $
 #
 #
 # -------- functions ----------------------------------------
@@ -101,9 +101,11 @@ function(X, i, j, r=NULL, breaks=NULL,
 
   if(i == j) {
     ## use Kest
+    XI <- X[I]
     result <- do.call(Kest,
-                      resolve.defaults(list(X=X[I],
-                                            r=r, breaks=breaks,
+                      resolve.defaults(list(X=quote(XI),
+                                            r=quote(r),
+                                            breaks=quote(breaks),
                                             correction=correction, ratio=ratio),
                                        list(rmax=NULL), ## forbidden 
                                        list(...)))
@@ -115,15 +117,7 @@ function(X, i, j, r=NULL, breaks=NULL,
                      r=r, breaks=breaks,
                      correction=correction, ratio=ratio, ...)
   }
-  iname <- make.parseable(paste(i))
-  jname <- make.parseable(paste(j))
-  result <-
-    rebadge.fv(result, 
-               substitute(Kcross[i,j](r), list(i=iname,j=jname)),
-               c("K", paste0("list(", iname, ",", jname, ")")), 
-               new.yexp=substitute(K[list(i,j)](r),
-                                   list(i=iname,j=jname)))
-  return(result)
+  result <- rebadge.as.crossfun(result, "K", NULL, i, j)
 }
 
 "Kdot" <- 
@@ -148,12 +142,7 @@ function(X, i, r=NULL, breaks=NULL,
 	
   result <- Kmulti(X, I, J,
                    r=r, breaks=breaks, correction=correction, ..., ratio=ratio)
-  iname <- make.parseable(paste(i))
-  result <-
-    rebadge.fv(result,
-               substitute(K[i ~ dot](r), list(i=iname)),
-               c("K", paste0(iname, "~ symbol(\"\\267\")")),
-               new.yexp=substitute(K[i ~ symbol("\267")](r), list(i=iname)))
+  result <- rebadge.as.dotfun(result, "K", NULL, i)
   return(result)
 }
 
@@ -379,3 +368,4 @@ function(X, I, J, r=NULL, breaks=NULL,
   }
   return(K)
 }
+

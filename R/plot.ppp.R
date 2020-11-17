@@ -1,33 +1,34 @@
 #
 #	plot.ppp.R
 #
-#	$Revision: 1.96 $	$Date: 2020/02/25 05:33:46 $
+#	$Revision: 1.98 $	$Date: 2020/11/17 03:47:24 $
 #
 #
 #--------------------------------------------------------------------------
 
 plot.ppp <- local({
 
-  transparencyfun <- function(n) {
+  default.transparency <- function(n) {
     if(n <= 100) 1 else (0.2 + 0.8 * exp(-(n-100)/1000))
   }
   
   ## determine symbol map for marks of points
   default.symap.points <- function(x, ..., 
-                                  chars=NULL, cols=NULL, 
+                                  chars=NULL, cols=NULL, col=NULL, 
                                   maxsize=NULL, meansize=NULL, markscale=NULL,
                                   markrange=NULL, marklevels=NULL) {
     marx <- marks(x)
     if(is.null(marx)) {
       ## null or constant symbol map
       ## consider using transparent colours
-      if(is.null(cols) &&
-         !any(c("col", "fg", "bg") %in% names(list(...))) &&
+      if(is.null(cols) && is.null(col) && 
+         !any(c("fg", "bg") %in% names(list(...))) &&
          (nx <- npoints(x)) > 100 &&
          identical(dev.capabilities()$semiTransparency, TRUE) &&
          spatstat.options("transparent"))
-        cols <- rgb(0,0,0,transparencyfun(nx))
-      return(symbolmap(..., chars=chars, cols=cols))
+        cols <- rgb(0,0,0, default.transparency(nx))
+      if(!is.null(cols) && !is.null(col)) col <- NULL
+      return(symbolmap(..., chars=chars, cols=cols, col=col))
     }
     if(!is.null(dim(marx)))
       stop("Internal error: multivariate marks in default.symap.points")
@@ -215,7 +216,7 @@ plot.ppp <- local({
 #    xwindow <- x$window
 #    if(do.plot) 
 #      do.call(plot.owin,
-#              resolve.defaults(list(xwindow),
+#              resolve.defaults(list(quote(xwindow)),
 #                               list(...),
 #                               list(main=main, invert=TRUE, add=add,
 #                                    type=if(show.window) "w" else "n")))
@@ -236,7 +237,7 @@ plot.ppp <- local({
       ## generate one plot for each column of marks
       y <- solapply(mx, setmarks, x=x)
       out <- do.call(plot,
-                     resolve.defaults(list(x=y, main=main,
+                     resolve.defaults(list(x=quote(y), main=main,
                                            show.window=show.window && !clipped,
                                            do.plot=do.plot,
                                            type=type),
@@ -361,7 +362,7 @@ plot.ppp <- local({
                ann=FALSE, axes=FALSE, xlab="", ylab="")
   rez <- resolve.defaults(list(...), dflt)[names(dflt)]
   do.call(plot.owin,
-          append(list(x=BB, type="n", add=add,
+          append(list(x=quote(BB), type="n", add=add,
                       main=blankmain, show.all=show.all),
                  rez))
   if(sick) {
@@ -376,8 +377,9 @@ plot.ppp <- local({
       }
       ## plot window of main pattern
       if(!clipped) {
+        xwindow <- x$window
         do.call(plot.owin,
-                resolve.defaults(list(x$window, add=TRUE),
+                resolve.defaults(list(quote(xwindow), add=TRUE),
                                  list(...),
                                  list(invert=TRUE)))
       } else plot(clippy, add=TRUE, ...)
@@ -397,7 +399,7 @@ plot.ppp <- local({
 
   ## Plot observation window (or at least the main title)
   do.call(plot.owin,
-          resolve.defaults(list(x=xwindow,
+          resolve.defaults(list(x=quote(xwindow),
                                 add=TRUE,
                                 main=main,
                                 type=if(show.window && !clipped) "w" else "n",

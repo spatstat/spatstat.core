@@ -6,6 +6,25 @@
 
 ##################  base ################################
 
+safevalue <- function(x, default=0) {
+  ## ensure x is finite and acceptable to C routines
+  ifelse(is.finite(x),
+         pmin(.Machine$double.xmax,
+              pmax(.Machine$double.eps,
+                   x)),
+         default)
+}
+
+bigvaluerule <- function(objfun, objargs, startpar, ...) {
+  ## evaluate objective at starting parameter vector
+  startval <- do.call(objfun,  list(par=startpar, objargs=objargs, ...))
+  ## determine suitable large number to replace Inf values of objective
+  bigvalue <- min(max(1, 10 * abs(startval)),
+                  with(.Machine, sqrt(double.xmax) * double.eps))
+  return(bigvalue)
+}
+
+
 mincontrast <- local({
 
   ## objective function (in a format that is re-usable by other code)
@@ -25,10 +44,26 @@ mincontrast <- local({
         if(length(theo) != nrvals)
           stop("adjustment did not return the correct number of values")
       }
-      ##
+      ## integrand of discrepancy 
       discrep <- (abs(theo^qq - obsq))^pp
-      value <- mean(discrep)
-      value <- min(value, .Machine$double.xmax)
+      ## protect C code from weird values
+      bigvalue <- BIGVALUE + sqrt(sum(par^2))
+      discrep <- safevalue(discrep, default=bigvalue)
+      ## rescaled integral of discrepancy
+      value <- mean(discrep) 
+      if(is.function(whiu)) value <- whiu(par, value, -1)
+      ## debugger activated by spatstat.options(mincon.trace)
+      if(isTRUE(TRACE)) {
+        cat("Parameters:", fill=TRUE)
+        print(par)
+        splat("Discrepancy value:", value)
+      }
+      if(is.environment(saveplace)) {
+        h <- get("h", envir=saveplace)
+        hplus <- as.data.frame(append(par, list(value=value)))
+        h <- rbind(h, hplus)
+        assign("h", h, envir=saveplace)
+      }
       return(value)
     })
   }
@@ -38,10 +73,13 @@ mincontrast <- local({
                           ctrl=list(q = 1/4, p = 2, rmin=NULL, rmax=NULL),
                           fvlab=list(label=NULL, desc="minimum contrast fit"),
                           explain=list(dataname=NULL,
-                            modelname=NULL, fname=NULL),
-			  adjustment=NULL) {
+                                       modelname=NULL, fname=NULL),
+                          action.bad.values=c("warn", "stop", "silent"),
+			  adjustment=NULL,
+                          pint=NULL) {
     verifyclass(observed, "fv")
-
+    action.bad.values <- match.arg(action.bad.values)
+    
     stopifnot(is.function(theoretical))
     if(!any("par" %in% names(formals(theoretical))))
       stop(paste("Theoretical function does not include an argument called",
@@ -79,30 +117,47 @@ mincontrast <- local({
     if(max(rvals) < rmax)
       stop(paste("rmax=", signif(rmax,4),
                  "exceeds the range of available data",
-                 "= [", signif(min(rvals),4), ",", signif(max(rvals),4), "]"))
+                 "= [", signif(min(rvals),4), ",", signif(max(rvals),4), "]"),
+           call.=FALSE)
     sub <- (rvals >= rmin) & (rvals <= rmax)
     rvals <- rvals[sub]
     obs <- obs[sub]
     ## sanity clause
     if(!all(ok <- is.finite(obs))) {
-      whinge <- paste("Some values of the empirical function",
+      doomed <- !any(ok)
+      whinge <- paste(if(doomed) "All" else "Some",
+                      "values of the empirical function",
                       sQuote(explain$fname),
-                      "were infinite or NA.")
+                      "were infinite, NA or NaN.")
+      if(doomed || action.bad.values == "stop")
+        stop(whinge, call.=FALSE)
+      ## trim each end of domain
       iMAX <- max(which(ok))
       iMIN <- min(which(!ok)) + 1
       if(iMAX > iMIN && all(ok[iMIN:iMAX])) {
+        ## success - accept trimmed domain
         rmin <- rvals[iMIN]
         rmax <- rvals[iMAX]
         obs   <- obs[iMIN:iMAX]
         rvals <- rvals[iMIN:iMAX]
         sub[sub] <- ok
-        warning(paste(whinge,
-                      "Range of r values was reset to",
-                      prange(c(rmin, rmax))),
-                call.=FALSE)
-      } else stop(paste(whinge, "Please choose a narrower range [rmin, rmax]"),
+        if(action.bad.values == "warn") {
+          warning(paste(whinge,
+                        "Range of r values was reset to",
+                        prange(c(rmin, rmax))),
+                  call.=FALSE)
+        }
+      } else stop(paste(whinge,
+                        "Unable to recover.",
+                        "Please choose a narrower range [rmin, rmax]"),
                   call.=FALSE)
     }
+    ## debugging
+    TRACE <- pint$trace %orifnull% spatstat.options("mincon.trace")
+    if(SAVE <- isTRUE(pint$save)) {
+      saveplace <- new.env()
+      assign("h", NULL, envir=saveplace)
+    } else saveplace <- NULL
     ## pack data into a list
     objargs <- list(theoretical = theoretical,
                     rvals       = rvals,
@@ -112,7 +167,15 @@ mincontrast <- local({
                     pp          = ctrl$p,
                     rmin        = rmin,
                     rmax        = rmax,
-		    adjustment  = adjustment)
+		    adjustment  = adjustment,
+                    whiu        = pint$whiu,
+                    saveplace   = saveplace,
+                    TRACE       = TRACE,
+                    BIGVALUE    = 1)
+    ## determine a suitable large number to replace Inf values of objective
+    objargs$BIGVALUE <- bigvaluerule(contrast.objective,
+                                     objargs,
+                                     startpar, ...)
     ## go
     minimum <- optim(startpar, fn=contrast.objective, objargs=objargs, ...)
     ## if convergence failed, issue a warning 
@@ -144,6 +207,7 @@ mincontrast <- local({
                    objargs  = objargs,
                    dotargs  = list(...))
     class(result) <- c("minconfit", class(result))
+    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
     return(result)
   }
 
@@ -251,8 +315,9 @@ print.minconfit <- function(x, ...) {
 
 plot.minconfit <- function(x, ...) {
   xname <- short.deparse(substitute(x))
+  xf <- x$fit
   do.call(plot.fv,
-          resolve.defaults(list(x$fit),
+          resolve.defaults(list(quote(xf)),
                            list(...),
                            list(main=xname)))
 }
@@ -269,6 +334,8 @@ unitname.minconfit <- function(x) {
 as.fv.minconfit <- function(x) x$fit
 
 ######  convergence status of 'optim' object
+
+optimConverged <- function(x) { x$convergence == 0 }
 
 optimStatus <- function(x, call=NULL) {
   cgce <- x$convergence
@@ -304,6 +371,7 @@ optimStatus <- function(x, call=NULL) {
 #' general code for collecting status reports
 
 signalStatus <- function(x, errors.only=FALSE) {
+  if(is.null(x)) return(invisible(NULL))
   stopifnot(inherits(x, "condition"))
   if(inherits(x, "error")) stop(x)
   if(inherits(x, "warning")) warning(x) 
@@ -312,6 +380,7 @@ signalStatus <- function(x, errors.only=FALSE) {
 }
 
 printStatus <- function(x, errors.only=FALSE) {
+  if(is.null(x)) return(invisible(NULL))
   prefix <-
     if(inherits(x, "error")) "error: " else 
     if(inherits(x, "warning")) "warning: " else NULL

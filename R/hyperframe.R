@@ -1,7 +1,7 @@
 #
 #  hyperframe.R
 #
-# $Revision: 1.73 $  $Date: 2020/04/29 12:37:48 $
+# $Revision: 1.78 $  $Date: 2020/11/16 02:30:29 $
 #
 
 hyperframe <- local({
@@ -79,16 +79,16 @@ hyperframe <- local({
   
     ## Collect the data frame columns into a data frame
     if(!any(dfcolumns))
-      df <- as.data.frame(matrix(, ncases, 0), row.names=row.names)
+      df <- as.data.frame(matrix(, ncases, 0))
     else {
       df <- do.call(data.frame,
                     append(aarg[dfcolumns],
-                           list(row.names=row.names,
-                                check.rows=check.rows,
+                           list(check.rows=check.rows,
                                 check.names=check.names,
                                 stringsAsFactors=stringsAsFactors)))
       names(df) <- nama[dfcolumns]
     }
+    if(length(row.names)) row.names(df) <- row.names
 
     ## Storage type of each variable
     vtype <- character(nvars)
@@ -287,12 +287,16 @@ as.hyperframe.hyperframe <- function(x, ...) {
 }
 
 as.hyperframe.data.frame <- function(x, ..., stringsAsFactors=FALSE) {
-  xlist <- if(missing(x)) NULL else as.list(x)
+  if(missing(x) || is.null(x)) {
+    xlist <- rona <- NULL
+  } else {
+    rona <- row.names(x)
+    xlist <- as.list(x)
+  }
   do.call(hyperframe,
-          resolve.defaults(
-                           xlist,
+          resolve.defaults(xlist,
                            list(...),
-                           list(row.names=rownames(x),
+                           list(row.names=rona,
                                 stringsAsFactors=stringsAsFactors),
                            .StripNull=TRUE))
 }
@@ -308,7 +312,6 @@ as.hyperframe.listof <- function(x, ...) {
           resolve.defaults(
                            xlist,
                            list(...),
-                           list(row.names=rownames(x)),
                            .StripNull=TRUE))
 }
 
@@ -443,10 +446,8 @@ cbind.hyperframe <- function(...) {
   ## tack on row names
   rona <- lapply(aarg, row.names)
   good <- (lengths(rona) == nrow(result))
-  if(any(good)) {
-    rona <- rona[[min(which(good))]]
-    row.names(result) <- make.names(rona, unique=TRUE)
-  }
+  if(any(good)) 
+    row.names(result) <- rona[[min(which(good))]]
   return(result)
 }
 

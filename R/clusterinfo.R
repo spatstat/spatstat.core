@@ -12,11 +12,11 @@
          printmodelname = function(...) "Thomas process", # Used by print.kppm
          parnames = c("kappa", "sigma2"),
          clustargsnames = NULL,
-         checkpar = function(par, old = TRUE){
+         checkpar = function(par, old = TRUE, ..., strict=TRUE){
              if(is.null(par))
                  par <- c(kappa=1,scale=1)
-             if(any(par<=0))
-                 stop("par values must be positive.")
+             if(strict && any(par<=0))
+                 stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("kappa","sigma2"),
                                        onError="null")
              if(is.null(nam)) {
@@ -30,7 +30,7 @@
              }
              return(par)
          },
-         checkclustargs = function(margs, old = TRUE) list(),
+         checkclustargs = function(margs, old = TRUE, ...) list(),
          resolvedots = function(...){
            return(list(...))
          },
@@ -45,7 +45,8 @@
              # Choose the first of the possible supplied values for scale:
              scale <- c(dots$scale, dots$par[["scale"]], dots$sigma, dots$par[["sigma"]])[1L]
              if(is.null(scale))
-                 stop("Argument ", sQuote("scale"), " must be given.")
+               stop(paste("Argument ", sQuote("scale"), " must be given."),
+                    call.=FALSE)
              thresh <- dots$thresh
              if(!is.null(thresh)){
                ## The squared length of isotropic Gaussian (sigma)
@@ -67,14 +68,14 @@
          },
          isPCP=TRUE,
          ## K-function
-         K = function(par,rvals, ...){
-           if(any(par <= 0))
+         K = function(par,rvals, ..., strict=TRUE){
+           if(strict && any(par <= 0))
              return(rep.int(Inf, length(rvals)))
            pi*rvals^2+(1-exp(-rvals^2/(4*par[2L])))/par[1L]
          },
          ## pair correlation function
-         pcf= function(par,rvals, ...){
-           if(any(par <= 0))
+         pcf= function(par,rvals, ..., strict=TRUE){
+           if(strict && any(par <= 0))
              return(rep.int(Inf, length(rvals)))
            1 + exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L] * par[2L])
          },
@@ -115,11 +116,11 @@
          printmodelname = function(...) "Matern cluster process", # Used by print.kppm
          parnames = c("kappa", "R"),
          clustargsnames = NULL,
-         checkpar = function(par, old = TRUE){
+         checkpar = function(par, old = TRUE, ...){
              if(is.null(par))
                  par <- c(kappa=1,scale=1)
              if(any(par<=0))
-                 stop("par values must be positive.")
+                 stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("kappa","R"), onError="null")
              if(is.null(nam)) {
                check.named.vector(par, c("kappa","scale"))
@@ -141,12 +142,13 @@
              # Choose the first of the possible supplied values for scale:
              scale <- c(dots$scale, dots$par[["scale"]], dots$R, dots$par[["R"]])[1L]
              if(is.null(scale))
-                 stop("Argument ", sQuote("scale"), " must be given.")
+               stop(paste("Argument ", sQuote("scale"), " must be given."),
+                    call.=FALSE)
            if(!is.null(dots$thresh))
                warning("Argument ", sQuote("thresh"), " is ignored for Matern Cluster model")
              return(scale)
          },
-         checkclustargs = function(margs, old = TRUE) list(),
+         checkclustargs = function(margs, old = TRUE, ...) list(),
          resolvedots = function(...){
            return(list(...))
          },
@@ -229,11 +231,11 @@
          printmodelname = function(...) "Cauchy process", # Used by print.kppm
          parnames = c("kappa", "eta2"),
          clustargsnames = NULL,
-         checkpar = function(par, old = TRUE){
+         checkpar = function(par, old = TRUE, ...){
              if(is.null(par))
                  par <- c(kappa=1,scale=1)
              if(any(par<=0))
-                 stop("par values must be positive.")
+                 stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("kappa","eta2"), onError="null")
              if(is.null(nam)) {
                  check.named.vector(par, c("kappa","scale"))
@@ -246,7 +248,7 @@
              }
              return(par)
          },
-         checkclustargs = function(margs, old = TRUE) list(),
+         checkclustargs = function(margs, old = TRUE, ...) list(),
          resolvedots = function(...){
            return(list(...))
          },
@@ -260,7 +262,8 @@
              # Choose the first of the possible supplied values for scale:
              scale <- c(dots$scale, dots$par[["scale"]])[1L]
              if(is.null(scale))
-                 stop("Argument ", sQuote("scale"), " must be given.")
+               stop(paste("Argument ", sQuote("scale"), " must be given."),
+                    call.=FALSE)
              thresh <- dots$thresh %orifnull% 0.01
              ## integral of ddist(r) dr is 1 - (1+(r/scale)^2)^(-1/2)
              ## solve for integral = 1-thresh:
@@ -314,11 +317,11 @@
          },
          parnames = c("kappa", "eta"),
          clustargsnames = "nu",
-         checkpar = function(par, old = TRUE){
+         checkpar = function(par, old = TRUE, ...){
              if(is.null(par))
                  par <- c(kappa=1,scale=1)
              if(any(par<=0))
-                 stop("par values must be positive.")
+                 stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("kappa","eta"), onError="null")
              if(is.null(nam)) {
                check.named.vector(par, c("kappa","scale"))
@@ -327,7 +330,7 @@
              if(!old) names(par)[2L] <- "scale"
              return(par)
          },
-         checkclustargs = function(margs, old = TRUE){
+         checkclustargs = function(margs, old = TRUE, ...){
              if(!old)
                  margs <- list(nu=margs$nu.ker)
              return(margs)
@@ -365,12 +368,14 @@
              # Choose the first of the possible supplied values for scale:
              scale <- c(dots$scale, dots$par[["scale"]])[1L]
              if(is.null(scale))
-                 stop("Argument ", sQuote("scale"), " must be given.")
+               stop(paste("Argument ", sQuote("scale"), " must be given."),
+                    call.=FALSE)
              # Find value of nu:
              extra <- .Spatstat.ClusterModelInfoTable$VarGamma$resolvedots(...)
              nu <- .Spatstat.ClusterModelInfoTable$VarGamma$checkclustargs(extra$margs, old=FALSE)$nu
              if(is.null(nu))
-                 stop("Argument ", sQuote("nu"), " must be given.")
+               stop(paste("Argument ", sQuote("nu"), " must be given."),
+                    call.=FALSE)
              thresh <- dots$thresh
              if(is.null(thresh))
                  thresh <- .001
@@ -390,7 +395,8 @@
              scale <- as.numeric(par[2L])
              nu <- margs$nu
              if(is.null(nu))
-                 stop("Argument ", sQuote("nu"), " is missing.")
+               stop(paste("Argument ", sQuote("nu"), " is missing."),
+                    call.=FALSE)
              numer <- ((rvals/scale)^nu) * besselK(rvals/scale, nu)
              numer[rvals==0] <- ifelse(nu>0, 2^(nu-1)*gamma(nu), Inf)
              denom <- pi * (2^(nu+1)) * scale^2 * gamma(nu + 1)
@@ -488,11 +494,11 @@
          modelabbrev = "log-Gaussian Cox process", # In fitted obj.
          printmodelname = function(...) "log-Gaussian Cox process", # Used by print.kppm
          parnames = c("sigma2", "alpha"),
-         checkpar = function(par, old = TRUE){
+         checkpar = function(par, old = TRUE, ...){
              if(is.null(par))
                  par <- c(var=1,scale=1)
              if(any(par<=0))
-                 stop("par values must be positive.")
+                 stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("sigma2","alpha"), onError="null")
              if(is.null(nam)) {
                  check.named.vector(par, c("var","scale"))
@@ -501,7 +507,7 @@
              if(!old) names(par) <- c("var", "scale")
              return(par)
          },
-         checkclustargs = function(margs, old = TRUE) return(margs),
+         checkclustargs = function(margs, old = TRUE, ...) return(margs),
          resolvedots = function(...){
            ## resolve dots for kppm and friends allowing for old/new par syntax
            dots <- list(...)
@@ -603,7 +609,8 @@
          },
          parhandler=function(model = "exponential", ...) {
            if(!is.character(model))
-             stop("Covariance function model should be specified by name")
+             stop("Covariance function model should be specified by name",
+                  call.=FALSE)
            margs <- c(...)
            if(!identical(model, "exponential")) {
              ## get the 'model generator' 

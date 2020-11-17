@@ -1,7 +1,7 @@
 #
 #   pairs.im.R
 #
-#   $Revision: 1.18 $   $Date: 2020/06/13 09:20:27 $
+#   $Revision: 1.19 $   $Date: 2020/11/17 03:47:24 $
 #
 
 pairs.listof <- pairs.solist <- function(..., plot=TRUE) {
@@ -57,7 +57,7 @@ pairs.im <- function(..., plot=TRUE) {
     Z <- imlist[[1L]]
     xname <- imnames[1L]
     do.call(hist,
-            resolve.defaults(list(x=Z, plot=plot),
+            resolve.defaults(list(x=quote(Z), plot=plot),
                              rest, 
                              list(xlab=xname,
                                   main=paste("Histogram of", xname))))
@@ -66,7 +66,7 @@ pairs.im <- function(..., plot=TRUE) {
     names(pixvals) <- xname
   } else {
     ## extract pixel rasters and reconcile them
-    imwins <- lapply(imlist, as.owin)
+    imwins <- solapply(imlist, as.owin)
     names(imwins) <- NULL
     rasta    <- do.call(intersect.owin, imwins)
     ## extract image pixel values on common raster
@@ -76,7 +76,7 @@ pairs.im <- function(..., plot=TRUE) {
   pixdf <- do.call(data.frame, pixvals)
   ## pairs plot
   if(plot && nim > 1)
-    do.call(pairs, resolve.defaults(list(x=pixdf),
+    do.call(pairs, resolve.defaults(list(x=quote(pixdf)),
                                       rest,
                                       list(labels=imnames, pch=".")))
   labels <- resolve.defaults(rest, list(labels=imnames))$labels
@@ -89,13 +89,14 @@ plot.plotpairsim <- function(x, ...) {
   xname <- short.deparse(substitute(x))
   x <- as.data.frame(x)
   if(ncol(x) == 1) {
+    x <- x[,1L]
     do.call(hist.default,
-            resolve.defaults(list(x=x[,1]),
+            resolve.defaults(list(x=quote(x)),
                              list(...),
                              list(main=xname, xlab=xname)))
   } else {
     do.call(pairs.default,
-            resolve.defaults(list(x=x),
+            resolve.defaults(list(x=quote(x)),
                              list(...),
                              list(pch=".")))
   }
@@ -125,7 +126,7 @@ panel.contour <- function(x, y, ..., sigma=NULL) {
   p <- ppp(xx, yy, window=square(1), check=FALSE)
   Z <- density(p, sigma=sigma)
   do.call(contour,
-          resolve.defaults(list(x=Z, add=TRUE),
+          resolve.defaults(list(x=quote(Z), add=TRUE),
                            list(...),
                            list(drawlabels=FALSE)))
 }

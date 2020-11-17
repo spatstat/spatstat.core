@@ -1,7 +1,7 @@
 #
 #    predictmppm.R
 #
-#	$Revision: 1.13 $	$Date: 2020/01/21 09:56:47 $
+#	$Revision: 1.17 $	$Date: 2020/11/01 00:36:17 $
 #
 #
 # -------------------------------------------------------------------
@@ -15,33 +15,71 @@ predict.mppm <- local({
     ##
     model <- object
     verifyclass(model, "mppm")
+    ## 
+    isMulti <- is.multitype(model)
+    modelsumry <- summary(model)
+    depends.on.row <- modelsumry$depends.on.row
+    fixedinteraction <- modelsumry$ikind$fixedinteraction
+    ndata.old <- model$npat
     ##
-    ##  
-    ##       'type'  
+    ## ......................................................................
+    if(verbose)
+      cat("Inspecting arguments...")
+    ## ......................................................................
+    ##
+    ##   hidden arguments
+    selfcheck <- resolve.defaults(list(...), list(selfcheck=FALSE))$selfcheck
+    ##
+    ##  Argument 'type'
+    ##             
     type <- pickoption("type", type, c(trend="trend",
                                        lambda="cif",
                                        cif="cif"), multi=TRUE)
     want.trend <- "trend" %in% type
     want.cif   <- "cif"   %in% type
     ##
-    selfcheck <- resolve.defaults(list(...), list(selfcheck=FALSE))$selfcheck
+    ##  Argument 'newdata'
     ##
-    ##
-    if(verbose)
-      cat("Inspecting arguments...")
-    ##
-    ##       'newdata'
     use.olddata <- is.null(newdata)
     if(use.olddata) {
       newdata <- model$data
       newdataname <- "Original data"
+      ndata.new <- ndata.old
+      new.id <- NULL
     } else {
       stopifnot(is.data.frame(newdata) || is.hyperframe(newdata))
       newdataname <- sQuote("newdata")
+      ndata.new <- nrow(newdata)
+      new.id <- NULL
+      if(depends.on.row) {
+        #' require row serial numbers 'id' 
+        new.id <- newdata$id
+        if(is.null(new.id)) {
+          #' no serial numbers given
+          #' implicitly use the old serial numbers
+          if(ndata.new != ndata.old)
+            stop(paste("'newdata' must have the same number of rows",
+                       "as the original 'data' argument",
+                       paren(paste("namely", ndata.old)),
+                       "because the model depends on the row index"),
+                 call.=FALSE)
+        } else {
+          #' serial numbers given
+          #' validate them
+          if(!is.factor(new.id) && !is.integer(new.id))
+            stop("newdata$id should be a factor or integer vector", call.=FALSE)
+          if(is.integer(new.id)) {
+            new.id <- factor(new.id, levels=1:ndata.old)
+          } else if(!identical(levels(new.id), as.character(1:ndata.old))) {
+            stop(paste0("Levels of newdata$id must be 1:", ndata.old),
+                 call.=FALSE)
+          }
+        }
+      } 
     }
     ##
+    ##   Argument 'locations'
     ##
-    ##    Locations for prediction
     if(is.hyperframe(locations)) 
       locations <- locations[,1,drop=TRUE]
     if(is.list(locations))
@@ -60,6 +98,11 @@ predict.mppm <- local({
         } else "unknown"
       } else "unknown"
 
+    ## ......................................................................
+    if(verbose)
+      cat("done.\nDeciding type of locations for prediction...")
+    ## ......................................................................
+    
     need.grid <- switch(loctype,
                         null      =TRUE,
                         data.frame=FALSE,
@@ -67,13 +110,12 @@ predict.mppm <- local({
                         mask      =FALSE,
                         window    =TRUE,
                         unknown   =stop("Unrecognised format for locations"))
+    
     make.image <- need.grid || (loctype == "mask")
     ##  
-    locationvars <- c("x", "y", "id")
+    locationvars <- c("x", "y", "id", if(isMulti) "marks" else NULL)
     ##  
     ##
-    if(verbose)
-      cat("done.\nDetermining locations for prediction...")
     if(need.grid) {
       ## prediction on a grid is required
       if(is.data.frame(newdata))
@@ -84,11 +126,10 @@ predict.mppm <- local({
       if(is.hyperframe(newdata)) {
         ## check consistency between locations and newdata
         nloc <- length(locations)
-        nnew <- summary(newdata)$ncases
-        if(nloc != nnew)
+        if(nloc != ndata.new)
           stop(paste("Length of argument", sQuote("locations"), paren(nloc),
                      "does not match number of rows in",
-                     newdataname, paren(nnew)))
+                     newdataname, paren(ndata.new)))
       } else {
         ## newdata is a data frame
         if(!is.data.frame(locations)) 
@@ -114,23 +155,67 @@ predict.mppm <- local({
         }
       }
     }
+
+    ## ......................................................................
     if(verbose)
-      cat("done.\n Constructing data for prediction...")
-    ##  
-    ##
+      cat("done.\nExtracting details of point process model...")
+    ## ......................................................................
+
     ## extract fitted glm/gam/glmm object
     FIT <- model$Fit$FIT
+    MOADF <- model$Fit$moadf
+    
     ## extract names of interaction variables
     Vnamelist <- model$Fit$Vnamelist
     vnames <- unlist(Vnamelist)
+    
+    ## determine which interaction is applicable on each row
+    interactions <- model$Inter$interaction
+    hyperinter <- is.hyperframe(interactions)
+    ninter <- if(hyperinter) nrow(interactions) else 1L
+    if(hyperinter && ninter > 1) {
+      if(fixedinteraction) {
+        interactions <- interactions[1L, ]
+      } else {
+        ## interaction depends on row
+        if(!is.null(new.id)) {
+          ## row sequence specified; extract the relevant rows
+          interactions <- interactions[as.integer(new.id), ]
+        } else {
+          ## rows of newdata implicitly correspond to rows of original data
+          if(ninter != ndata.new)
+            stop(paste("Number of rows of newdata", paren(ndata.new),
+                       "does not match number of interactions in model",
+                       paren(ninter)))
+        }
+      }
+    }
+
+    ## extract possible types, if model is multitype
+    if(isMulti) {
+      levlist <- unique(lapply(data.mppm(model), levelsofmarks))
+      if(length(levlist) > 1)
+        stop("Internal error: the different point patterns have inconsistent marks",
+             call.=FALSE)
+      marklevels <- levlist[[1L]]
+     } else marklevels <- list(NULL) # sic
+    
+    ## ......................................................................
+    if(verbose) {
+      cat("done.\n")
+      if(use.olddata) splat("Using original hyperframe of data") else 
+      splat("newdata is a", if(is.data.frame(newdata)) "data frame" else "hyperframe")
+    }
+    ## ......................................................................
     ##
-    ##  
-    ## newdata is data frame
     if(is.data.frame(newdata)) {
-      if(verbose)
-        cat("(data frame)...")
+      ##  
+      ##              newdata is a DATA FRAME
+      ##
       if(need.grid)
         stop("Cannot predict model on a grid; newdata is a data frame")
+      if(verbose)
+        cat("Computing prediction..")
       ## use newdata as covariates
       nbg <- !(locationvars %in% names(newdata))
       if(any(nbg))
@@ -153,19 +238,23 @@ predict.mppm <- local({
           answer$cif <- if(want.trend) answer$trend else
                         Predict(FIT, newdata=newdata, type="response")
         } else {
-          warning("Not yet implemented (computation of cif in data frame case)")        ## split data frame by 'id'
+          warning("Computation of the cif is not yet implemented when newdata is a data frame")
+          ## split data frame by 'id'
           ## compute interaction components using existing point patterns
           ## compute fitted values
         }
       }
+      if(verbose) cat("done.\n")
       return(answer)
     }
   
-    ## newdata is a hyperframe
+    ## ......................................................................
+    ##        newdata is a HYPERFRAME
+    ##
     if(verbose)
-      cat("(hyperframe)...")
-    sumry <- summary(newdata)
-    npat.new <- sumry$ncases
+      cat("Building data for prediction...")
+    sumry.new <- summary(newdata)
+    ndata.new <- sumry.new$ncases
     ## name of response point pattern in model
     Yname <- model$Info$Yname
     ##
@@ -174,9 +263,9 @@ predict.mppm <- local({
     ## Otherwise from the original data if appropriate
     if(verbose)
       cat("(responses)...")
-    Y <- if(Yname %in% sumry$col.names) 
+    Y <- if(Yname %in% sumry.new$col.names) 
       newdata[, Yname, drop=TRUE, strip=FALSE]
-    else if(npat.new == model$npat)
+    else if(ndata.new == ndata.old)
       data[, Yname, drop=TRUE, strip=FALSE]
     else NULL
     ##
@@ -218,139 +307,155 @@ predict.mppm <- local({
       ## locations are given somehow
       if(verbose)
         cat("(locations)...")
-      if(loctype == "points")
-        Dummies <- locations
-      else if(loctype == "mask") {
-        Dummies <- lapply(locations, punctify)
-        Templates <- lapply(locations, as.im)
-      } else
-        stop("Internal error: illegal loctype")
-    }
-  
-    ## Pack into quadschemes
-    if(verbose)
-      cat("(quadschemes)...")
-    Quads <- list()
-    for(i in seq(npat.new)) 
-      Quads[[i]] <- quad(data=Y[[i]], dummy=Dummies[[i]])
-    ## Insert quadschemes into newdata
-    newdata[, Yname] <- Quads
-    
-    ## Determine interactions to be used
-    if(verbose)
-      cat("(interactions)...")
-    interactions <- model$Inter$interaction
-    ninter <- if(is.hyperframe(interactions)) nrow(interactions) else 1
-    nnew <- nrow(newdata)
-    if(ninter != nnew && ninter != 1) {
-      if(!all(model$Inter$constant))
-        stop(paste("Number of rows of newdata", paren(nnew),
-                   "does not match number of interactions in model",
-                   paren(ninter)))
-      interactions <- interactions[1, ]
+      switch(loctype,
+             points = {
+               Dummies <- locations
+             },
+             mask = {
+               Dummies <- lapply(locations, punctify)
+               Templates <- lapply(locations, as.im)
+             },
+             stop("Internal error: illegal loctype"))
     }
 
-    ## compute the Berman-Turner frame
-    if(verbose)
-      cat("done.\nStarting prediction...(Berman-Turner frame)...")
-    moadf <- mppm(formula     = model$formula,
-                  data        = newdata,
-                  interaction = interactions,
-                  iformula    = model$iformula,
-                  random      = model$random,
-                  use.gam     = model$Fit$use.gam,
-                  correction  = model$Info$correction,
-                  rbord       = model$Info$rbord,
-                  backdoor    = TRUE)
-    ## compute fitted values
-    if(verbose)
-      cat("(glm prediction)...")
-    values <- moadf[, c("x", "y", "id")]
-    if(want.cif)
-      values$cif <- Predict(FIT, newdata=moadf, type="response")
-    if(want.trend) {
-      if(length(vnames) == 0) {
-        ## Poisson model: trend = cif 
-        values$trend <-
-          if(want.cif) values$cif else
-          Predict(FIT, newdata=moadf, type="response")
+    ## ..........................................
+    ## ............... PREDICTION ...............
+    ## ..........................................
+
+    ## initialise hyperframe of predicted values
+    Answer <- newdata[,integer(0),drop=FALSE]
+    if(depends.on.row) Answer$id <- factor(levels(MOADF$id))
+
+    ## Loop over possible types, or execute once:
+    ## ///////////////////////////////////////////
+  
+    for(lev in marklevels) {
+
+      ## Pack prediction locations into quadschemes
+      if(verbose) {
+        cat("Building quadschemes")
+        if(isMulti) cat(paste("with mark", lev))
+        cat("...")
+      }
+      
+      if(isMulti) {
+        ## assign current mark level to all dummy points
+        flev <- factor(lev, levels=marklevels)
+        Dummies <- lapply(Dummies, "marks<-", value=flev)
+      }
+      Quads <- mapply(quad, data=Y, dummy=Dummies,
+                      SIMPLIFY=FALSE, USE.NAMES=FALSE)
+      
+      ## Insert quadschemes into newdata
+      newdata[, Yname] <- Quads
+    
+      ## compute the Berman-Turner frame
+      if(verbose)
+        cat("done.\nStarting prediction...(Berman-Turner frame)...")
+      moadf <- mppm(formula     = model$formula,
+                    data        = newdata,
+                    interaction = interactions,
+                    iformula    = model$iformula,
+                    random      = model$random,
+                    use.gam     = model$Fit$use.gam,
+                    correction  = model$Info$correction,
+                    rbord       = model$Info$rbord,
+                    backdoor    = TRUE)
+      ## compute fitted values
+      if(verbose)
+        cat("(glm prediction)...")
+      values <- moadf[, locationvars]
+      if(want.cif)
+        values$cif <- Predict(FIT, newdata=moadf, type="response")
+      if(want.trend) {
+        if(length(vnames) == 0) {
+          ## Poisson model: trend = cif 
+          values$trend <-
+            if(want.cif) values$cif else
+            Predict(FIT, newdata=moadf, type="response")
+        } else {
+          ## zero the interaction components
+          moadf[, vnames] <- 0
+          ## compute fitted values
+          values$trend <- Predict(FIT, newdata=moadf, type="response")
+        }
+      }
+      if(verbose)
+        cat("done.\nReshaping results...")
+      ##
+      ## Reshape results
+      ## separate answers for each image
+      values <- split(values, values$id)
+      ## 
+      Trends <- list()
+      Lambdas <- list()
+      if(!make.image) {
+        if(verbose)
+          cat("(marked point patterns)...")
+        ## values become marks attached to locations
+        for(i in seq(ndata.new)) {
+          Val <- values[[i]]
+          Loc <- Dummies[[i]]
+          isdum <- !is.data(Quads[[i]])
+          if(selfcheck)
+            if(length(isdum) != length(Val$trend))
+              stop("Internal error: mismatch between data frame and locations")
+          if(want.trend)
+            Trends[[i]] <- Loc %mark% (Val$trend[isdum])
+          if(want.cif)
+            Lambdas[[i]] <- Loc %mark% (Val$cif[isdum])
+        }
       } else {
-        ## zero the interaction components
-        moadf[, vnames] <- 0
-        ## compute fitted values
-        values$trend <- Predict(FIT, newdata=moadf, type="response")
+        if(verbose)
+          cat("(pixel images)...")
+        ## assign values to pixel images
+        for(i in seq(ndata.new)) {
+          values.i <- values[[i]]
+          Q.i <- Quads[[i]]
+          values.i <- values.i[!is.data(Q.i), ]
+          Template.i <- Templates[[i]]
+          ok.i <- !is.na(Template.i$v)
+          if(sum(ok.i) != nrow(values.i))
+            stop("Internal error: mismatch between data frame and image")
+          if(selfcheck) {
+            dx <- rasterx.im(Template.i)[ok.i] - values.i$x
+            dy <- rastery.im(Template.i)[ok.i] - values.i$y
+            cat(paste("i=", i, "range(dx) =", paste(range(dx), collapse=", "),
+                      "range(dy) =", paste(range(dy), collapse=", "), "\n"))
+          }
+          if(want.trend) {
+            Trend.i <- Template.i
+            Trend.i$v[ok.i] <- values.i$trend
+            Trends[[i]] <- Trend.i
+          }
+          if(want.cif) {
+            Lambda.i <- Template.i
+            Lambda.i$v[ok.i] <- values.i$cif
+            Lambdas[[i]] <- Lambda.i
+          }
+        }
       }
-    }
-    if(verbose)
-      cat("done.\nReshaping results...")
-    ##
-    ## Reshape results
-    ## separate answers for each image
-    values <- split(values, values$id)
-    ## 
-    Trends <- list()
-    Lambdas <- list()
-    if(!make.image) {
       if(verbose)
-        cat("(marked point patterns)...")
-      ## values become marks attached to locations
-      for(i in seq(npat.new)) {
-        Val <- values[[i]]
-        Loc <- Dummies[[i]]
-        isdum <- !is.data(Quads[[i]])
-        if(selfcheck)
-          if(length(isdum) != length(Val$trend))
-            stop("Internal error: mismatch between data frame and locations")
-        if(want.trend)
-          Trends[[i]] <- Loc %mark% (Val$trend[isdum])
-        if(want.cif)
-          Lambdas[[i]] <- Loc %mark% (Val$cif[isdum])
+        cat("done reshaping.\n")
+      
+      if(want.trend) {
+        trendname <- paste0("trend", lev)
+        Answer[,trendname] <- Trends
       }
-    } else {
-      if(verbose)
-        cat("(pixel images)...")
-      ## assign values to pixel images
-      for(i in seq(npat.new)) {
-        values.i <- values[[i]]
-        Q.i <- Quads[[i]]
-        values.i <- values.i[!is.data(Q.i), ]
-        Template.i <- Templates[[i]]
-        ok.i <- !is.na(Template.i$v)
-        if(sum(ok.i) != nrow(values.i))
-          stop("Internal error: mismatch between data frame and image")
-        if(selfcheck) {
-          dx <- rasterx.im(Template.i)[ok.i] - values.i$x
-          dy <- rastery.im(Template.i)[ok.i] - values.i$y
-          cat(paste("i=", i, "range(dx) =", paste(range(dx), collapse=", "),
-                    "range(dy) =", paste(range(dy), collapse=", "), "\n"))
-        }
-        if(want.trend) {
-          Trend.i <- Template.i
-          Trend.i$v[ok.i] <- values.i$trend
-          Trends[[i]] <- Trend.i
-        }
-        if(want.cif) {
-          Lambda.i <- Template.i
-          Lambda.i$v[ok.i] <- values.i$cif
-          Lambdas[[i]] <- Lambda.i
-        }
+      if(want.cif) {
+        cifname <- paste0("cif", lev)
+        Answer[,cifname] <- Lambdas
       }
-    }
-    if(verbose)
-      cat("done.\n")
-    ## answer is a hyperframe
-    Answer <- hyperframe(id=factor(levels(moadf$id)),
-                         row.names=sumry$row.names)
-    if(want.trend)
-      Answer$trend <- Trends
-    if(want.cif)
-      Answer$cif <- Lambdas
+    }   ## ///////////  end loop over possible types //////////////////
+    
     return(Answer)
   }
 
   ## helper functions
   emptypattern <- function(w) { ppp(numeric(0), numeric(0), window=w) }
 
+  levelsofmarks <- function(X) { levels(marks(X)) }
+      
   gridsample <- function(W, ngrid) {
     masque <- as.mask(W, dimyx=ngrid)
     xx <- raster.x(masque)

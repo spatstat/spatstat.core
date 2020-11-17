@@ -1,7 +1,7 @@
 #
 #       plot.fv.R   (was: conspire.S)
 #
-#  $Revision: 1.129 $    $Date: 2017/12/30 05:01:31 $
+#  $Revision: 1.131 $    $Date: 2020/11/17 03:47:24 $
 #
 #
 
@@ -505,7 +505,8 @@ plot.fv <- local({
     if(!is.null(ylab)) {
       if(is.language(ylab)) 
         ylab <- flat.deparse(ylab)
-      legdesc <- sprintf(legdesc, ylab)
+      if(any(grepl("%s", legdesc))) 
+        legdesc <- sprintf(legdesc, ylab)
     }
     ## compute legend info
     legtxt <- key

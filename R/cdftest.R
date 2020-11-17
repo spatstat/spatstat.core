@@ -1,7 +1,7 @@
 #
 #  cdftest.R
 #
-#  $Revision: 2.22 $  $Date: 2020/06/12 01:24:12 $
+#  $Revision: 2.23 $  $Date: 2020/11/10 01:48:23 $
 #
 #
 
@@ -40,7 +40,8 @@ cdf.test.ppp <-
       modelname <- "CSR"
     }
     do.call(spatialCDFtest,
-            resolve.defaults(list(model, covariate, test=test),
+            resolve.defaults(list(model=quote(model),
+                                  covariate=quote(covariate), test=test),
                              list(interpolate=interpolate, jitter=jitter),
                              list(...),
                              list(modelname=modelname,
@@ -58,7 +59,9 @@ cdf.test.ppm <-
   if(is.poisson(model) && is.stationary(model))
     modelname <- "CSR"
   do.call(spatialCDFtest,
-          resolve.defaults(list(model, covariate, test=test),
+          resolve.defaults(list(model=quote(model), 
+				covariate=quote(covariate), 
+				test=test),
                            list(interpolate=interpolate, jitter=jitter,
                                 nsim=nsim, verbose=verbose),
                            list(...),

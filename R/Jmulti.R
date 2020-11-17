@@ -3,7 +3,7 @@
 #	Usual invocations to compute multitype J function(s)
 #	if F and G are not required 
 #
-#	$Revision: 4.43 $	$Date: 2019/11/01 01:35:30 $
+#	$Revision: 4.45 $	$Date: 2020/10/30 03:59:35 $
 #
 #
 #
@@ -33,25 +33,17 @@ function(X, i, j, eps=NULL, r=NULL, breaks=NULL, ..., correction=NULL) {
   if(sum(I) == 0)
     stop(paste("No points have mark = ", i))
 #        
-  if(i == j)
+  if(i == j){
     result <- Jest(X[I], eps=eps, r=r, breaks=breaks,
                    correction=correction, checkspacing=checkspacing)
-  else {
+  } else {
     J <- (marx == j)
     result <- Jmulti(X, I, J,
                      eps=eps, r=r, breaks=breaks, disjoint=TRUE,
                      correction=correction, checkspacing=checkspacing)
   }
   conserve <- attr(result, "conserve")
-  iname <- make.parseable(paste(i))
-  jname <- make.parseable(paste(j))
-  result <-
-    rebadge.fv(result,
-               substitute(J[i,j](r),
-                          list(i=iname,j=jname)),
-               c("J", paste0("list(", iname, ",", jname, ")")),
-               new.yexp=substitute(J[list(i,j)](r),
-                                   list(i=iname,j=jname)))
+  result <- rebadge.as.crossfun(result, "J", NULL, i, j)
   attr(result, "conserve") <- conserve
   return(result)
 }
@@ -86,12 +78,7 @@ function(X, i, eps=NULL, r=NULL, breaks=NULL, ..., correction=NULL) {
                    eps=eps, r=r, breaks=breaks, disjoint=FALSE,
                    correction=correction, checkspacing=checkspacing)
   conserve <- attr(result, "conserve")
-  iname <- make.parseable(paste(i))
-  result <-
-    rebadge.fv(result,
-               substitute(J[i ~ dot](r), list(i=iname)),
-               c("J", paste(iname, "~ symbol(\"\\267\")")),
-               new.yexp=substitute(J[i ~ symbol("\267")](r), list(i=iname)))
+  result <- rebadge.as.dotfun(result, "J", NULL, i)
   attr(result, "conserve") <- conserve
   return(result)
 }

@@ -42,7 +42,9 @@ berman.test.ppm <- function(model, covariate,
   if(is.poisson(model) && is.stationary(model))
     modelname <- "CSR"
   do.call(bermantestEngine,
-          resolve.defaults(list(model, covariate, which, alternative),
+          resolve.defaults(list(quote(model), 
+				quote(covariate), 
+				which, alternative),
                            list(...),
                            list(modelname=modelname,
                                 covname=covname,
@@ -234,7 +236,7 @@ plot.bermantest <-
                      paste("p-value=", signif(x$p.value, 4)))
            do.call(plot.ecdf,
                    resolve.defaults(
-                                    list(cdfU),
+                                    list(quote(cdfU)),
                                     list(...),
                                     list(do.points=FALSE, asp=1),
                                     list(xlim=c(0,1), ylim=c(0,1)),

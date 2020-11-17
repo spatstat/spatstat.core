@@ -40,8 +40,9 @@ local({
 #
 #  Test validity of envelope data
 #
-#  $Revision: 1.23 $  $Date: 2020/06/12 00:16:25 $
+#  $Revision: 1.24 $  $Date: 2020/11/02 06:53:20 $
 #
+
 
 local({
 checktheo <- function(fit) {
@@ -202,7 +203,6 @@ local({
 })
 }
 
-
 if(ALWAYS) {
 local({
   #' Test robustness of envelope() sorting procedure when NA's are present
@@ -258,6 +258,9 @@ local({
   envelope(amacrine, Kdif, nsim=3)
 })
 }
+
+
+
 #'  tests/enveltest.R
 #'     Envelope tests (dclf.test, mad.test)
 #'     and two-stage tests (bits.test, dg.test, bits.envelope, dg.envelope)
@@ -437,7 +440,7 @@ local({
 #
 #  tests/func.R
 #
-#   $Revision: 1.6 $   $Date: 2020/06/12 00:18:36 $
+#   $Revision: 1.7 $   $Date: 2020/11/02 07:00:08 $
 #
 #  Tests of 'funxy' infrastructure etc
 
@@ -446,14 +449,14 @@ local({
   ## Check the peculiar function-building code in funxy
   W <- square(1)
   f1a <- function(x, y) sqrt(x^2 + y^2)
+  F1a <- funxy(f1a, W)
   f1b <- function(x, y) { sqrt(x^2 + y^2) }
   f2a <- function(x, y) sin(x)
   f2b <- function(x, y) { sin(x) } 
   f3a <- function(x, y) sin(x) + cos(x) 
   f3b <- function(x, y) { sin(x) + cos(x) } 
   f4a <- function(x, y) { z <- x + y ; z }
-  f4b <- function(x, y) { x + y } 
-  F1a <- funxy(f1a, W)
+  f4b <- function(x, y) { x + y }
   F1b <- funxy(f1b, W)
   F2a <- funxy(f2a, W)
   F2b <- funxy(f2b, W)
@@ -472,6 +475,8 @@ local({
   d <- F1a(Q)
 })
 }
+
+
 ##  
 ##     tests/funnymarks.R
 ##

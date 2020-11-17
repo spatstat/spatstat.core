@@ -1,7 +1,7 @@
 #
 # summary.mppm.R
 #
-# $Revision: 1.16 $  $Date: 2020/03/10 09:05:00 $
+# $Revision: 1.17 $  $Date: 2020/10/31 13:50:19 $
 #
 
 
@@ -128,6 +128,9 @@ summary.mppm <- function(object, ..., brief=FALSE) {
                   toohard           =toohard,
                   printeachrow      =printeachrow)
 
+  
+  y$depends.on.row <- ("id" %in% variablesinformula(y$trend)) || !fixedinteraction
+    
   if(toohard)
     iprint <- append(iprint,
                      list("(Sorry, cannot interpret fitted interactions)"))
