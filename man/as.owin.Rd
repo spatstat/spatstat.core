@@ -1,38 +1,17 @@
 \name{as.owin}
-\alias{as.owin}
-\alias{as.owin.owin}
-\alias{as.owin.ppp}
 \alias{as.owin.ppm}
 \alias{as.owin.kppm}
 \alias{as.owin.dppm}
 \alias{as.owin.msr}
-\alias{as.owin.psp}
-\alias{as.owin.quad}
-\alias{as.owin.quadratcount}
 \alias{as.owin.quadrattest}
-\alias{as.owin.tess}
-\alias{as.owin.im}
-\alias{as.owin.layered}
-\alias{as.owin.data.frame}
-\alias{as.owin.distfun}
-\alias{as.owin.nnfun}
-\alias{as.owin.funxy}
-\alias{as.owin.boxx}
 \alias{as.owin.rmhmodel}
-\alias{as.owin.leverage.ppm}
-\alias{as.owin.influence.ppm}
-\alias{as.owin.default}
 \title{Convert Data To Class owin}
 \description{
 Converts data specifying an observation window
 in any of several formats, into an object of class \code{"owin"}.
 }
 \usage{
- as.owin(W, \dots, fatal=TRUE)
 
- \method{as.owin}{owin}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{ppp}(W, \dots, fatal=TRUE)
 
  \method{as.owin}{ppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
 
@@ -40,40 +19,14 @@ in any of several formats, into an object of class \code{"owin"}.
 
  \method{as.owin}{dppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
 
-
  \method{as.owin}{msr}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{psp}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{quad}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{quadratcount}(W, \dots, fatal=TRUE)
 
  \method{as.owin}{quadrattest}(W, \dots, fatal=TRUE)
 
- \method{as.owin}{tess}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{im}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{layered}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{data.frame}(W, \dots, step, fatal=TRUE)
-
- \method{as.owin}{distfun}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{nnfun}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{funxy}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{boxx}(W, \dots, fatal=TRUE)
-
  \method{as.owin}{rmhmodel}(W, \dots, fatal=FALSE)
 
- \method{as.owin}{leverage.ppm}(W, \dots, fatal=TRUE)
 
- \method{as.owin}{influence.ppm}(W, \dots, fatal=TRUE)
 
- \method{as.owin}{default}(W, \dots, fatal=TRUE)
 }
 \arguments{
   \item{W}{
@@ -87,11 +40,6 @@ in any of several formats, into an object of class \code{"owin"}.
   }
   \item{\dots}{Ignored.}
   \item{from}{Character string. See Details.}
-  \item{step}{
-    Optional. A single number, or numeric vector of length 2,
-    giving the grid step lengths
-    in the \eqn{x} and \eqn{y} directions.
-  }
 }
 \value{
   An object of class \code{"owin"} (see \code{\link{owin.object}})
@@ -101,7 +49,7 @@ in any of several formats, into an object of class \code{"owin"}.
   The class \code{"owin"} is a way of specifying the observation window
   for a point pattern. See \code{\link{owin.object}} for an overview.
  
-  The function \code{as.owin} converts data in any of several formats 
+  The generic function \code{as.owin} converts data in any of several formats 
   into an object of class \code{"owin"} for use by the \pkg{spatstat}
   package. The function \code{as.owin} is generic, with methods
   for different classes of objects, and a default method.
@@ -228,14 +176,6 @@ in any of several formats, into an object of class \code{"owin"}.
  Z <- as.im(function(x,y) { x + 3}, unit.square())
  w <- as.owin(Z)
 
- # Venables & Ripley 'spatial' package
- spatialpath <- system.file(package="spatial")
- if(nchar(spatialpath) > 0) {
-   require(spatial)
-   towns <- ppinit("towns.dat")
-   w <- as.owin(towns)
-   detach(package:spatial)
- }
 }
 \author{
   \spatstatAuthors.

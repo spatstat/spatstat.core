@@ -1,26 +1,10 @@
 \name{domain}
-\alias{domain}
-\alias{domain.ppp}
-\alias{domain.psp}
-\alias{domain.im}
-\alias{domain.ppx}
-\alias{domain.pp3}
 \alias{domain.ppm}
 \alias{domain.kppm}
 \alias{domain.dppm}
 \alias{domain.msr}
-\alias{domain.quad}
-\alias{domain.quadratcount}
 \alias{domain.quadrattest}
-\alias{domain.tess}
-\alias{domain.im}
-\alias{domain.layered}
-\alias{domain.distfun}
-\alias{domain.nnfun}
-\alias{domain.funxy}
 \alias{domain.rmhmodel}
-\alias{domain.leverage.ppm}
-\alias{domain.influence.ppm}
 \title{
   Extract the Domain of any Spatial Object
 }
@@ -29,17 +13,6 @@
   this function extracts the spatial domain in which the object is defined.
 }
 \usage{
-   domain(X, \dots)
-
-   \method{domain}{ppp}(X, \dots)
-
-   \method{domain}{psp}(X, \dots)
-
-   \method{domain}{im}(X, \dots)
-
-   \method{domain}{ppx}(X, \dots)
-
-   \method{domain}{pp3}(X, \dots)
 
  \method{domain}{ppm}(X, \dots, from=c("points", "covariates"))
 
@@ -49,30 +22,9 @@
 
  \method{domain}{msr}(X, \dots)
 
- \method{domain}{quad}(X, \dots)
-
- \method{domain}{quadratcount}(X, \dots)
-
  \method{domain}{quadrattest}(X, \dots)
 
- \method{domain}{tess}(X, \dots)
-
-
- \method{domain}{im}(X, \dots)
-
- \method{domain}{layered}(X, \dots)
-
- \method{domain}{distfun}(X, \dots)
-
- \method{domain}{nnfun}(X, \dots)
-
- \method{domain}{funxy}(X, \dots)
-
  \method{domain}{rmhmodel}(X, \dots)
-
- \method{domain}{leverage.ppm}(X, \dots)
-
- \method{domain}{influence.ppm}(X, \dots)
 }
 \arguments{
   \item{X}{
@@ -121,7 +73,6 @@
 \examples{
   domain(cells)
   domain(bei.extra$elev)
-  domain(chicago)
 }
 \keyword{spatial}
 \keyword{manip}

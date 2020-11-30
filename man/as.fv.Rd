@@ -1,9 +1,4 @@
-\name{as.fv} 
-\alias{as.fv}
-\alias{as.fv.fv}
-\alias{as.fv.fasp}
-\alias{as.fv.data.frame}
-\alias{as.fv.matrix}
+\name{as.fv}
 \alias{as.fv.minconfit}
 \alias{as.fv.dppm}
 \alias{as.fv.kppm}
@@ -13,16 +8,6 @@
   Converts data into a function table (an object of class \code{"fv"}).
 }
 \usage{
-  as.fv(x)
-
-  \method{as.fv}{fv}(x)
-
-  \method{as.fv}{data.frame}(x)
-
-  \method{as.fv}{matrix}(x)
-
-  \method{as.fv}{fasp}(x)
-
   \method{as.fv}{minconfit}(x)
 
   \method{as.fv}{dppm}(x)

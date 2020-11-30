@@ -41,7 +41,7 @@ local({
 ##
 ##   Tests of mark correlation code (etc)
 ##
-## $Revision: 1.6 $ $Date: 2020/04/30 02:18:23 $
+## $Revision: 1.7 $ $Date: 2020/11/25 01:23:32 $
 
 local({
   if(ALWAYS) {
@@ -85,6 +85,10 @@ local({
     if(require(sm)) {
       b <- markcrosscorr(betacells, method="sm")
     }
+
+    ## Vmark with normalisation
+    v <- Vmark(spruces, normalise=TRUE)
+    v <- Vmark(finpines, normalise=TRUE)
   }
 })
 #' tests/mctests.R
@@ -107,38 +111,6 @@ local({
                  rinterval=c(0, 0.1), alternative="greater", clamp=TRUE)
     envelopeTest(redwood, pcf, exponent=Inf, nsim=19,
                  rinterval=c(0, 0.1), alternative="greater", clamp=TRUE)
-  }
-})
-
-#'  tests/morpho.R
-#' 
-#' morphology code blocks
-#'
-#' $Revision: 1.3 $ $Date: 2020/04/30 02:18:23 $
-
-local({
-  if(ALWAYS) { # depends on C code etc
-    #' owin
-    a <- erosion(letterR, 0.1, polygonal=FALSE)
-    b <- dilation(letterR, 0.1, polygonal=FALSE)
-    at <- erosion(letterR, 0.1, polygonal=FALSE, strict=TRUE)
-    bt <- dilation(letterR, 0.1, polygonal=FALSE, tight=FALSE)
-    #' psp
-    S <- edges(letterR)
-    dm <- dilation(S, 0.1, polygonal=FALSE)
-    dt <- dilation(S, 0.1, polygonal=FALSE, tight=FALSE)
-    op <- spatstat.options(old.morpho.psp=TRUE)
-    dn <- dilation(S, 0.1, polygonal=TRUE)
-    spatstat.options(op)
-    cS <- closing(S, 0.1, polygonal=FALSE)
-    eS <- erosion(S, 0)
-    oS <- opening(S, 0)
-    #' ppp
-    dc <- dilation(cells, 0.06, polygonal=FALSE)
-    ec <- erosion(cells, 0)
-    oc <- opening(cells, 0)
-    #'
-    reset.spatstat.options()
   }
 })
 
@@ -371,20 +343,23 @@ local({
 #'
 #'     tests/msr.R
 #'
-#'     $Revision: 1.3 $ $Date: 2020/04/30 05:23:52 $
+#'     $Revision: 1.5 $ $Date: 2020/11/30 07:27:44 $
 #'
 #'     Tests of code for measures
 #'
 
 if(FULLTEST) {
 local({
+    
   ## cases of 'msr'
   Q <- quadscheme(cells)
   nQ <- n.quad(Q)
   nX <- npoints(cells)
   A <- matrix(nX * 3, nX, 3)
   B <- matrix(nQ * 3, nQ, 3)
-  M <- msr(Q, A, B)
+
+  m <- msr(Q, A, B)
+
   M <- msr(Q, A, 1)
   M <- msr(Q, 1, B)
   M <- msr(Q, A, B[,1])
@@ -393,21 +368,20 @@ local({
   M <- msr(Q, A[,1,drop=FALSE], B)
 
   ## methods
-  rr <- residuals(ppm(cells ~ x))
-
-  a <- summary(rr)
-  b <- is.marked(rr)
-  w <- as.owin(rr)
-  z <- domain(rr)
-  ss <- scalardilate(rr, 2)
-  tt <- rescale(rr, 2)
-  ee <- rotate(rr, pi/4)
-  aa <- affine(rr, mat=diag(c(1,2)), vec=c(0,1))
-  ff <- flipxy(rr)
+  a <- summary(m)
+  b <- is.marked(m)
+  w <- as.owin(m)
+  z <- domain(m)
+  ss <- scalardilate(m, 2)
+  tt <- rescale(m, 2)
+  ee <- rotate(m, pi/4)
+  aa <- affine(m, mat=diag(c(1,2)), vec=c(0,1))
+  ff <- flipxy(m)
   
-  rrr <- augment.msr(rr, sigma=0.08)
-  uuu <- update(rrr)
-
+  am <- augment.msr(m, sigma=0.08)
+  ua <- update(am)
+  
+  rr <- residuals(ppm(cells ~ x))
   mm <- residuals(ppm(amacrine ~ x))
   ss <- residuals(ppm(amacrine ~ x), type="score")
   gg <- rescale(ss, 1/662, c("micron", "microns"))
