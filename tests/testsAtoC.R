@@ -105,6 +105,29 @@ local({
 
   
 #'
+#'   tests/closecore.R
+#'
+#' check 'closepairs/crosspairs' code
+#' invoked in core package
+#'
+#' $Revision: 1.1 $ $Date: 2020/12/03 02:04:00 $
+#' 
+#' ------- All this code must be run on every hardware -------
+#'
+
+local({
+  #' weightedclosepairs is currently in strauss.R
+  wi <- weightedclosepairs(redwood, 0.05, "isotropic")
+  wt <- weightedclosepairs(redwood, 0.05, "translate")
+  wp <- weightedclosepairs(redwood, 0.05, "periodic")
+  #' markmarkscatter uses closepairs.pp3
+  X <- runifpoint3(100)
+  marks(X) <- runif(100)
+  markmarkscatter(X, 0.2)
+  markmarkscatter(X[FALSE], 0.2)
+})
+
+#'
 #'     contact.R
 #'
 #'   Check machinery for first contact distributions
@@ -164,7 +187,7 @@ local({
 # tests/correctC.R
 # check for agreement between C and interpreted code
 # for interpoint distances etc.
-# $Revision: 1.7 $ $Date: 2020/04/28 12:58:26 $
+# $Revision: 1.8 $ $Date: 2020/12/03 03:06:04 $
 
 if(ALWAYS) { # depends on hardware
 local({
@@ -180,7 +203,8 @@ local({
 
   ## pairdist.ppp
   set.seed(190901)
-  X <- rpoispp(42)
+  ## X <- rpoispp(42)
+  X <- runifrect(max(2, rpois(1, 42)))
   dC <- pairdist(X, method="C")
   dR <- pairdist(X, method="interpreted")
   checkagree(dC, dR, "pairdist()")
@@ -194,7 +218,8 @@ local({
   checkagree(dCp2, dRp2, "pairdist(periodic=TRUE, squared=TRUE)")
 
   ## crossdist.ppp
-  Y <- rpoispp(42)
+  ## Y <- rpoispp(42)
+  Y <- runifrect(max(2, rpois(1, 42)))
   dC <- crossdist(X, Y, method="C")
   dR <- crossdist(X, Y, method="interpreted")
   checkagree(dC, dR, "crossdist()")
