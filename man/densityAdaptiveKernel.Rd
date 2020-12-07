@@ -29,7 +29,7 @@ densityAdaptiveKernel(X, \dots)
     Arguments passed to
     \code{\link{bw.abram}} to compute the smoothing bandwidths
     if \code{bw} is missing,
-    or passed to \code{\link[spatstat]{as.mask}}
+    or passed to \code{\link[spatstat.geom]{as.mask}}
     to control the spatial resolution of the result.
   }
   \item{weights}{
@@ -134,7 +134,7 @@ densityAdaptiveKernel(X, \dots)
   \code{\link{density.ppp}},
   \code{\link{adaptive.density}},
   \code{\link{densityVoronoi}},
-  \code{\link{im.object}}.
+  \code{\link[spatstat.geom]{im.object}}.
 
   See the function \code{bivariate.density} in the \pkg{sparr} package
   for a more flexible implementation, and

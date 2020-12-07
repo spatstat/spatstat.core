@@ -25,7 +25,7 @@
   \item{\dots}{
     Arguments passed to \code{\link[graphics]{image.default}}
     or 
-    \code{\link[spatstat]{plot.ppp}} to control the plot.
+    \code{\link[spatstat.geom]{plot.ppp}} to control the plot.
   }
   \item{how}{
     Character string determining whether to display the
@@ -68,7 +68,7 @@
   values will be kernel-smoothed using \code{\link{Smooth.ppp}}
   and displayed as a pixel image.
   If \code{how="nearest"} the values will be interpolated
-  by nearest neighbour interpolation using \code{\link{nnmark}}
+  by nearest neighbour interpolation using \code{\link[spatstat.geom]{nnmark}}
   and displayed as a pixel image.
 
   For \code{image.ssf} and \code{contour.ssf} the values are

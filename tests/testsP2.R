@@ -77,7 +77,7 @@ local({
 #'
 #'   Class support for ppm
 #'
-#'   $Revision: 1.7 $ $Date: 2020/04/30 05:23:52 $
+#'   $Revision: 1.8 $ $Date: 2020/12/04 08:24:43 $
 
 if(FULLTEST) {
 local({
@@ -136,11 +136,16 @@ local({
   fit0 <- update(fitZ, . ~ 1)
   anova(fit0, fitZ, override=TRUE)
 
+  #' (5) miscellaneous
+  
   ## example from Robert Aue - handling offsets
   X <- demohyper$Points[[1]]
   GH <- Hybrid(G=Geyer(r=0.1, sat=3), H=Hardcore(0.01))
   fit <- ppm(X ~ 1, GH)
   valid.ppm(fit)
+
+  #' case of boundingbox
+  boundingbox(cells, ppm(cells ~ 1))
 })
 
 reset.spatstat.options()

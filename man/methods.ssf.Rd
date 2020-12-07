@@ -94,18 +94,18 @@
 
   The commands documented here are methods for this class,
   for the generic commands
-  \code{\link[spatstat]{marks}},
-  \code{\link[spatstat]{marks<-}},
-  \code{\link[spatstat]{unmark}},
-  \code{\link[spatstat]{as.im}},
+  \code{\link[spatstat.geom]{marks}},
+  \code{\link[spatstat.geom]{marks<-}},
+  \code{\link[spatstat.geom]{unmark}},
+  \code{\link[spatstat.geom]{as.im}},
   \code{\link[base]{as.function}},
-  \code{\link[spatstat]{as.ppp}},
+  \code{\link[spatstat.geom]{as.ppp}},
   \code{\link[base]{print}},
   \code{\link[base]{summary}},
   \code{\link[base]{range}},
   \code{\link[base]{min}},
   \code{\link[base]{max}}
-  and \code{\link[spatstat]{integral}}.
+  and \code{\link[spatstat.geom]{integral}}.
 }
 \seealso{
   \code{\link{ssf}}

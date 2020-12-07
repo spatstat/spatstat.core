@@ -14,7 +14,7 @@
     Object of class \code{"ssf"}.
   }
   \item{\dots}{
-    Arguments passed to \code{\link[spatstat]{Smooth.ppp}}
+    Arguments passed to \code{\link[spatstat.core]{Smooth.ppp}}
     to control the smoothing.
   }
 }
@@ -34,7 +34,7 @@
 }
 \seealso{
   \code{\link{ssf}},
-  \code{\link{Smooth.ppp}}
+  \code{\link[spatstat.core]{Smooth.ppp}}
 }
 \examples{
    f <- ssf(redwood, nndist(redwood))

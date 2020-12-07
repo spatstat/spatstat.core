@@ -1,9 +1,11 @@
 \name{spatstat.core-internal} 
 \title{Internal spatstat.core functions}
 \alias{[.localpcfmatrix}
+\alias{[.rat}
 \alias{accumulateStatus}
 \alias{active.interactions}
 \alias{adaptcoef}
+\alias{adjust.ratfv}
 \alias{affine.msr}
 \alias{ang2rad}
 \alias{areadelta2}
@@ -13,12 +15,16 @@
 \alias{areaLoss.grid}
 \alias{areaLoss.poly}
 \alias{as.data.frame.bw.optim}
+\alias{as.data.frame.fv}
+\alias{as.ppm.rppm}
+\alias{assemble.plot.objects}       
 \alias{augment.msr}
 \alias{bandwidth.is.infinite}
 \alias{BartCalc}
 \alias{bermantestCalc}
 \alias{bermantestEngine}
 \alias{bigvaluerule}
+\alias{bind.ratfv}
 \alias{blankcoefnames}
 \alias{bt.frame}
 \alias{bw.optim}
@@ -37,7 +43,9 @@
 \alias{coef.summary.kppm}
 \alias{coef.summary.ppm}
 \alias{coef.vblogit} 
+\alias{compatible.rat}
 \alias{compileCDF}
+\alias{conform.ratfv}
 \alias{CressieReadStatistic}
 \alias{CressieReadSymbol}
 \alias{CressieReadName}
@@ -57,8 +65,12 @@
 \alias{diagnose.ppm.engine}
 \alias{digestCovariates}
 \alias{digital.volume}
+\alias{dim.fasp}               
 \alias{dim.msr}
+\alias{dimnames.fasp}               
+\alias{dimnames<-.fasp}
 \alias{dimnames.msr}
+\alias{distributecbind}
 \alias{doMultiStraussHard}
 \alias{dppmFixAlgorithm}
 \alias{dppmFixIntensity}
@@ -81,13 +93,23 @@
 \alias{extractAtomicQtests}
 \alias{fakeNeyScot}
 \alias{family.vblogit} 
+\alias{fasp}
 \alias{f3engine}
 \alias{f3Cengine}
 \alias{fill.coefs}
 \alias{findCovariate}
 \alias{fii}
+\alias{findbestlegendpos}
+\alias{findcbind}
+\alias{flatfname}
 \alias{flipxy.msr}
 \alias{forbid.logi}
+\alias{FormatFaspFormulae}
+\alias{fvexprmap}
+\alias{fvlabels}
+\alias{fvlabels<-}
+\alias{fvlabelmap}
+\alias{fvlegend}
 \alias{g3engine}
 \alias{g3Cengine}
 \alias{getdataname}
@@ -155,6 +177,8 @@
 \alias{logi.engine}
 \alias{logLik.vblogit}
 \alias{lookup2DkernelInfo}
+\alias{makefvlabel}
+\alias{maskLaslett}
 \alias{match2DkernelName}
 \alias{match.kernel}
 \alias{mctestSigtraceEngine}
@@ -166,6 +190,7 @@
 \alias{mpl.prepare}
 \alias{mpl.usable}
 \alias{MultiPair.checkmatrix}
+\alias{names<-.fv}
 \alias{newformula}
 \alias{newstyle.coeff.handling}
 \alias{nncleanEngine}
@@ -198,6 +223,7 @@
 \alias{PoisSaddleArea}
 \alias{PoisSaddleGeyer}
 \alias{PoisSaddlePairwise}
+\alias{polyLaslett}
 \alias{PPMmodelmatrix}
 \alias{ppm.default}
 \alias{ppmCovariates}
@@ -205,12 +231,11 @@
 \alias{ppmInfluenceEngine}
 \alias{predict.profilepl}
 \alias{predict.vblogit}
+\alias{prefixfv}
 \alias{printStatus}
 \alias{printStatusList}
 \alias{print.addvar}    
-\alias{print.autoexec}    
 \alias{print.bt.frame}
-\alias{print.bugtable}
 \alias{print.bw.frac}
 \alias{print.bw.optim}
 \alias{print.diagppm}
@@ -218,12 +243,16 @@
 \alias{print.detpointprocfamily}
 \alias{print.detpointprocfamilyfun}
 \alias{print.envelope}
+\alias{print.fasp}       
+\alias{print.fv}       
+\alias{print.fvfun}       
 \alias{print.hasenvelope}       
 \alias{print.hierarchicalordering}
 \alias{print.influence.ppm}       
 \alias{print.interact}       
 \alias{print.intermaker}       
 \alias{print.isf}
+\alias{print.laslett}
 \alias{print.leverage.ppm}
 \alias{print.localpcfmatrix}
 \alias{print.lurk}
@@ -236,6 +265,7 @@
 \alias{print.profilepl}
 \alias{print.quadrattest}
 \alias{print.qqppm}
+\alias{print.rat}
 \alias{print.rmhcontrol}
 \alias{print.rmhexpand}
 \alias{print.rmhmodel}
@@ -250,11 +280,18 @@
 \alias{quad.mppm}
 \alias{quadBlockSizes}
 \alias{quadrat.testEngine}
+\alias{ratfv}
 \alias{RandomFieldsSafe}
+\alias{rebadge.as.crossfun}
+\alias{rebadge.as.dotfun}
+\alias{rebadge.fv}
+\alias{rebadgeLabels}
+\alias{reconcile.fv}
 \alias{reduceformula}
 \alias{reheat}
 \alias{reincarnate.interact}
 \alias{RelevantDeviation}
+\alias{rename.fv}
 \alias{rescale.msr}
 \alias{resid4plot}
 \alias{resid1plot}
@@ -336,6 +373,8 @@
 \alias{summary.vblogit}
 \alias{thinjump}
 \alias{tweak.coefs}
+\alias{tweak.fv.entry}
+\alias{tweak.ratfv.entry}
 \alias{twostage.test}
 \alias{twostage.envelope}
 \alias{unitname.msr}
@@ -346,6 +385,7 @@
 \alias{validate2Dkernel}
 \alias{validate.angles}        
 \alias{validate.weights}        
+\alias{vanilla.fv}
 \alias{varcountEngine}
 %\alias{vblogit} %DoNotExport
 %\alias{vblogit.fmla} %DoNotExport
@@ -356,15 +396,18 @@
 \alias{X2testEngine}
 
 
+
 %%%%%%%
 \description{
   Internal spatstat.core functions.
 }
 \usage{
 \method{[}{localpcfmatrix}(x, i, \dots)
+\method{[}{rat}(x, \dots)
 accumulateStatus(x, stats)
 active.interactions(object)
 adaptcoef(new.coef, fitcoef, drop)
+adjust.ratfv(f, columns, numfactor, denfactor)
 \method{affine}{msr}(X, mat, vec, \dots)
 ang2rad(ang, unit, start, clockwise)
 areadelta2(X, r, \dots, sparseOK)
@@ -376,7 +419,10 @@ areaLoss.grid(X, r, \dots, W, subset,
                          ngrid = spatstat.options("ngrid.disc"),
                          exact = FALSE)
 areaLoss.poly(X, r, \dots, W, subset, splitem)
+assemble.plot.objects(xlim, ylim, \dots, lines, polygon)
+\method{as.ppm}{rppm}(object)
 \method{as.data.frame}{bw.optim}(x, \dots)
+\method{as.data.frame}{fv}(x, \dots)
 augment.msr(x, \dots, sigma, recompute)
 bandwidth.is.infinite(sigma)
 BartCalc(fY, fK)
@@ -384,6 +430,8 @@ bermantestCalc(fram, which, alternative, \dots)
 bermantestEngine(model, covariate, which, alternative, \dots,
                  modelname, covname, dataname)
 bigvaluerule(objfun, objargs, startpar, \dots)
+bind.ratfv(x, numerator, denominator, labl, desc, preferred,
+           ratio, quotient)
 blankcoefnames(x)
 bt.frame(Q, trend, interaction, \dots, covariates,
          correction, rbord, use.gam, allcovar)
@@ -405,7 +453,9 @@ clarkevansCalc(X, correction, clipregion, working)
 \method{coef}{summary.kppm}(object, \dots)
 \method{coef}{summary.ppm}(object, \dots)
 \method{coef}{vblogit}(object, \dots) 
+\method{compatible}{rat}(A, B, \dots) 
 compileCDF(D, B, r, \dots, han.denom, check)
+conform.ratfv(x)
 CressieReadStatistic(OBS,EXP,lambda,normalise,named)
 CressieReadSymbol(lambda)
 CressieReadName(lambda)
@@ -437,8 +487,12 @@ diagnose.ppm.engine(object, \dots, type, typename, opt,
                          rv, oldstyle, splineargs, verbose)
 digestCovariates(\dots, W)
 digital.volume(range, nval, vside)
+\method{dim}{fasp}(x)
 \method{dim}{msr}(x)
+\method{dimnames}{fasp}(x)
+\method{dimnames}{fasp}(x) <- value
 \method{dimnames}{msr}(x)
+distributecbind(x)
 doMultiStraussHard(iradii, hradii, types)
 dppmFixIntensity(DPP, lambda, po)
 dppmFixAlgorithm(algorithm, changealgorithm, clusters, startpar)
@@ -487,13 +541,23 @@ ExpSmoothLog(X, \dots, at, weights)
 extractAtomicQtests(x)
 fakeNeyScot(Y, lambda, win, saveLambda, saveparents)
 \method{family}{vblogit}(object, \dots)
+fasp(fns, which, formulae, dataname, title, rowNames, colNames, checkfv)
 f3engine(x, y, z, box, vside, range, nval, correction)
 f3Cengine(x, y, z, box, vside, rmax, nrval)
 fill.coefs(coefs, required)
 findCovariate(covname, scope, scopename=NULL)
+findbestlegendpos(\dots)
+findcbind(root, depth, maxdepth)
 fii(interaction, coefs, Vnames, IsOffset, vnameprefix)
+flatfname(x)
 \method{flipxy}{msr}(X)
 forbid.logi(object)
+FormatFaspFormulae(f, argname)
+fvexprmap(x)
+fvlabels(x, expand=FALSE)
+fvlabels(x) <- value
+fvlabelmap(x, dot=TRUE)
+fvlegend(object, elang)
 g3engine(x, y, z, box, rmax, nrval, correction)
 g3Cengine(x, y, z, box, rmax, nrval)
 getdataname(defaultvalue, \dots, dataname)
@@ -575,6 +639,8 @@ logi.engine(Q, trend, interaction, \dots,
             VB)
 \method{logLik}{vblogit}(object, \dots)
 lookup2DkernelInfo(kernel)
+makefvlabel(op, accent, fname, sub, argname)
+maskLaslett(X, \dots, eps, dimyx, xy, oldX, verbose, plotit)
 match.kernel(kernel)
 match2DkernelName(kernel)
 mctestSigtraceEngine(R, devdata, devsim, \dots,
@@ -599,6 +665,7 @@ mpl.prepare(Q, X, P, trend, interaction, covariates,
             weightfactor, skip.border, clip.interaction, splitInf)
 mpl.usable(x)
 MultiPair.checkmatrix(mat, n, matname, naok, zerook, asymmok)
+\method{names}{fv}(x) <- value
 newformula(old, change, eold, enew, expandpoly)
 newstyle.coeff.handling(object)
 nncleanEngine(kthNND, k, d, \dots, tol, maxit,
@@ -620,7 +687,7 @@ PoisSaddle(beta, fi)
 PoisSaddleArea(beta, fi)
 PoisSaddleGeyer(beta, fi)
 PoisSaddlePairwise(beta, fi)
-\method{print}{localpcfmatrix}(x, \dots)
+polyLaslett(X, \dots, oldX, verbose, plotit)
 PPMmodelmatrix(object, data, \dots, subset, Q, keepNA, irregular,
                splitInf)
 printStatus(x, errors.only)
@@ -663,10 +730,9 @@ ppmInfluenceEngine(fit, what, \dots, iScore, iHessian, iArgs,
 \method{predict}{vblogit}(object, newdata, type, se.fit, dispersion,
                           terms, na.action, \dots)
 \method{predict}{profilepl}(object, \dots)
+prefixfv(x, tagprefix, descprefix, lablprefix, whichtags)
 \method{print}{addvar}(x, \dots)
-\method{print}{autoexec}(x, \dots)
 \method{print}{bt.frame}(x, \dots)
-\method{print}{bugtable}(x, \dots)
 \method{print}{bw.frac}(x, \dots)
 \method{print}{bw.optim}(x, \dots)
 \method{print}{densityfun}(x, \dots)
@@ -674,13 +740,18 @@ ppmInfluenceEngine(fit, what, \dots, iScore, iHessian, iArgs,
 \method{print}{detpointprocfamily}(x, \dots)
 \method{print}{detpointprocfamilyfun}(x, \dots)
 \method{print}{envelope}(x, \dots)
+\method{print}{fasp}(x, \dots)
+\method{print}{fv}(x, \dots, tight)
+\method{print}{fvfun}(x, \dots)
 \method{print}{hasenvelope}(x, \dots)
 \method{print}{hierarchicalordering}(x, \dots)
 \method{print}{influence.ppm}(x, \dots)
 \method{print}{interact}(x, \dots, family, brief, banner)       
 \method{print}{intermaker}(x, \dots)
 \method{print}{isf}(x, \dots)
+\method{print}{laslett}(x, \dots)
 \method{print}{leverage.ppm}(x, \dots)
+\method{print}{localpcfmatrix}(x, \dots)
 \method{print}{lurk}(x, \dots)
 \method{print}{minconfit}(x, \dots)
 \method{print}{mppm}(x, \dots)
@@ -691,6 +762,7 @@ ppmInfluenceEngine(fit, what, \dots, iScore, iHessian, iArgs,
 \method{print}{profilepl}(x, \dots)
 \method{print}{quadrattest}(x, \dots)
 \method{print}{qqppm}(x, \dots)
+\method{print}{rat}(x, \dots)
 \method{print}{rmhcontrol}(x, \dots)
 \method{print}{rmhexpand}(x, \dots, prefix=TRUE)
 \method{print}{rmhmodel}(x, \dots)
@@ -705,9 +777,17 @@ ppmInfluenceEngine(fit, what, \dots, iScore, iHessian, iArgs,
 quad.mppm(x)
 quadBlockSizes(nX, nD, p, nMAX, announce)
 RandomFieldsSafe()
+ratfv(df, numer, denom, \dots, ratio)
+rebadge.as.crossfun(x, main, sub, i, j)
+rebadge.as.dotfun(x, main, sub, i)
+rebadge.fv(x, new.ylab, new.fname, tags, new.desc, new.labl, new.yexp,
+           new.dotnames, new.preferred, new.formula, new.tags)
+rebadgeLabels(x, new.fname)
+reconcile.fv(\dots)
 reduceformula(fmla, deletevar, verbose)
 reheat(model, invtemp)
 RelevantDeviation(x, alternative, clamp, scaling)
+rename.fv(x, fname, ylab, yexp)
 \method{rescale}{msr}(X, s, unitname)
 resolveEinfo(x, what, fallback, warn, atomic)
 resolve.foxall.window(X, Y, W, warn.trim)
@@ -822,6 +902,8 @@ summarise.trend(trend, w, a)
 \method{summary}{vblogit}(object, \dots)
 thinjump(n, p)
 tweak.coefs(model, new.coef)
+tweak.fv.entry(x, current.tag, new.labl, new.desc, new.tag)
+tweak.ratfv.entry(x, \dots)
 twostage.test(X, \dots, exponent, nsim, nsimsub,
               alternative, reuse, leaveout, interpolate,
               savefuns, savepatterns, verbose, badXfatal, testblurb)
@@ -836,6 +918,7 @@ twostage.envelope(X, \dots, nsim, nsimsub, nrank,
 validate2Dkernel(kernel, fatal)
 validate.angles(angles, unit, guess)
 validate.weights(x, recip, how, allowzero, allowinf)
+vanilla.fv(x)
 varcountEngine(g, B, lambdaB, f)
 %vblogit(y, X, offset, eps, m0, S0, S0i, xi0, verb, maxiter, \dots)
 %vblogit.fmla(formula, offset, data, subset, weights, verbose, epsilon, \dots)
@@ -845,6 +928,7 @@ weightedclosepairs(X, r, correction, what)
 windows.mppm(x)
 X2testEngine(OBS, EXP, \dots, method, CR, df, nsim,
      conditional, alternative, testname, dataname)
+
 
 }
 \details{

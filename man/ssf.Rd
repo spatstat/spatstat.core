@@ -33,9 +33,9 @@
   handled in a different way.
 
   There are methods for \code{plot}, \code{print} etc; see
-  \code{\link{plot.ssf}} and \code{\link{methods.ssf}}.
+  \code{\link{plot.ssf}} and \code{\link[spatstat.core:methods.ssf]{methods.ssf}}.
 
-  Use \code{\link[spatstat]{unmark}} to extract only the point
+  Use \code{\link[spatstat.geom]{unmark}} to extract only the point
   locations, and \code{\link{marks.ssf}} to extract only the function values.
 }
 \value{
@@ -46,7 +46,7 @@
 }
 \seealso{
   \code{\link{plot.ssf}}, 
-  \code{\link{methods.ssf}}, 
+  \code{\link[spatstat.core:methods.ssf]{methods.ssf}}, 
   \code{\link{Smooth.ssf}}, 
   \code{\link{with.ssf}},
   \code{\link{[.ssf}}.

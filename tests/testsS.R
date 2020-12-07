@@ -31,7 +31,7 @@ local({
 ##   Tests of psp class and related code
 ##                      [SEE ALSO: tests/xysegment.R]
 ##
-##  $Revision: 1.30 $  $Date: 2020/11/09 09:01:13 $
+##  $Revision: 1.32 $  $Date: 2020/12/04 05:26:31 $
 
 
 local({
@@ -51,10 +51,35 @@ local({
     B <- square(0.3)
     density(Y, 0.2, at=B)
     density(Y, 0.2, at=B, edge=TRUE, method="C")
-    Z <- runifpoint(3, B)
+    Z <- runifrect(3, B)
     density(Y, 0.2, at=Z)
     density(Y, 0.2, at=Z, edge=TRUE, method="C")
   }
+
+  if(FULLTEST) {
+    #' segment clipping in window (bug found by Rolf)
+    set.seed(42)
+    X <- runifpoint(50, letterR)
+    SP <- dirichletEdges(X) #' clip to polygonal window
+    Window(X) <- as.mask(Window(X))
+    SM <- dirichletEdges(X) #' clip to mask window
+  }
+  
+  if(FULLTEST) {
+    #' test rshift.psp and append.psp with marks (Ute Hahn)
+    m <- data.frame(A=1:10, B=letters[1:10])
+    g <- gl(3, 3, length=10)
+    X <- psp(runif(10), runif(10), runif(10), runif(10), window=owin(), marks=m)
+    Y <- rshift(X, radius = 0.1)
+    Y <- rshift(X, radius = 0.1, group=g)
+    #' mark management
+    b <- data.frame(A=1:10)
+    X <- psp(runif(10), runif(10), runif(10), runif(10), window=owin(), marks=b)
+    stopifnot(is.data.frame(marks(X)))
+    Y <- rshift(X, radius = 0.1)
+    Y <- rshift(X, radius = 0.1, group=g)
+  }
+
 })
 
 
@@ -129,7 +154,7 @@ local({
 #'
 #'   Tests of 'ssf' class
 #'
-#'   $Revision: 1.3 $ $Date: 2020/05/01 09:59:59 $
+#'   $Revision: 1.5 $ $Date: 2020/12/04 08:02:25 $
 #'
 
 if(FULLTEST) {

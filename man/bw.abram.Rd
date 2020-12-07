@@ -25,8 +25,8 @@ bw.abram(X, h0,
   }
   \item{\dots}{
     Additional arguments passed to
-    \code{\link{as.im}} to control the pixel resolution,
-    or passed to \code{\link[spatstat]{density.ppp}} or \code{smoother}
+    \code{\link[spatstat.geom]{as.im}} to control the pixel resolution,
+    or passed to \code{\link{density.ppp}} or \code{smoother}
     to control the type of smoothing, when computing the pilot estimate.
   }
   \item{at}{
@@ -125,7 +125,7 @@ bw.abram(X, h0,
   Either a numeric vector of length \code{npoints(X)}
   giving the Abramson bandwidth for each point
   (when \code{at = "points"}, the default),
-  or the entire pixel \code{\link[spatstat]{im}}age
+  or the entire pixel \code{\link[spatstat.geom]{im}}age
   of the Abramson bandwidths over the relevant spatial domain
   (when \code{at = "pixels"}).
 }
