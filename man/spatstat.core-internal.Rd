@@ -9,11 +9,6 @@
 \alias{affine.msr}
 \alias{ang2rad}
 \alias{areadelta2}
-\alias{areaGain.diri}       
-\alias{areaGain.grid}       
-\alias{areaLoss.diri}       
-\alias{areaLoss.grid}
-\alias{areaLoss.poly}
 \alias{as.data.frame.bw.optim}
 \alias{as.data.frame.fv}
 \alias{as.ppm.rppm}
@@ -411,14 +406,6 @@ adjust.ratfv(f, columns, numfactor, denfactor)
 \method{affine}{msr}(X, mat, vec, \dots)
 ang2rad(ang, unit, start, clockwise)
 areadelta2(X, r, \dots, sparseOK)
-areaGain.diri(u, X, r, \dots, W, verbose)
-areaGain.grid(u, X, r, \dots, W, ngrid)
-areaLoss.diri(X, r, \dots, W, subset)
-areaLoss.grid(X, r, \dots, W, subset,
-                         method = c("count", "distmap"),
-                         ngrid = spatstat.options("ngrid.disc"),
-                         exact = FALSE)
-areaLoss.poly(X, r, \dots, W, subset, splitem)
 assemble.plot.objects(xlim, ylim, \dots, lines, polygon)
 \method{as.ppm}{rppm}(object)
 \method{as.data.frame}{bw.optim}(x, \dots)

@@ -2,10 +2,10 @@
 
 import(stats,graphics,grDevices,utils,methods)
 import(spatstat.utils,spatstat.data,spatstat.sparse,spatstat.geom)
-import(polyclip,goftest)
+import(goftest)
 import(Matrix,nlme,rpart)
-importFrom(deldir,
-           deldir,duplicatedxy,tile.list)
+
+#
 importFrom(abind,abind)
 importFrom(tensor,tensor)
 importFrom(mgcv,
@@ -52,14 +52,7 @@ export("anova.ppm")
 export("anova.slrm")
 export("apply.ssf")
 export("areadelta2")
-export("areaGain")
-export("areaGain.diri")       
-export("areaGain.grid")       
 export("AreaInter")
-export("areaLoss")
-export("areaLoss.diri")       
-export("areaLoss.grid")
-export("areaLoss.poly")
 export("as.data.frame.bw.optim")
 export("as.data.frame.envelope")
 export("as.data.frame.fv")
