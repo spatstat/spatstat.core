@@ -14,8 +14,6 @@
 
 */
 
-void areadifs(double *, int *, double *, double *, int *, int *, double *); 
-void areaBdif(double *, int *, double *, double *, int *, int *, double *, double *, double *, double *, double *);
 void delta2area(double *, double *, double *, double *, int *, double *, double *, double *, double *, int *); 
 void delta2area(double *, double *, double *, double *, int *, double *, double *, double *, double *, int *);
 void digberJ(double *, double *, int *, int *, int *, double *);
