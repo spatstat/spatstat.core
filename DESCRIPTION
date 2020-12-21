@@ -1,6 +1,6 @@
 Package: spatstat.core
 Version: 1.65-0
-Date: 2020-12-19
+Date: 2020-12-21
 Title: Core Functionality of the 'spatstat' Package
 Authors@R: c(person("Adrian", "Baddeley", 
                     role = c("aut", "cre"),

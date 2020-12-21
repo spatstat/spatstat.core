@@ -5,20 +5,29 @@
 \title{The spatstat.core Package}
 \description{
   The \pkg{spatstat.core} package
-  is a subset of the original \pkg{spatstat}
-  package, containing the core functionality.
+  is a subset of the original \pkg{spatstat} package.
+  It contains the core functionality
+  for statistical analysis and modelling of spatial data.
 }
 \details{
-  \pkg{spatstat} is a package for the statistical analysis
-  of spatial data. Its main focus is the analysis of
+  \pkg{spatstat} is
+  an \R package
+  for the statistical analysis of spatial data.
+  Its main focus is the analysis of
   spatial patterns of points in two-dimensional space.
 
-  The orginal \pkg{spatstat} package has grown to be very large.
-  It is now in the process of being divided into several
-  \bold{sub-packages}.
+  The original \pkg{spatstat} package
+  is progressively being split into
+  sub-packages.
+
+  \bold{New users are advised to install the original \pkg{spatstat}
+    package, rather than the sub-packages, until the split-up
+    is completed. }
 
   This sub-package \pkg{spatstat.core} contains all the main
-  user-level functions from the original \pkg{spatstat} package.
+  user-level functions
+  from the original \pkg{spatstat} package
+  that perform statistical analysis and modelling of spatial data.
 
   (The main exception is that functions for linear networks
   are in the separate sub-package \pkg{spatstat.linnet}.)
