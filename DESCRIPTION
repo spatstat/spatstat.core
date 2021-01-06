@@ -1,6 +1,6 @@
 Package: spatstat.core
 Version: 1.65-0
-Date: 2020-12-21
+Date: 2021-01-06
 Title: Core Functionality of the 'spatstat' Package
 Authors@R: c(person("Adrian", "Baddeley", 
                     role = c("aut", "cre"),
@@ -46,7 +46,7 @@ Description: This is a subset of the original 'spatstat' package,
 	     containing all of the user-level code from 'spatstat',
 	     except for the code for linear networks.
 License: GPL (>= 2)
-URL: http://www.spatstat.org
+URL: http://spatstat.org
 LazyData: true
 NeedsCompilation: yes
 ByteCompile: true
