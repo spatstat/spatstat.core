@@ -46,7 +46,7 @@ Description: This is a subset of the original 'spatstat' package,
 	     containing all of the user-level code from 'spatstat',
 	     except for the code for linear networks.
 License: GPL (>= 2)
-URL: http://spatstat.org
+URL: http://spatstat.org/
 LazyData: true
 NeedsCompilation: yes
 ByteCompile: true
