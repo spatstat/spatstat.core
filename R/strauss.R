@@ -2,7 +2,7 @@
 #
 #    strauss.R
 #
-#    $Revision: 2.45 $	$Date: 2020/11/30 10:48:23 $
+#    $Revision: 2.46 $	$Date: 2021/01/07 03:08:41 $
 #
 #    The Strauss process
 #
@@ -143,7 +143,7 @@ closepaircounts <- function(X, r) {
   Xsort <- X[oX]
   nX <- npoints(X)
   # call C routine (defined in Estrauss.c)
-  out <- .C("Cclosepaircounts",
+  out <- .C(SC_Cclosepaircounts,
             nxy    = as.integer(nX),
             x      = as.double(Xsort$x),
             y      = as.double(Xsort$y),
@@ -168,7 +168,7 @@ crosspaircounts <- function(X, Y, r) {
   nX <- npoints(X)
   nY <- npoints(Y)
   # call C routine (defined in Estrauss.c)
-  out <- .C("Ccrosspaircounts",
+  out <- .C(SC_Ccrosspaircounts,
             nnsource = as.integer(nX),
             xsource  = as.double(Xsort$x),
             ysource  = as.double(Xsort$y),

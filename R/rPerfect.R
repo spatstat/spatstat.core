@@ -1,7 +1,7 @@
 #
 #  Perfect Simulation 
 #
-#  $Revision: 1.21 $ $Date: 2017/06/05 10:31:58 $
+#  $Revision: 1.22 $ $Date: 2021/01/07 03:08:41 $
 #
 #  rStrauss
 #  rHardcore
@@ -41,7 +41,7 @@ rStrauss <- function(beta, gamma=1, R=0, W=owin(), expand=TRUE,
     storage.mode(beta) <- storage.mode(gamma) <- storage.mode(R) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectStrauss",
+    z <- .Call(SC_PerfectStrauss,
                beta,
                gamma,
                R,
@@ -99,7 +99,7 @@ rHardcore <- function(beta, R=0, W=owin(), expand=TRUE, nsim=1, drop=TRUE) {
     storage.mode(beta) <- storage.mode(R) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectHardcore",
+    z <- .Call(SC_PerfectHardcore,
                beta,
                R,
                xrange,
@@ -167,7 +167,7 @@ rStraussHard <- function(beta, gamma=1, R=0, H=0, W=owin(),
       storage.mode(R) <- storage.mode(H) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectStraussHard",
+    z <- .Call(SC_PerfectStraussHard,
                beta,
                gamma,
                R,
@@ -234,7 +234,7 @@ rDiggleGratton <- function(beta, delta, rho, kappa=1, W=owin(),
     storage.mode(delta) <- storage.mode(rho) <- storage.mode(kappa) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectDiggleGratton",
+    z <- .Call(SC_PerfectDiggleGratton,
                beta,
                delta,
                rho,
@@ -294,7 +294,7 @@ rDGS <- function(beta, rho, W=owin(), expand=TRUE, nsim=1, drop=TRUE) {
     storage.mode(rho) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectDGS",
+    z <- .Call(SC_PerfectDGS,
                beta,
                rho,
                xrange,
@@ -356,7 +356,7 @@ rPenttinen <- function(beta, gamma=1, R, W=owin(),
     storage.mode(beta) <- storage.mode(gamma) <- storage.mode(R) <- "double"
     storage.mode(xrange) <- storage.mode(yrange) <- "double"
   
-    z <- .Call("PerfectPenttinen",
+    z <- .Call(SC_PerfectPenttinen,
                beta,
                gamma,
                R,

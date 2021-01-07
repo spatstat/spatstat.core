@@ -2,7 +2,7 @@
 #
 #    geyer.S
 #
-#    $Revision: 2.42 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 2.44 $	$Date: 2021/01/07 03:16:36 $
 #
 #    Geyer's saturation process
 #
@@ -216,7 +216,7 @@ geyercounts <- function(U, X, r, sat, Xcounts, EqualPairs) {
   Cmap <- rep.int(-1L, nU)
   Cmap[Usortindex] <- Xsortindex - 1L
   # call C routine
-  zz <- .C("Egeyer",
+  zz <- .C(SC_Egeyer,
            nnquad = as.integer(nU),
            xquad  = as.double(Usort$x),
            yquad  = as.double(Usort$y),

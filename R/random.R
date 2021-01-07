@@ -3,7 +3,7 @@
 ##
 ##    Functions for generating random point patterns
 ##
-##    $Revision: 4.102 $   $Date: 2020/11/29 09:00:41 $
+##    $Revision: 4.103 $   $Date: 2021/01/07 03:08:41 $
 ##
 ##    runifpoint()      n i.i.d. uniform random points ("binomial process")
 ##    runifdisc()       special case of disc (faster)
@@ -874,7 +874,7 @@ thinjump <- function(n, p) {
     return(retain)
   }
   guessmaxlength <- ceiling(n * p + 2 * sqrt(n * p * (1-p)))
-  i <- .Call("thinjumpequal",
+  i <- .Call(SC_thinjumpequal,
              n, p, guessmaxlength,
              PACKAGE="spatstat.core")
   return(i)

@@ -1,5 +1,5 @@
 #
-#	$Revision: 1.27 $	$Date: 2019/02/21 01:18:21 $
+#	$Revision: 1.28 $	$Date: 2021/01/07 03:08:41 $
 #
 #	Estimates of F, G and K for three-dimensional point patterns
 #
@@ -287,7 +287,7 @@ k3engine <- function(x, y, z, box=c(0,1,0,1,0,1),
                      rmax=1, nrval=100, correction="translation") 
 {
   code <- switch(correction, translation=0, isotropic=1)
-  res <- .C("RcallK3",
+  res <- .C(SC_RcallK3,
             as.double(x), as.double(y), as.double(z), 
             as.integer(length(x)),
             as.double(box[1L]), as.double(box[2L]), 
@@ -311,7 +311,7 @@ g3engine <- function(x, y, z, box=c(0,1,0,1,0,1),
                      rmax=1, nrval=10, correction="Hanisch G3") 
 {
 	code <- switch(correction, "minus sampling"=1, "Hanisch G3"=3)
-	res <- .C("RcallG3",
+	res <- .C(SC_RcallG3,
 		as.double(x), as.double(y), as.double(z), 
 		as.integer(length(x)),
 		as.double(box[1L]), as.double(box[2L]), 
@@ -337,7 +337,7 @@ f3engine <- function(x, y, z, box=c(0,1,0,1,0,1),
 {
 #
 	code <- switch(correction, "minus sampling"=1, no=0)
-	res <- .C("RcallF3",
+  res <- .C(SC_RcallF3,
 		as.double(x), as.double(y), as.double(z), 
 		as.integer(length(x)),
 		as.double(box[1L]), as.double(box[2L]), 
@@ -361,7 +361,7 @@ f3Cengine <- function(x, y, z, box=c(0,1,0,1,0,1),
 	vside=0.05, rmax=1, nrval=25)
 {
 #
-  res <- .C("RcallF3cen",
+  res <- .C(SC_RcallF3cen,
             as.double(x), as.double(y), as.double(z), 
             as.integer(length(x)),
             as.double(box[1L]), as.double(box[2L]), 
@@ -401,7 +401,7 @@ g3Cengine <- function(x, y, z, box=c(0,1,0,1,0,1),
 	rmax=1, nrval=25)
 {
 #
-  res <- .C("RcallG3cen",
+  res <- .C(SC_RcallG3cen,
             as.double(x), as.double(y), as.double(z), 
             as.integer(length(x)),
             as.double(box[1L]), as.double(box[2L]), 
@@ -440,7 +440,7 @@ pcf3engine <- function(x, y, z, box=c(0,1,0,1,0,1),
                        delta=rmax/10) 
 {
   code <- switch(correction, translation=0, isotropic=1)
-  res <- .C("Rcallpcf3",
+  res <- .C(SC_Rcallpcf3,
             as.double(x), as.double(y), as.double(z), 
             as.integer(length(x)),
             as.double(box[1L]), as.double(box[2L]), 
@@ -479,7 +479,7 @@ digital.volume <- function(range=c(0, 1.414),  nval=25, vside= 0.05)
 #
 	w <- 2 * range[2L] + 2 * vside
 #
-	dvol <- .C("RcallF3",
+  dvol <- .C(SC_RcallF3,
                    as.double(w/2), as.double(w/2), as.double(w/2),
                    as.integer(1L),
                    as.double(0), as.double(w), 

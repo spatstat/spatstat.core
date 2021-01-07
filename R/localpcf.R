@@ -1,7 +1,7 @@
 #
 #   localpcf.R
 #
-#  $Revision: 1.25 $  $Date: 2020/12/02 01:53:02 $
+#  $Revision: 1.26 $  $Date: 2021/01/07 03:08:41 $
 #
 #
 
@@ -116,7 +116,7 @@ localpcfmatrix <- function(X, i=seq_len(npoints(X)), ...,
     force(nr)
     # call C
     if(!weighted) {
-      zz <- .C("locpcfx",
+      zz <- .C(SC_locpcfx,
                nn1 = as.integer(nY),
                x1  = as.double(Ysort$x),
                y1  = as.double(Ysort$y),
@@ -131,7 +131,7 @@ localpcfmatrix <- function(X, i=seq_len(npoints(X)), ...,
                pcf=as.double(double(nr * nY)),
                PACKAGE="spatstat.core")
     } else {
-      zz <- .C("locWpcfx",
+      zz <- .C(SC_locWpcfx,
                nn1 = as.integer(nY),
                x1  = as.double(Ysort$x),
                y1  = as.double(Ysort$y),

@@ -1,7 +1,7 @@
 #
 #	Kest.R		Estimation of K function
 #
-#	$Revision: 5.129 $	$Date: 2020/02/10 09:44:52 $
+#	$Revision: 5.130 $	$Date: 2021/01/07 03:08:41 $
 #
 #
 # -------- functions ----------------------------------------
@@ -468,7 +468,7 @@ Kborder.engine <- function(X, rmax, nr=100,
     bigint <- .Machine$integer.max
     if(npts < sqrt(bigint)) {
       # yes - use faster integer arithmetic
-      res <- .C("KborderI",
+      res <- .C(SC_KborderI,
                 nxy=as.integer(npts),
                 x=as.double(x),
                 y=as.double(y),
@@ -480,7 +480,7 @@ Kborder.engine <- function(X, rmax, nr=100,
                 PACKAGE="spatstat.core")
     } else {
       # no - need double precision storage
-      res <- .C("KborderD",
+      res <- .C(SC_KborderD,
                 nxy=as.integer(npts),
                 x=as.double(x),
                 y=as.double(y),
@@ -541,7 +541,7 @@ Kborder.engine <- function(X, rmax, nr=100,
         stop("domain of weights image does not contain all points of X")
     }
     weights.Xsort <- weights[orderX]
-    res <- .C("Kwborder",
+    res <- .C(SC_Kwborder,
               nxy=as.integer(npts),
               x=as.double(x),
               y=as.double(y),
@@ -648,7 +648,7 @@ Knone.engine <- function(X, rmax, nr=100,
     bigint <- .Machine$integer.max
     if(npts < sqrt(bigint)) {
       # yes - use faster integer arithmetic
-      res <- .C("KnoneI",
+      res <- .C(SC_KnoneI,
                 nxy=as.integer(npts),
                 x=as.double(x),
                 y=as.double(y),
@@ -658,7 +658,7 @@ Knone.engine <- function(X, rmax, nr=100,
                 PACKAGE="spatstat.core")
     } else {
       # no - need double precision storage
-      res <- .C("KnoneD",
+      res <- .C(SC_KnoneD,
                 nxy=as.integer(npts),
                 x=as.double(x),
                 y=as.double(y),
@@ -683,7 +683,7 @@ Knone.engine <- function(X, rmax, nr=100,
         stop("domain of weights image does not contain all points of X")
     }
     weights.Xsort <- weights[orderX]
-    res <- .C("Kwnone",
+    res <- .C(SC_Kwnone,
               nxy=as.integer(npts),
               x=as.double(x),
               y=as.double(y),
@@ -866,7 +866,7 @@ Krect.engine <- function(X, rmax, nr=100,
     zbnumer <- numeric(if(doBord) nr else 1L)
     zbdenom <- numeric(if(doBord) nr else 1L)
     zunco   <- numeric(if(doUnco) nr else 1L)
-    res <- .C("KrectWtd",
+    res <- .C(SC_KrectWtd,
               width=as.double(width),
               height=as.double(height),
               nxy=as.integer(npts),
@@ -893,7 +893,7 @@ Krect.engine <- function(X, rmax, nr=100,
     zbnumer <- integer(if(doBord) nr else 1L)
     zbdenom <- integer(if(doBord) nr else 1L)
     zunco   <- integer(if(doUnco) nr else 1L)
-    res <- .C("KrectInt",
+    res <- .C(SC_KrectInt,
               width=as.double(width),
               height=as.double(height),
               nxy=as.integer(npts),
@@ -918,7 +918,7 @@ Krect.engine <- function(X, rmax, nr=100,
     zbnumer <- numeric(if(doBord) nr else 1L)
     zbdenom <- numeric(if(doBord) nr else 1L)
     zunco   <- numeric(if(doUnco) nr else 1L)
-    res <- .C("KrectDbl",
+    res <- .C(SC_KrectDbl,
               width=as.double(width),
               height=as.double(height),
               nxy=as.integer(npts),

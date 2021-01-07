@@ -3,7 +3,7 @@
 ##
 ##  Spatial scan statistics
 ##
-##  $Revision: 1.18 $  $Date: 2020/12/19 05:25:06 $
+##  $Revision: 1.19 $  $Date: 2021/01/07 03:08:41 $
 ##
 
 scanmeasure <- function(X, ...){
@@ -32,7 +32,7 @@ scanmeasure.ppp <- function(X, r, ..., method=c("counts", "fft")) {
            nc <- dimyx[2]
            ##
            n <- npoints(X)
-           zz <- .C("scantrans",
+           zz <- .C(SC_scantrans,
                     x=as.double(X$x),
                     y=as.double(X$y),
                     n=as.integer(n),

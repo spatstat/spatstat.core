@@ -1,7 +1,7 @@
 #
 # Jinhom.R
 #
-#  $Revision: 1.11 $ $Date: 2017/06/05 10:31:58 $
+#  $Revision: 1.13 $ $Date: 2021/01/07 03:18:50 $
 #
 
 Ginhom <- function(X, lambda=NULL, lmin=NULL,
@@ -125,7 +125,7 @@ Ginhom <- function(X, lambda=NULL, lmin=NULL,
   yord <- yy[oX]
   vord <- vv[oX]
   # compute local cumulative products
-  z <- .C("locprod",
+  z <- .C(SC_locprod,
           n = as.integer(npts),
           x = as.double(xord),
           y = as.double(yord),
@@ -308,7 +308,7 @@ Finhom <- function(X, lambda=NULL, lmin=NULL,
   yM <- as.vector(rastery.mask(M))
   nM <- length(xM)
   # compute local cumulative products
-  z <- .C("locxprod",
+  z <- .C(SC_locxprod,
          ntest = as.integer(nM),
          xtest = as.double(xM),
          ytest = as.double(yM),

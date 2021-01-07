@@ -2,7 +2,7 @@
 #
 #   rmhmodel.R
 #
-#   $Revision: 1.77 $  $Date: 2020/01/08 01:21:59 $
+#   $Revision: 1.78 $  $Date: 2021/01/07 03:08:41 $
 #
 #
 
@@ -198,7 +198,7 @@ rmhmodel.default <- local({
   
     ## Check that the C name is recognised in C 
     if(!is.na(C.id)) {
-      z <- .C("knownCif",
+      z <- .C(SC_knownCif,
               cifname=as.character(C.id),
               answer=as.integer(0),
               PACKAGE="spatstat.core")

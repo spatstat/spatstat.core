@@ -2,7 +2,7 @@
 #
 #  density.psp.R
 #
-#  $Revision: 1.16 $    $Date: 2020/03/16 10:28:51 $
+#  $Revision: 1.17 $    $Date: 2021/01/07 03:08:41 $
 #
 #
 
@@ -74,7 +74,7 @@ density.psp <- function(x, sigma, ..., edge=TRUE,
            xp <- as.numeric(as.vector(xx))
            yp <- as.numeric(as.vector(yy))
            np <- length(xp)
-           z <- .C("segdens",
+           z <- .C(SC_segdens,
                    sigma = as.double(sigma),
                    ns = as.integer(n),
                    xs = as.double(xs),

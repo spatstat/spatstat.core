@@ -3,7 +3,7 @@
 #
 #  Inverse-distance weighted smoothing
 #
-#  $Revision: 1.12 $ $Date: 2020/01/01 01:30:57 $
+#  $Revision: 1.13 $ $Date: 2021/01/07 03:08:41 $
 
 idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
   stopifnot(is.ppp(X) && is.marked(X))
@@ -52,7 +52,7 @@ idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
            npixels <- prod(dim)
            ## call C
            if(!se) {
-             z <- .C("Cidw",
+             z <- .C(SC_Cidw,
                      x = as.double(X$x),
                      y = as.double(X$y),
                      v = as.double(marx),
@@ -71,7 +71,7 @@ idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
              out <- as.im(matrix(z$rat, dim[1L], dim[2L]), W=W)
              out <- out[W, drop=FALSE]
            } else {
-             z <- .C("Cidw2",
+             z <- .C(SC_Cidw2,
                      x = as.double(X$x),
                      y = as.double(X$y),
                      v = as.double(marx),
@@ -105,7 +105,7 @@ idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
          points={
            npts <- npoints(X)
            if(!se) {
-             z <- .C("idwloo",
+             z <- .C(SC_idwloo,
                      x = as.double(X$x),
                      y = as.double(X$y),
                      v = as.double(marx),
@@ -117,7 +117,7 @@ idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
                      PACKAGE="spatstat.core")
              out <- z$rat
            } else {
-             z <- .C("idwloo2",
+             z <- .C(SC_idwloo2,
                      x = as.double(X$x),
                      y = as.double(X$y),
                      v = as.double(marx),

@@ -3,7 +3,7 @@
 #
 #  Smooth the marks of a point pattern
 # 
-#  $Revision: 1.76 $  $Date: 2020/12/19 05:25:06 $
+#  $Revision: 1.77 $  $Date: 2021/01/07 03:08:41 $
 #
 
 # smooth.ppp <- function(X, ..., weights=rep(1, npoints(X)), at="pixels") {
@@ -472,7 +472,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
       vv <- values
     }
     if(is.null(weights)) {
-      zz <- .C("Gsmoopt",
+      zz <- .C(SC_Gsmoopt,
                nxy     = as.integer(npts),
                x       = as.double(xx),
                y       = as.double(yy),
@@ -484,7 +484,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
       if(sorted) result <- zz$result else result[oo] <- zz$result
     } else {
       wtsort <- weights[oo]
-      zz <- .C("Gwtsmoopt",
+      zz <- .C(SC_Gwtsmoopt,
                nxy     = as.integer(npts),
                x       = as.double(xx),
                y       = as.double(yy),
@@ -521,7 +521,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
     if(is.null(varcov)) {
       # isotropic kernel
       if(is.null(weights)) {
-        zz <- .C("smoopt",
+        zz <- .C(SC_smoopt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -534,7 +534,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
         if(sorted) result <- zz$result else result[oo] <- zz$result
       } else {
         wtsort <- weights[oo]
-        zz <- .C("wtsmoopt",
+        zz <- .C(SC_wtsmoopt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -552,7 +552,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
       Sinv <- solve(varcov)
       flatSinv <- as.vector(t(Sinv))
       if(is.null(weights)) {
-        zz <- .C("asmoopt",
+        zz <- .C(SC_asmoopt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -565,7 +565,7 @@ smoothpointsEngine <- function(x, values, sigma, ...,
         if(sorted) result <- zz$result else result[oo] <- zz$result
       } else {
         wtsort <- weights[oo]
-        zz <- .C("awtsmoopt",
+        zz <- .C(SC_awtsmoopt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -914,7 +914,7 @@ smoothcrossEngine <- function(Xdata, Xquery, values, sigma, ...,
   if(is.null(varcov)) {
     ## isotropic kernel
     if(is.null(weights)) {
-      zz <- .C("crsmoopt",
+      zz <- .C(SC_crsmoopt,
                nquery      = as.integer(nquery),
                xq      = as.double(xq),
                yq      = as.double(yq),
@@ -929,7 +929,7 @@ smoothcrossEngine <- function(Xdata, Xquery, values, sigma, ...,
       if(sorted) result <- zz$result else result[ooq] <- zz$result
     } else {
       wtsort <- if(sorted) weights else weights[ood]
-      zz <- .C("wtcrsmoopt",
+      zz <- .C(SC_wtcrsmoopt,
                nquery      = as.integer(nquery),
                xq      = as.double(xq),
                yq      = as.double(yq),
@@ -949,7 +949,7 @@ smoothcrossEngine <- function(Xdata, Xquery, values, sigma, ...,
       Sinv <- solve(varcov)
       flatSinv <- as.vector(t(Sinv))
       if(is.null(weights)) {
-        zz <- .C("acrsmoopt",
+        zz <- .C(SC_acrsmoopt,
                  nquery      = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),
@@ -964,7 +964,7 @@ smoothcrossEngine <- function(Xdata, Xquery, values, sigma, ...,
         if(sorted) result <- zz$result else result[ooq] <- zz$result
       } else {
         wtsort <- if(sorted) weights else weights[ood]
-        zz <- .C("awtcrsmoopt",
+        zz <- .C(SC_awtcrsmoopt,
                  nquery      = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),

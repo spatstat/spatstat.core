@@ -3,7 +3,7 @@
 #
 #  Method for 'density' for point patterns
 #
-#  $Revision: 1.112 $    $Date: 2020/11/29 07:35:59 $
+#  $Revision: 1.113 $    $Date: 2021/01/07 03:08:41 $
 #
 
 # ksmooth.ppp <- function(x, sigma, ..., edge=TRUE) {
@@ -417,7 +417,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
       yy <- yy[oo]
     }
     if(is.null(weights)) {
-      zz <- .C("Gdenspt",
+      zz <- .C(SC_Gdenspt,
                nxy     = as.integer(npts),
                x       = as.double(xx),
                y       = as.double(yy),
@@ -428,7 +428,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
       result <- result * gaussconst
     } else if(k == 1L) {
       wtsort <- if(sorted) weights else weights[oo]
-      zz <- .C("Gwtdenspt",
+      zz <- .C(SC_Gwtdenspt,
                nxy     = as.integer(npts),
                x       = as.double(xx),
                y       = as.double(yy),
@@ -442,7 +442,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
       ## matrix of weights
       wtsort <- if(sorted) weights else weights[oo, ]
       for(j in 1:k) {
-        zz <- .C("Gwtdenspt",
+        zz <- .C(SC_Gwtdenspt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -472,7 +472,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
     if(is.null(varcov)) {
       # isotropic kernel
       if(is.null(weights)) {
-        zz <- .C("denspt",
+        zz <- .C(SC_denspt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -483,7 +483,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
         if(sorted) result <- zz$result else result[oo] <- zz$result 
       } else if(k == 1L) {
         wtsort <- if(sorted) weights else weights[oo]
-        zz <- .C("wtdenspt",
+        zz <- .C(SC_wtdenspt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -497,7 +497,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
         # matrix of weights
         wtsort <- if(sorted) weights else weights[oo, ]
         for(j in 1:k) {
-          zz <- .C("wtdenspt",
+          zz <- .C(SC_wtdenspt,
                    nxy     = as.integer(npts),
                    x       = as.double(xx),
                    y       = as.double(yy),
@@ -513,7 +513,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
       # anisotropic kernel
       flatSinv <- as.vector(t(Sinv))
       if(is.null(weights)) {
-        zz <- .C("adenspt",
+        zz <- .C(SC_adenspt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -526,7 +526,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
       } else if(k == 1L) {
         # vector of weights
         wtsort <- if(sorted) weights else weights[oo]
-        zz <- .C("awtdenspt",
+        zz <- .C(SC_awtdenspt,
                  nxy     = as.integer(npts),
                  x       = as.double(xx),
                  y       = as.double(yy),
@@ -541,7 +541,7 @@ densitypointsEngine <- function(x, sigma=NULL, ...,
         # matrix of weights
         wtsort <- if(sorted) weights else weights[oo, ]
         for(j in 1:k) {
-          zz <- .C("awtdenspt",
+          zz <- .C(SC_awtdenspt,
                    nxy     = as.integer(npts),
                    x       = as.double(xx),
                    y       = as.double(yy),
@@ -854,7 +854,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
     if(is.null(varcov)) {
       ## isotropic kernel
       if(is.null(weights)) {
-        zz <- .C("crdenspt",
+        zz <- .C(SC_crdenspt,
                  nquery  = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),
@@ -868,7 +868,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
         if(sorted) result <- zz$result else result[ooq] <- zz$result 
       } else if(k == 1L) {
         wtsort <- if(sorted) weights else weights[ood]
-        zz <- .C("wtcrdenspt",
+        zz <- .C(SC_wtcrdenspt,
                  nquery  = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),
@@ -885,7 +885,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
         ## matrix of weights
         wtsort <- if(sorted) weights else weights[ood, ]
         for(j in 1:k) {
-          zz <- .C("wtcrdenspt",
+          zz <- .C(SC_wtcrdenspt,
                    nquery  = as.integer(nquery),
                    xq      = as.double(xq),
                    yq      = as.double(yq),
@@ -907,7 +907,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
       Sinv <- solve(varcov)
       flatSinv <- as.vector(t(Sinv))
       if(is.null(weights)) {
-        zz <- .C("acrdenspt",
+        zz <- .C(SC_acrdenspt,
                  nquery  = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),
@@ -923,7 +923,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
       } else if(k == 1L) {
         ## vector of weights
         wtsort <- if(sorted) weights else weights[ood]
-        zz <- .C("awtcrdenspt",
+        zz <- .C(SC_awtcrdenspt,
                  nquery  = as.integer(nquery),
                  xq      = as.double(xq),
                  yq      = as.double(yq),
@@ -941,7 +941,7 @@ densitycrossEngine <- function(Xdata, Xquery, sigma=NULL, ...,
         ## matrix of weights
         wtsort <- if(sorted) weights else weights[ood, ]
         for(j in 1:k) {
-          zz <- .C("awtcrdenspt",
+          zz <- .C(SC_awtcrdenspt,
                    nquery  = as.integer(nquery),
                    xq      = as.double(xq),
                    yq      = as.double(yq),

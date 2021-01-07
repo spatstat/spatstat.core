@@ -1,5 +1,5 @@
 #
-# $Id: rmh.default.R,v 1.115 2020/01/07 05:53:17 adrian Exp adrian $
+# $Id: rmh.default.R,v 1.116 2021/01/07 03:08:41 adrian Exp adrian $
 #
 rmh.default <- function(model,start=NULL,
                         control=default.rmhcontrol(model),
@@ -854,7 +854,7 @@ rmhEngine <- function(InfoList, ...,
     # Call the Metropolis-Hastings C code:
     if(verbose)
       cat("Running Metropolis-Hastings.\n")
-    out <- .Call("xmethas",
+    out <- .Call(SC_xmethas,
                  ncif,
                  C.id,
                  beta,
@@ -976,7 +976,7 @@ rmhEngine <- function(InfoList, ...,
       #' call
       if(verbose)
         cat("Running Metropolis-Hastings.\n")
-      out <- .Call("xmethas",
+      out <- .Call(SC_xmethas,
                    ncif,
                    C.id,
                    beta,

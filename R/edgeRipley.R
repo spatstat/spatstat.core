@@ -1,7 +1,7 @@
 #
 #        edgeRipley.R
 #
-#    $Revision: 1.18 $    $Date: 2019/09/21 05:19:19 $
+#    $Revision: 1.19 $    $Date: 2021/01/07 03:08:41 $
 #
 #    Ripley isotropic edge correction weights
 #
@@ -131,7 +131,7 @@ edge.Ripley <- local({
              ############ C code #############################
              switch(W$type,
                     rectangle={
-                      z <- .C("ripleybox",
+                      z <- .C(SC_ripleybox,
                               nx=as.integer(n),
                               x=as.double(x),
                               y=as.double(y),
@@ -150,7 +150,7 @@ edge.Ripley <- local({
                       Y <- edges(W)
                       bd <- bdist.points(X)
                       if(!debug) {
-                        z <- .C("ripleypoly",
+                        z <- .C(SC_ripleypoly,
                                 nc=as.integer(n),
                                 xc=as.double(x),
                                 yc=as.double(y),
@@ -165,7 +165,7 @@ edge.Ripley <- local({
                                 out=as.double(numeric(Nr * Nc)),
                                 PACKAGE="spatstat.core")
                       } else {
-                        z <- .C("rippolDebug",
+                        z <- .C(SC_rippolDebug,
                                 nc=as.integer(n),
                                 xc=as.double(x),
                                 yc=as.double(y),

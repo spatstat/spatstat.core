@@ -10,7 +10,7 @@
 #'     GmultiInhom
 #'     FmultiInhom
 #'
-#'      $Revision: 1.6 $ $Date: 2017/06/05 10:31:58 $
+#'      $Revision: 1.8 $ $Date: 2021/01/07 03:16:28 $
 
 GmultiInhom <- function(X, I, J, 
                         lambda=NULL, lambdaI=NULL, lambdaJ=NULL,
@@ -138,7 +138,7 @@ GmultiInhom <- function(X, I, J,
   yJord <- yyJ[oXJ]
   vJord <- vvJ[oXJ]
   # compute local cumulative products
-  z <- .C("locxprod",
+  z <- .C(SC_locxprod,
           ntest = as.integer(nI),
           xtest = as.double(xIord),
           ytest = as.double(yIord),

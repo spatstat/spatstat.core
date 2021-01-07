@@ -1,33 +1,30 @@
-# spatstat.core NAMESPACE file
+## spatstat.core NAMESPACE file
+
+## ................  Import packages ..................
 
 import(stats,graphics,grDevices,utils,methods)
 import(spatstat.utils,spatstat.data,spatstat.sparse,spatstat.geom)
 import(goftest)
 import(Matrix,nlme,rpart)
 
-#
 importFrom(abind,abind)
 importFrom(tensor,tensor)
 importFrom(mgcv,
            gam,gam.control,anova.gam,formula.gam,predict.gam,
            print.gam,summary.gam,vcov.gam,s)
 
-# ....  load dynamic library .....
-#      (native routines are now registered in init.c)
-useDynLib(spatstat.core, .registration=TRUE)
+## ................ Load dynamic library ..............
+##      (native routines are registered in init.c)
+##      (entry points are symbols with prefix "SC_")
 
-# Do not edit the following.
-# It is generated automatically.
+useDynLib(spatstat.core, .registration=TRUE, .fixes="SC_")
+
+## //////////  DO NOT EDIT THE FOLLOWING  ///////////////
+## ////////  it is generated automatically  /////////////
 
 
 
 
-# .................................................. 
-#  load dynamic library
-#      (native routines are now registered in init.c)
-# .................................................. 
-
-useDynLib(spatstat.core, .registration=TRUE)
 
 # .................................................. 
 # Automatically-generated list of documented objects 

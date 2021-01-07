@@ -2,7 +2,7 @@
 #
 #    areainter.R
 #
-#    $Revision: 1.48 $	$Date: 2018/03/15 07:07:19 $
+#    $Revision: 1.49 $	$Date: 2021/01/07 03:08:41 $
 #
 #    The area interaction
 #
@@ -210,7 +210,7 @@ areadelta2 <- local({
         # relevant neighbours
         K <- setdiff(union(Ki, Kj), c(i,j))
         # call C code
-        z <- .C("delta2area",
+        z <- .C(SC_delta2area,
                 xa = as.double(xx[i]),
                 ya = as.double(yy[i]),
                 xb = as.double(xx[j]),
@@ -356,7 +356,7 @@ areadelta2 <- local({
       # relevant neighbours
       K <- setdiff(union(Ki, Kj), c(i,j))
       # call C code
-      z <- .C("delta2area",
+      z <- .C(SC_delta2area,
             xa = as.double(xx[i]),
             ya = as.double(yy[i]),
             xb = as.double(xx[j]),

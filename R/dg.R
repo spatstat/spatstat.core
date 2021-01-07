@@ -1,7 +1,7 @@
 #
 #     dg.S
 #
-#    $Revision: 1.22 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 1.23 $	$Date: 2021/01/07 03:08:41 $
 #
 #     Diggle-Gratton pair potential
 #
@@ -26,7 +26,7 @@ DiggleGratton <- local({
     ## call C routine
     if(!splitInf) {
       ## usual case: allow cif to be zero because of hard core
-      out <- .C("Ediggra",
+      out <- .C(SC_Ediggra,
                 nnsource = as.integer(nX),
                 xsource  = as.double(Xsort$x),
                 ysource  = as.double(Xsort$y),
@@ -43,7 +43,7 @@ DiggleGratton <- local({
       answer[oX] <- out$values
     } else {
       ## split off the hard core terms and return them separately
-      out <- .C("ESdiggra",
+      out <- .C(SC_ESdiggra,
                 nnsource = as.integer(nX),
                 xsource  = as.double(Xsort$x),
                 ysource  = as.double(Xsort$y),
