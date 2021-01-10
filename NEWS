@@ -1,0 +1,29 @@
+
+        CHANGES IN spatstat.core VERSION 1.65-1
+
+OVERVIEW
+
+    o Added NEWS file.
+
+
+        CHANGES IN spatstat.core VERSION 1.65-0
+
+OVERVIEW
+
+    o Package initialised at version 1.65-0
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o spatstat.core
+    The package 'spatstat.core' has been created from a subset
+    of the code in the original 'spatstat' package version 1.65-0.
+    It contains the core functionality for statistical analysis of
+    spatial data. For an overview, see help("spatstat.core-package")
+
+    o Execution
+    The 'spatstat.core' package is slightly faster than the corresponding
+    code in the 'spatstat' package, because the procedure for calling
+    internal C functions has been streamlined.
+
+
+
