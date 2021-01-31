@@ -919,8 +919,12 @@ X2testEngine(OBS, EXP, \dots, method, CR, df, nsim,
 
 }
 \details{
-  These internal \pkg{spatstat.core} functions are not usually called
+  These internal \pkg{spatstat.core} functions should not be called
   directly by the user. Their names and capabilities may change
   without warning from one version of \pkg{spatstat.core} to the next.
+}
+\value{
+The return values of these functions are not documented,
+and may change without warning.
 }
 \keyword{internal}

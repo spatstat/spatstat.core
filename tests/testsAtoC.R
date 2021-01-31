@@ -30,9 +30,13 @@ local({
 })
 ## tests/cdf.test.R
 
+
 local({
-  AC <- split(ants, un=FALSE)$Cataglyphis
-  AM <- split(ants, un=FALSE)$Messor
+  NSIM <- 9
+  op <- spatstat.options(ndummy.min=16, npixel=32)
+  AA <- split(ants, un=FALSE)
+  AC <- AA[["Cataglyphis"]]
+  AM <- AA[["Messor"]]
   DM <- distmap(AM)
   if(ALWAYS) {
     ## (1) check cdf.test with strange data
@@ -51,14 +55,17 @@ local({
   if(FULLTEST) {
     ## (2) Monte Carlo test for Gibbs model
     fit <- ppm(cells ~ 1, Strauss(0.07))
-    cdf.test(fit, "x", nsim=9)
+    cdf.test(fit, "x", nsim=NSIM)
 
     ## cdf.test.slrm
     fut <- slrm(japanesepines ~ x + y)
     Z <- distmap(japanesepines)
     cdf.test(fut, Z)
   }
+  reset.spatstat.options()
 })
+
+
 #'    tests/circular.R
 #'
 #'    Circular data and periodic distributions

@@ -45,6 +45,7 @@
   Tilman Davies,
   Yongtao Guan,
   Ute Hahn,
+  Kassel Hingee,
   Abdollah Jalilian,
   Marie-Colette van Lieshout,
   Greg McSwiggan,
@@ -56,7 +57,7 @@
   Hangsheng Wang
   made substantial contributions of code.
 
-  Additional contributions and suggestions from
+  For suggestions and bug alerts we thank
   Monsuru Adepeju,
   Corey Anderson,
   Ang Qi Wei,
@@ -130,7 +131,6 @@
   Maximilian Hesselbarth,
   Paul Hewson,
   Hamidreza Heydarian,
-  Kassel Hingee,
   Kurt Hornik,
   Philipp Hunziker,
   Jack Hywood,
@@ -193,7 +193,6 @@
   Mike Porter,
   Sergiy Protsiv,
   Adrian Raftery,
-  Suman Rakshit,
   Ben Ramage,
   Pablo Ramon,
   Xavier Raynaud,

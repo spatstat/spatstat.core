@@ -86,7 +86,7 @@
   hickory <- split(lansing)[["hickory"]]
   b <- bw.scott(hickory)
   b
-  \donttest{
+  if(interactive()) {
    plot(density(hickory, b))
   }
   bw.scott.iso(hickory)

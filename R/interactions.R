@@ -151,20 +151,22 @@ impliedcoefficients <- function(object, tag) {
   }
   # (2) evaluate linear predictor
   Coefs <- if(!has.random) coef(fitobj) else fixef(fitobj)
-  opt <- options(warn= -1)
+  suppressWarnings({
 #  eta0 <- predict(fitobj, newdata=df, type="link")
-  eta0 <- GLMpredict(fitobj, data=df, coefs=Coefs, changecoef=TRUE, type="link")
-  options(opt)
+    eta0 <- GLMpredict(fitobj, data=df, coefs=Coefs,
+                       changecoef=TRUE, type="link")
+  })
   
   # (3) for each vname in turn,
   # set the value of the vname to 1 and predict again
   for(j in seq_along(vnames)) {
     vnj <- vnames[j]
     df[[vnj]] <- 1
-    opt <- options(warn= -1)
+    suppressWarnings({
 #    etaj <- predict(fitobj, newdata=df, type="link")
-    etaj <- GLMpredict(fitobj, data=df, coefs=Coefs, changecoef=TRUE, type="link")
-    options(opt)
+      etaj <- GLMpredict(fitobj, data=df, coefs=Coefs,
+                         changecoef=TRUE, type="link")
+    })
     answer[ ,j] <- etaj - eta0
     # set the value of this vname back to 0
     df[[vnj]] <- 0

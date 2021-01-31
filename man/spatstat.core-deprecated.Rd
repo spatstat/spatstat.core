@@ -20,4 +20,7 @@ which.max.im(x)
   \code{circumradius} is replaced by the more appropriately named
   \code{boundingradius}.
 }
+\value{
+\code{which.max.im} returns an integer.
+}
 \keyword{internal}
