@@ -43,6 +43,7 @@
   Kasper Klitgaard Berthelsen,
   Ottmar Cronie,
   Tilman Davies,
+  Julian Gilbey, 
   Yongtao Guan,
   Ute Hahn,
   Kassel Hingee,
@@ -57,7 +58,7 @@
   Hangsheng Wang
   made substantial contributions of code.
 
-  For suggestions and bug alerts we thank
+  For comments, corrections, bug alerts and suggestions, we thank
   Monsuru Adepeju,
   Corey Anderson,
   Ang Qi Wei,
@@ -117,7 +118,6 @@
   Jonas Geldmann,
   Marc Genton,
   Shaaban Ghalandarayeshi,
-  Julian Gilbey,
   Jason Goldstick,
   Pavel Grabarnik,
   C. Graf,
