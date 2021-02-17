@@ -1,4 +1,12 @@
 
+        CHANGES IN spatstat.core VERSION 1.65-7
+
+OVERVIEW
+
+    o We thank Michael Chirico for a contribution.
+
+    o Minor changes to appease the compiler.
+    
         CHANGES IN spatstat.core VERSION 1.65-6
 
 OVERVIEW
