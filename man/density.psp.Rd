@@ -5,7 +5,7 @@
   Compute a kernel smoothed intensity function from a line segment pattern.
 }
 \usage{
-  \method{density}{psp}(x, sigma, \dots, edge=TRUE,
+  \method{density}{psp}(x, sigma, \dots, weights=NULL, edge=TRUE,
                    method=c("FFT", "C", "interpreted"),
                    at=NULL)
 
@@ -21,6 +21,11 @@
   \item{\dots}{
     Extra arguments, including arguments passed to \code{\link{as.mask}}
     to determine the resolution of the resulting image.
+  }
+  \item{weights}{
+    Optional. Numerical weights for each line segment.
+    A numeric vector, of length equal to the number of segments in
+    \code{x}.
   }
   \item{edge}{
     Logical flag indicating whether to apply edge correction.
@@ -67,6 +72,9 @@
   by dividing it by the convolution of the same Gaussian kernel
   with the observation window.
 
+  If \code{weights} are given, then the contribution from line segment
+  \code{i} is multiplied by the value of \code{weights[i]}.
+  
   If the argument \code{at} is given, then it specifies the locations
   where density values should be computed.
   \itemize{

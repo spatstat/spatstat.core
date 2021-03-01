@@ -2,17 +2,21 @@
 #
 #  density.psp.R
 #
-#  $Revision: 1.17 $    $Date: 2021/01/07 03:08:41 $
+#  $Revision: 1.19 $    $Date: 2021/03/01 01:04:39 $
 #
 #
 
-density.psp <- function(x, sigma, ..., edge=TRUE,
+density.psp <- function(x, sigma, ..., weights=NULL, edge=TRUE, 
                         method=c("FFT", "C", "interpreted"),
                         at=NULL) {
   verifyclass(x, "psp")
   method <- match.arg(method)
   w <- x$window
   n <- x$n
+  if(length(weights)) {
+    check.nvector(weights, n, things="segments", oneok=TRUE)
+    if(length(weights) == 1) weights <- rep(weights, n)
+  } else weights <- NULL
   len <- lengths_psp(x)
   ang <- angles.psp(x, directed=TRUE)
   ux <- unitname(x)
@@ -53,15 +57,30 @@ density.psp <- function(x, sigma, ..., edge=TRUE,
            #' compute matrix contribution from each segment 
            coz <- cos(ang)
            zin <- sin(ang)
-           for(i in seq_len(n)) {
-             en <- x$ends[i,]
-             dx <- xx - en$x0
-             dy <- yy - en$y0
-             u1 <- dx * coz[i] + dy * zin[i]
-             u2 <- - dx * zin[i] + dy * coz[i]
-             value <- dnorm(u2, sd=sigma) *
-               (pnorm(u1, sd=sigma) - pnorm(u1-len[i], sd=sigma))
-             totvalue <- if(i == 1L) value else (value + totvalue)
+           if(is.null(weights)) {
+             #' unweighted
+             for(i in seq_len(n)) {
+               en <- x$ends[i,]
+               dx <- xx - en$x0
+               dy <- yy - en$y0
+               u1 <- dx * coz[i] + dy * zin[i]
+               u2 <- - dx * zin[i] + dy * coz[i]
+               value <- dnorm(u2, sd=sigma) *
+                 (pnorm(u1, sd=sigma) - pnorm(u1-len[i], sd=sigma))
+               totvalue <- if(i == 1L) value else (value + totvalue)
+             }
+           } else {
+             #' weighted
+             for(i in seq_len(n)) {
+               en <- x$ends[i,]
+               dx <- xx - en$x0
+               dy <- yy - en$y0
+               u1 <- dx * coz[i] + dy * zin[i]
+               u2 <- - dx * zin[i] + dy * coz[i]
+               value <- weights[i] * dnorm(u2, sd=sigma) *
+                 (pnorm(u1, sd=sigma) - pnorm(u1-len[i], sd=sigma))
+               totvalue <- if(i == 1L) value else (value + totvalue)
+             }
            }
            dens <- switch(atype,
                           window = im(totvalue, w$xcol, w$yrow, unitname=ux),
@@ -74,24 +93,42 @@ density.psp <- function(x, sigma, ..., edge=TRUE,
            xp <- as.numeric(as.vector(xx))
            yp <- as.numeric(as.vector(yy))
            np <- length(xp)
-           z <- .C(SC_segdens,
-                   sigma = as.double(sigma),
-                   ns = as.integer(n),
-                   xs = as.double(xs),
-                   ys = as.double(ys),
-                   alps = as.double(ang),
-                   lens = as.double(len),
-                   np = as.integer(np),
-                   xp = as.double(xp), 
-                   yp = as.double(yp),
-                   z = as.double(numeric(np)),
-                   PACKAGE="spatstat.core")
+           if(is.null(weights)) {
+             #' unweighted
+             z <- .C(SC_segdens,
+                     sigma = as.double(sigma),
+                     ns    = as.integer(n),
+                     xs    = as.double(xs),
+                     ys    = as.double(ys),
+                     alps  = as.double(ang),
+                     lens  = as.double(len),
+                     np    = as.integer(np),
+                     xp    = as.double(xp), 
+                     yp    = as.double(yp),
+                     z     = as.double(numeric(np)),
+                     PACKAGE="spatstat.core")
+           } else {
+             #' weighted
+             z <- .C(SC_segwdens,
+                     sigma = as.double(sigma),
+                     ns    = as.integer(n),
+                     xs    = as.double(xs),
+                     ys    = as.double(ys),
+                     alps  = as.double(ang),
+                     lens  = as.double(len),
+                     ws    = as.double(weights),
+                     np    = as.integer(np),
+                     xp    = as.double(xp), 
+                     yp    = as.double(yp),
+                     z     = as.double(numeric(np)),
+                     PACKAGE="spatstat.core")
+           }
            dens <- switch(atype,
                           window = im(z$z, w$xcol, w$yrow, unitname=ux),
                           points = z$z)
          },
          FFT = {
-           Y <- pixellate(x, ..., DivideByPixelArea=TRUE)
+           Y <- pixellate(x, ..., weights=weights, DivideByPixelArea=TRUE)
            dens <- blur(Y, sigma, normalise=edge, bleed=FALSE, ...)
            if(atype == "points") dens <- dens[atY, drop=FALSE]
          })

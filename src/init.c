@@ -70,6 +70,7 @@ static const R_CMethodDef CEntries[] = {
     {"rippolDebug",      (DL_FUNC) &rippolDebug,      12},
     {"scantrans",        (DL_FUNC) &scantrans,        11},
     {"segdens",          (DL_FUNC) &segdens,          10},
+    {"segwdens",         (DL_FUNC) &segwdens,         11},
     {"smoopt",           (DL_FUNC) &smoopt,            8},
     {"wtcrdenspt",       (DL_FUNC) &wtcrdenspt,       10},
     {"wtcrsmoopt",       (DL_FUNC) &wtcrsmoopt,       11},

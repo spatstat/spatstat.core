@@ -1,4 +1,23 @@
 
+        CHANGES IN spatstat.core VERSION 1.65-9
+
+OVERVIEW
+
+    o We thank Ian Buller for a suggestion.
+
+    o weights permitted in density calculation for line segments.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o density.psp
+    New argument 'weights'.
+
+        CHANGES IN spatstat.core VERSION 1.65-8
+
+OVERVIEW
+
+    o Minor changes to appease the compiler.
+
         CHANGES IN spatstat.core VERSION 1.65-7
 
 OVERVIEW

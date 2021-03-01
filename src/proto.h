@@ -32,7 +32,8 @@ void wtcrdenspt(int *, double *, double *, int *, double *, double *, double *, 
 void acrdenspt(int *, double *, double *, int *, double *, double *, double *, double *, double *, double *); 
 void awtcrdenspt(int *, double *, double *, int *, double *, double *, double *, double *, double *, double *, double *); 
 void awtcrdenspt(int *, double *, double *, int *, double *, double *, double *, double *, double *, double *, double *);
-void segdens(double *, int *, double *, double *, double *, double *, int *, double *, double *, double *);
+void segdens(double *, int *, double *, double *, double *, double *, int *, double *, double *, double *); 
+void segwdens(double *, int *, double *, double *, double *, double *, double *, int *, double *, double *, double *);
 void Ediggra(int *, double *, double *, int *, int *, double *, double *, int *, double *, double *, double *); 
 void ESdiggra(int *, double *, double *, int *, int *, double *, double *, int *, double *, double *, double *, int *);
 void Ediggatsti(int *, double *, double *, int *, int *, double *, double *, int *, double *, double *);
