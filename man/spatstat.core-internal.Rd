@@ -161,6 +161,7 @@
 \alias{kppmComLik}
 \alias{kppmMinCon}
 \alias{kppmPalmLik}
+\alias{kppmCLadap}
 \alias{kraever}
 \alias{kraeverRandomFields}
 \alias{labels.ppm}
@@ -606,6 +607,8 @@ kppmComLik(X, Xname, po, clusters, control, weightfun, rmax,
 kppmMinCon(X, Xname, po, clusters, control, statistic, statargs,
            algorithm, DPP, \dots)
 kppmPalmLik(X, Xname, po, clusters, control, weightfun, rmax, 
+           algorithm, DPP, \dots, pint)
+kppmCLadap(X, Xname, po, clusters, control, weightfun, rmax, 
            algorithm, DPP, \dots, pint)
 kraever(package, fatal)
 kraeverRandomFields()
