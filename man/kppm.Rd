@@ -366,7 +366,7 @@
   \code{\link{pcf}},
   \code{\link{pcfinhom}}.
 
-  See also \code{\link{ppm}}
+  See also \code{\link{ppm}} and \code{\link{improve.kppm}}
 }
 \references{
   Guan, Y. (2006) 
