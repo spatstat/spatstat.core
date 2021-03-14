@@ -366,7 +366,7 @@
   \code{\link{pcf}},
   \code{\link{pcfinhom}}.
 
-  See also \code{\link{ppm}}
+  See also \code{\link{ppm}} and \code{\link{improve.kppm}}
 }
 \references{
   Guan, Y. (2006) 
@@ -374,6 +374,10 @@
   models.
   \emph{Journal of the American Statistical Association}
   \bold{101}, 1502--1512.
+  
+  Guan, Y., Jalilian, A. and Waagepetersen, R. (2015) Quasi-likelihood for spatial point processes
+  \emph{Journal of the Royal Statistical Society, Series B}
+   \bold{77}, 677-697.
 
   Jalilian, A., Guan, Y. and Waagepetersen, R. (2012)
   Decomposition of variance for spatial Cox processes.
