@@ -344,6 +344,9 @@
   \code{\link{Kmodel.kppm}},
   \code{\link{pcfmodel.kppm}}.
 
+  See also \code{\link{improve.kppm}} for improving the fit of a
+  \code{kppm} object.
+
   Minimum contrast fitting algorithm:
   higher level interface \code{\link{clusterfit}};
   low-level algorithm \code{\link{mincontrast}}.
@@ -358,7 +361,7 @@
   \code{\link{matclust.estpcf}},
   \code{\link{lgcp.estpcf}},
   \code{\link{cauchy.estpcf}},
-  \code{\link{vargamma.estpcf}},
+  \code{\link{vargamma.estpcf}}.
 
   Summary statistics:
   \code{\link{Kest}},
@@ -366,18 +369,18 @@
   \code{\link{pcf}},
   \code{\link{pcfinhom}}.
 
-  See also \code{\link{ppm}} and \code{\link{improve.kppm}}
+  For fitting Poisson or Gibbs point process models, see \code{\link{ppm}}.
 }
 \references{
   Guan, Y. (2006) 
-  A composite likelihood approach in fitting spatial point process
-  models.
+  A composite likelihood approach in fitting spatial point process models.
   \emph{Journal of the American Statistical Association}
   \bold{101}, 1502--1512.
-  
-  Guan, Y., Jalilian, A. and Waagepetersen, R. (2015) Quasi-likelihood for spatial point processes
+
+  Guan, Y., Jalilian, A. and Waagepetersen, R. (2015)
+  Quasi-likelihood for spatial point processes.
   \emph{Journal of the Royal Statistical Society, Series B}
-   \bold{77}, 677-697.
+  \bold{77}, 677-697.
 
   Jalilian, A., Guan, Y. and Waagepetersen, R. (2012)
   Decomposition of variance for spatial Cox processes.
