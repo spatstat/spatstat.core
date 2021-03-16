@@ -7,7 +7,7 @@
   Computes the diffusion estimate of the intensity of a point pattern.
 }
 \usage{
-\method{densityHeat}{ppp}(X, sigma, \dots, weights=NULL,
+\method{densityHeat}{ppp}(x, sigma, \dots, weights=NULL,
           connect=8, symmetric=FALSE,
           sigmaX=NULL, k=1, show=FALSE, se=FALSE,
           at=c("pixels", "points"),
@@ -16,7 +16,7 @@
           verbose=TRUE, internal=NULL)
 }
 \arguments{
-  \item{X}{
+  \item{x}{
     Point pattern (object of class \code{"ppp"}).
   }
   \item{sigma}{
@@ -31,7 +31,7 @@
   }
   \item{weights}{
     Optional numeric vector of weights associated with each point of
-    \code{X}.
+    \code{x}.
   }
   \item{connect}{
     Grid connectivity: either 4 or 8.
@@ -42,7 +42,7 @@
   }
   \item{sigmaX}{
     Numeric vector of bandwidths, one associated with each data point in
-    \code{X}. See Details.
+    \code{x}. See Details.
   }
   \item{k}{
     Integer. Calculations will be performed by repeatedly multiplying
@@ -57,7 +57,7 @@
   \item{at}{
     Character string specifying whether to compute values
     at a grid of pixels (\code{at="pixels"}, the default)
-    or at the data points of \code{X} (\code{at="points"}).
+    or at the data points of \code{x} (\code{at="points"}).
   }
   \item{leaveoneout}{
     Logical value specifying whether to compute a leave-one-out
@@ -126,9 +126,9 @@
   heat equation with spatially-varying parameters.
 
   In the second version of adaptive smoothing, each data point in
-  \code{X} is smoothed using a separate bandwidth.
+  \code{x} is smoothed using a separate bandwidth.
   The argument \code{sigmaX} should be a numeric vector
-  specifying the bandwidth for each point of \code{X}.
+  specifying the bandwidth for each point of \code{x}.
   The smoothing is performed using the lagged arrival algorithm.
   The argument \code{sigma} can be omitted.
 
@@ -154,7 +154,7 @@
   which is another pixel image giving the estimated standard error.
 
   If \code{at="points"} then the result is a numeric vector
-  with one entry for each point of \code{X}.
+  with one entry for each point of \code{x}.
 }
 \seealso{
   \code{\link[spatstat.core]{density.ppp}} for the usual kernel estimator,
@@ -179,31 +179,43 @@
   Adrian Baddeley and Tilman Davies.
 }
 \examples{
+   online <- interactive()
+   if(!online) op <- spatstat.options(npixel=32)
+
    X <- runifpoint(25, letterR)
    Z <- densityHeat(X, 0.2)
-   plot(Z, main="Diffusion estimator")
-   plot(X, add=TRUE, pch=16)
-   integral(Z) # should equal 25
+   if(online) {
+     plot(Z, main="Diffusion estimator")
+     plot(X, add=TRUE, pch=16)
+     integral(Z) # should equal 25
+   }
 
    Z <- densityHeat(X, 0.2, se=TRUE)
    Zse <- attr(Z, "se")
-   plot(solist(estimate=Z, SE=Zse), main="")
+   if(online) plot(solist(estimate=Z, SE=Zse), main="")
 
    Zex <- densityHeat(X, 0.2, extrapolate=TRUE)
 
    ZS <- densityHeat(X, 0.2, symmetric=TRUE, eps=0.125)
-   plot(ZS, main="fixed bandwidth")
-   plot(X, add=TRUE, pch=16)
+   if(online) {
+     plot(ZS, main="fixed bandwidth")
+     plot(X, add=TRUE, pch=16)
+   }
 
    sig <- function(x,y) { (x-1.5)/10 }
    ZZ <- densityHeat(X, sig)
-   plot(ZZ, main="adaptive (I)")
-   plot(X, add=TRUE, pch=16)
+   if(online) {
+     plot(ZZ, main="adaptive (I)")
+     plot(X, add=TRUE, pch=16)
+   }
 
    sigX <- sig(X$x, X$y)
    AA <- densityHeat(X, sigmaX=sigX)
-   plot(AA, main="adaptive (II)")
-   plot(X, add=TRUE, pch=16)
+   if(online) {
+     plot(AA, main="adaptive (II)")
+     plot(X, add=TRUE, pch=16)
+   }
+   if(!online) spatstat.options(op)
 }
 \keyword{spatial}
 \keyword{smooth}

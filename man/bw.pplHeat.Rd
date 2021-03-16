@@ -68,12 +68,15 @@ bw.pplHeat(X, \dots, srange=NULL, ns=16, sigma=NULL,
   \code{\link{densityHeat.ppp}}
 }
 \examples{
+  online <- interactive()
+  if(!online) op <- spatstat.options(npixel=32)
   f <- function(x,y) { dnorm(x, 2.3, 0.1) * dnorm(y, 2.0, 0.2) }
   X <- rpoint(15, f, win=letterR)
   plot(X)
   b <- bw.pplHeat(X, sigma=0.25)
   b
   plot(b)
+  if(!online) spatstat.options(op)
 }
 \keyword{spatial}
 \keyword{smooth}

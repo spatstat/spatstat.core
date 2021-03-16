@@ -7,10 +7,10 @@
   Computes a diffusion estimate of intensity for a point pattern.
 }
 \usage{
-densityHeat(X, sigma, \dots)
+densityHeat(x, sigma, \dots)
 }
 \arguments{
-  \item{X}{
+  \item{x}{
     Point pattern (object of class \code{"ppp"} or another class).
   }
   \item{sigma}{
@@ -25,11 +25,11 @@ densityHeat(X, sigma, \dots)
   The generic function \code{densityHeat} computes an
   estimate of point process intensity using a diffusion kernel method.
 
-  Further details depend on the class of point pattern \code{X}.
+  Further details depend on the class of point pattern \code{x}.
   See the help file for the appropriate method.
 }
 \value{
-  Depends on the class of \code{X}.
+  Depends on the class of \code{x}.
 }
 \seealso{
   For two-dimensional point patterns (objects of class \code{"ppp"}),

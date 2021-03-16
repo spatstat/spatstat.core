@@ -4,11 +4,11 @@
 #'   Diffusion estimator of density/intensity
 #'
 
-densityHeat <- function(X, sigma, ...) {
+densityHeat <- function(x, sigma, ...) {
   UseMethod("densityHeat")
 }
 
-densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
+densityHeat.ppp <- function(x, sigma, ..., weights=NULL,
                             connect=8,
                             symmetric=FALSE, sigmaX=NULL, k=1,
                             show=FALSE, se=FALSE,
@@ -17,8 +17,8 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
                             extrapolate = FALSE, coarsen = TRUE, 
                             verbose=TRUE,
                             internal=NULL) {
-  stopifnot(is.ppp(X))
-  nX <- npoints(X)
+  stopifnot(is.ppp(x))
+  nX <- npoints(x)
   at <- match.arg(at)
   if(length(weights)) check.nvector(weights, nX) else weights <- NULL
 
@@ -71,7 +71,7 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
     if(!is.null(sigmaX))
       stop("variance calculation is not implemented for lagged arrivals")
     lambda <- varlam <- switch(at,
-                               pixels = as.im(0, W=Window(X), ...),
+                               pixels = as.im(0, W=Window(x), ...),
                                points = numeric(nX))
     if(verbose) {
       pstate <- list()
@@ -80,7 +80,7 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
     if(is.null(weights)) {
       ## unweighted calculation: coded separately for efficiency
       for(i in seq_len(nX)) {
-        Heat.i <- densityHeat.ppp(X[i], sigma, ...,
+        Heat.i <- densityHeat.ppp(x[i], sigma, ...,
                                   connect=connect, symmetric=symmetric, k=k)
         switch(at,
                pixels = {
@@ -89,13 +89,13 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
                },
                points = {
                  if(leaveoneout) {
-                   Heat.ixi <- safelookup(Heat.i,X[-i],warn=FALSE)
-                   #'was: Heat.ixi <- Heat.i[ X[-i] ]
+                   Heat.ixi <- safelookup(Heat.i,x[-i],warn=FALSE)
+                   #'was: Heat.ixi <- Heat.i[ x[-i] ]
                    lambda[-i] <- lambda[-i] + Heat.ixi
                    varlam[-i] <- varlam[-i] + Heat.ixi^2
                  } else {
-                   lambda <- lambda + Heat.i[X]
-                   varlam <- varlam + Heat.i[X]^2
+                   lambda <- lambda + Heat.i[x]
+                   varlam <- varlam + Heat.i[x]^2
                  }
                })
         if(verbose) pstate <- progressreport(i, nX, state=pstate)
@@ -103,7 +103,7 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
     } else {
       ## weighted calculation
       for(i in seq_len(nX)) {
-        Heat.i <- densityHeat.ppp(X[i], sigma, ...,
+        Heat.i <- densityHeat.ppp(x[i], sigma, ...,
                                   connect=connect, symmetric=symmetric, k=k)
         w.i <- weights[i]
         switch(at,
@@ -113,12 +113,12 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
                },
                points = {
                  if(leaveoneout) {
-                   Heat.ixi <- Heat.i[ X[-i] ]
+                   Heat.ixi <- Heat.i[ x[-i] ]
                    lambda[-i] <- lambda[-i] + w.i * Heat.ixi
                    varlam[-i] <- varlam[-i] + w.i * Heat.ixi^2
                  } else {
-                   lambda <- lambda + w.i * Heat.i[X]
-                   varlam <- varlam + w.i * Heat.i[X]^2
+                   lambda <- lambda + w.i * Heat.i[x]
+                   varlam <- varlam + w.i * Heat.i[x]^2
                  }
                })
         if(verbose) pstate <- progressreport(i, nX, state=pstate)
@@ -144,18 +144,18 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
     #' sort in decreasing order of bandwidth
     osx <- order(sigmaX, decreasing=TRUE)
     sigmaX <- sigmaX[osx]
-    X <- X[osx]
+    x <- x[osx]
     #' discretise window
     W <- do.call.matched(as.mask,
                          resolve.defaults(list(...),
-                                          list(w=Window(X))))
+                                          list(w=Window(x))))
     #' initial state is zero
     Y <- as.im(W, value=0)
     #' discretised coordinates
-    Xpos <- nearest.valid.pixel(X$x, X$y, Y)
+    Xpos <- nearest.valid.pixel(x$x, x$y, Y)
   } else {
     #' pixellate pattern
-    Y <- pixellate(X, ..., weights=weights, preserve=TRUE, savemap=want.Xpos)
+    Y <- pixellate(x, ..., weights=weights, preserve=TRUE, savemap=want.Xpos)
     Xpos <- attr(Y, "map")
   } 
 
@@ -348,6 +348,6 @@ densityHeat.ppp <- function(X, sigma, ..., weights=NULL,
   }
   #' pack up
   Z[] <- as.vector(U)
-  if(at == "points") Z <- Z[X]
+  if(at == "points") Z <- Z[x]
   return(Z)
 }
