@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.29 $   $Date: 2018/05/12 16:19:22 $
+#  $Revision: 1.30 $   $Date: 2021/03/21 10:13:00 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -61,6 +61,7 @@ slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
 
 #  W  <- Data$W
   df <- Data$df
+  nY <- npoints(Data$response)
   
   ########  FIT MODEL ###############################
 
@@ -80,7 +81,8 @@ slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
                  CallInfo = CallInfo,
                  Data     = Data,
                  Fit      = list(FIT=FIT, dformula=dformula),
-                 terms    = terms(formula))
+                 terms    = terms(formula),
+                 nobs     = nY)
 
   class(result) <- c("slrm", class(result))
   return(result)

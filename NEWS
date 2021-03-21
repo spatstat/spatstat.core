@@ -1,4 +1,16 @@
 
+        CHANGES IN spatstat.core VERSION 2.0-0
+
+OVERVIEW
+
+    o More support for spatial logistic regression models.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o slrm
+    'step' can now be applied to models fitted using 'slrm'.
+
+
         CHANGES IN spatstat.core VERSION 1.65-11
 
 OVERVIEW

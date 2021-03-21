@@ -38,8 +38,8 @@ densityHeat(x, sigma, \dots)
   and the tessellation-based estimator is
   \code{\link{adaptive.density}}.
 
-  For point patterns on a linear network (objects of class
-  \code{"lpp"}), see \code{\link[spatstat.linnet]{densityHeat.lpp}}.
+%%  For point patterns on a linear network (objects of class
+%%  \code{"lpp"}), see \code{\link[spatstat.linnet]{densityHeat.lpp}}.
 }
 \author{
   Adrian Baddeley and Tilman Davies.
