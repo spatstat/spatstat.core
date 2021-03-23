@@ -646,132 +646,117 @@
 }
 \examples{
  X <- simdat
+ online <- interactive()
+ Nsim <- if(online) 19 else 3
 
  # Envelope of K function under CSR
- \donttest{
- plot(envelope(X))
- }
- \testonly{
-  plot(envelope(X, nsim=3))
- }
+ plot(envelope(X, nsim=Nsim))
 
  # Translation edge correction (this is also FASTER):
- \donttest{
- plot(envelope(X, correction="translate"))
- }
- \testonly{
-  E <- envelope(X, nsim=3, correction="translate")
+ if(online) {
+   plot(envelope(X, correction="translate"))
+ } else {
+  E <- envelope(X, nsim=Nsim, correction="translate")
  }
 
 # Global envelopes
- \donttest{
- plot(envelope(X, Lest, global=TRUE))
- plot(envelope(X, Kest,  global=TRUE, scale=function(r) { r }))
- }
- \testonly{
-  E <- envelope(X, Lest, nsim=3, global=TRUE)
-  E <- envelope(X, Kest, nsim=3, global=TRUE, scale=function(r) { r })
+ if(online) {
+   plot(envelope(X, Lest, global=TRUE))
+   plot(envelope(X, Kest,  global=TRUE, scale=function(r) { r }))
+ } else {
+  E <- envelope(X, Lest, nsim=Nsim, global=TRUE)
+  E <- envelope(X, Kest, nsim=Nsim, global=TRUE, scale=function(r) { r })
   E
   summary(E)
  }
 
  # Envelope of K function for simulations from Gibbs model 
- \donttest{
- fit <- ppm(cells ~1, Strauss(0.05))
- plot(envelope(fit))
- plot(envelope(fit, global=TRUE))
- }
- \testonly{
+ if(online) {
+   fit <- ppm(cells ~1, Strauss(0.05))
+   plot(envelope(fit))
+   plot(envelope(fit, global=TRUE))
+ } else {
   fit <- ppm(cells ~1, Strauss(0.05), nd=20)
-  E <- envelope(fit, nsim=3, correction="border", nrep=100)
-  E <- envelope(fit, nsim=3, correction="border", global=TRUE, nrep=100)
+  E <- envelope(fit, nsim=Nsim, correction="border", nrep=100)
+  E <- envelope(fit, nsim=Nsim, correction="border", global=TRUE, nrep=100)
  }
 
  # Envelope of K function for simulations from cluster model 
  fit <- kppm(redwood ~1, "Thomas")
- \donttest{
- plot(envelope(fit, Gest))
- plot(envelope(fit, Gest, global=TRUE))
- }
- \testonly{
-  E <- envelope(fit, Gest, correction="rs", nsim=3, global=TRUE, nrep=100)
+ if(online) {
+   plot(envelope(fit, Gest))
+   plot(envelope(fit, Gest, global=TRUE))
+ } else {
+  E <- envelope(fit, Gest, correction="rs", nsim=Nsim, global=TRUE, nrep=100)
  }
 
  # Envelope of G function under CSR
- \donttest{
- plot(envelope(X, Gest))
- }
- \testonly{
-  E <- envelope(X, Gest, correction="rs", nsim=3)
+ if(online) {
+   plot(envelope(X, Gest))
+ } else {
+  E <- envelope(X, Gest, correction="rs", nsim=Nsim)
  }
 
  # Envelope of L function under CSR
  #  L(r) = sqrt(K(r)/pi)
- \donttest{
+ if(online) {
   E <- envelope(X, Kest)
-  plot(E, sqrt(./pi) ~ r)
+ } else {
+  E <- envelope(X, Kest, correction="border", nsim=Nsim)
  }
- \testonly{
-  E <- envelope(X, Kest, correction="border", nsim=3)
-  plot(E, sqrt(./pi) ~ r)
- }
+ plot(E, sqrt(./pi) ~ r)
 
  # Simultaneous critical envelope for L function
  # (alternatively, use Lest)
- \donttest{
+ if(online) {
   plot(envelope(X, Kest, transform=expression(sqrt(./pi)), global=TRUE))
- }
- \testonly{
-  E <- envelope(X, Kest, nsim=3, correction="border",
+ } else {
+  E <- envelope(X, Kest, nsim=Nsim, correction="border",
                transform=expression(sqrt(./pi)), global=TRUE)
  }
 
  ## One-sided envelope
- \donttest{
+ if(online) {
   plot(envelope(X, Lest, alternative="less"))
- }
- \testonly{
-  E <- envelope(X, Lest, nsim=3, alternative="less")
+ } else {
+  E <- envelope(X, Lest, nsim=Nsim, alternative="less")
  }
  
  # How to pass arguments needed to compute the summary functions:
  # We want envelopes for Jcross(X, "A", "B") 
  # where "A" and "B" are types of points in the dataset 'demopat'
 
- \donttest{
+ if(online) {
  plot(envelope(demopat, Jcross, i="A", j="B"))
- }
- \testonly{
- plot(envelope(demopat, Jcross, correction="rs", i="A", j="B", nsim=3))
+ } else {
+ plot(envelope(demopat, Jcross, correction="rs", i="A", j="B", nsim=Nsim))
  }
  
  # Use of `simulate' expression
- \donttest{
+ if(online) {
  plot(envelope(cells, Gest, simulate=expression(runifpoint(42))))
  plot(envelope(cells, Gest, simulate=expression(rMaternI(100,0.02))))
- }
- \testonly{
-  plot(envelope(cells, Gest, correction="rs", simulate=expression(runifpoint(42)), nsim=3))
+ } else {
+  plot(envelope(cells, Gest, correction="rs", simulate=expression(runifpoint(42)), nsim=Nsim))
     plot(envelope(cells, Gest, correction="rs", simulate=expression(rMaternI(100, 0.02)),
-nsim=3, global=TRUE))
+nsim=Nsim, global=TRUE))
  }
 
  # Use of `simulate' function
- \donttest{
+ if(online) {
    plot(envelope(amacrine, Kcross, simulate=rlabel))
- }
- \testonly{
-   plot(envelope(amacrine, Kcross, simulate=rlabel, nsim=3))
+ } else {
+   plot(envelope(amacrine, Kcross, simulate=rlabel, nsim=Nsim))
  }
 
  # Envelope under random toroidal shifts
- \donttest{
+ if(online) {
  plot(envelope(amacrine, Kcross, i="on", j="off",
                simulate=expression(rshift(amacrine, radius=0.25)))) 
  }
 
  # Envelope under random shifts with erosion
- \donttest{
+ if(online) {
  plot(envelope(amacrine, Kcross, i="on", j="off",
               simulate=expression(rshift(amacrine, radius=0.1, edge="erode"))))
  }
@@ -784,11 +769,10 @@ nsim=3, global=TRUE))
  # (lambda=NULL would also be valid)
 
  fit <- kppm(redwood ~1, clusters="MatClust")
- \donttest{
+ if(online) {
     plot(envelope(fit, Kinhom, lambda=fit, nsim=19))
- }
- \testonly{
-    envelope(fit, Kinhom, lambda=fit, nsim=3)
+ } else {
+    envelope(fit, Kinhom, lambda=fit, nsim=Nsim)
  }
 
  # Note that the principle of symmetry, essential to the validity of
@@ -803,33 +787,32 @@ nsim=3, global=TRUE))
  # from a model that was fitted to the data; this is only a problem in
  # small datasets.
 
-\donttest{
+ if(online) {
  red.dens <- density(redwood, sigma=bw.diggle, positive=TRUE)
  plot(envelope(redwood, Kinhom, sigma=bw.diggle,
          simulate=expression(rpoispp(red.dens))))
  }
 
  # Precomputed list of point patterns
-\donttest{
- nX <- npoints(X)
- PatList <- list()
- for(i in 1:19) PatList[[i]] <- runifpoint(nX)
- E <- envelope(X, Kest, nsim=19, simulate=PatList)
-}
-\testonly{
- PatList <- list()
- for(i in 1:3) PatList[[i]] <- runifpoint(10)
- E <- envelope(X, Kest, nsim=3, simulate=PatList)
-}
+ if(online) {
+  nX <- npoints(X)
+  PatList <- list()
+  for(i in 1:Nsim) PatList[[i]] <- runifpoint(nX)
+  E <- envelope(X, Kest, nsim=19, simulate=PatList)
+ } else {
+  PatList <- list()
+  for(i in 1:Nsim) PatList[[i]] <- runifpoint(10)
+ }
+ E <- envelope(X, Kest, nsim=Nsim, simulate=PatList)
 
 # re-using the same point patterns
 # EK <- envelope(X, Kest, savepatterns=TRUE)
 # EG <- envelope(X, Gest, simulate=EK)
 
-\testonly{
- EK <- envelope(X, Kest, nsim=3, savepatterns=TRUE)
- EG <- envelope(X, Gest, nsim=3, simulate=EK)
-}
+ if(online) {
+   EK <- envelope(X, Kest, nsim=Nsim, savepatterns=TRUE)
+   EG <- envelope(X, Gest, nsim=Nsim, simulate=EK)
+ }
 }
 \author{
   \spatstatAuthors.

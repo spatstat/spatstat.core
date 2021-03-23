@@ -3,8 +3,19 @@
 
 OVERVIEW
 
+    o We thank Tilman Davies,  Greg McSwiggan and Suman Rakshit
+    for contributions.
+    
+    o Diffusion kernel smoothing.
+    
     o More support for spatial logistic regression models.
 
+NEW FUNCTIONS
+
+    o densityHeat, densityHeat.ppp
+    Given a point pattern, compute the diffusion kernel estimate
+    of point process intensity. This is an alternative to density.ppp.
+    
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o slrm
