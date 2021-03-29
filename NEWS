@@ -1,4 +1,29 @@
 
+        CHANGES IN spatstat.core VERSION 2.0-0.002
+
+OVERVIEW
+
+    o Improved output in summary.mppm
+
+    o Bug fix in model.depends
+    
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o summary.mppm
+    Improved summary of the dependence of the
+    interpoint interaction on the covariates.
+
+BUG FIXES
+
+    o model.depends
+    Crashed for models fitted using 'gam'.
+    Fixed.
+
+    o model.matrix.mppm
+    If the model was fitted using 'gam', the resulting matrix
+    did not have an 'assign' attribute.
+
+
         CHANGES IN spatstat.core VERSION 2.0-0
 
 OVERVIEW

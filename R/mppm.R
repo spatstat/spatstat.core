@@ -1,7 +1,7 @@
 #
 # mppm.R
 #
-#  $Revision: 1.101 $   $Date: 2020/12/19 05:25:06 $
+#  $Revision: 1.102 $   $Date: 2021/03/29 08:36:08 $
 #
 
 mppm <- local({
@@ -702,10 +702,32 @@ model.matrix.mppm <- function(object, ..., keepNA=TRUE, separate=FALSE) {
       stop("Internal error: model matrix has wrong number of rows", call.=FALSE)
     df <- df[ok, , drop=FALSE]
   }
+
+  ## get standard attributes of model matrix
+  ctr <- attr(mm, "contrasts")
+  if(is.null(ctr) && !is.null(ctr <- FIT[["contrasts"]]))
+    attr(mm, "contrasts") <- ctr
+  ass <- attr(mm, "assign")
+  if(is.null(ass)) {
+    ass <- FIT[["assign"]]
+    if(length(ass) == ncol(mm)) {
+      attr(mm, "assign") <- ass
+    } else {
+      ass <- NULL
+      warning("Unable to determine 'assign' in model.matrix.mppm", call.=FALSE)
+    }
+  }
+
+  ## split if required
   if(separate) {
     id <- df$id
     mm <- split.data.frame(mm, id)  # see help(split)
+    if(!is.null(ass))
+      mm <- lapply(mm, "attr<-", which="assign", value=ass)
+    if(!is.null(ctr))
+      mm <- lapply(mm, "attr<-", which="contrasts", value=ctr)
   }
+
   return(mm)
 }
 

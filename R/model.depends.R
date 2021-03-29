@@ -1,37 +1,40 @@
 #
 # Determine which 'canonical variables' depend on a supplied covariate
 #
-#   $Revision: 1.9 $  $Date: 2020/02/04 03:26:37 $
+#   $Revision: 1.11 $  $Date: 2021/03/29 08:11:44 $
 #
 
 model.depends <- function(object) {
-  # supplied covariates
+  ## supplied covariates
   fo <- formula(object)
   if(length(as.list(fo)) == 3) {
-    # formula has a response: strip it
+    ## formula has a response: strip it
     fo <- fo[-2]
   }
   covars <- variablesinformula(fo)
-  # canonical covariates 
   mm <- model.matrix(object)
-  ass <- attr(mm, "assign")
-  # model terms
+  depends <- matrix(FALSE, ncol(mm), length(covars),
+                    dimnames=list(colnames(mm), covars))
+  ## model term labels
   tt <- terms(object)
   lab <- attr(tt, "term.labels")
-  # 'ass' maps canonical covariates to 'lab'
-  # determine which canonical covariate depends on which supplied covariate
-  depends <- matrix(FALSE, length(ass), length(covars))
-  for(i in seq(along=ass)) {
-    if(ass[i] == 0) # 0 is the intercept term
-      depends[i,] <- FALSE
-    else {
-      turm <- lab[ass[i]]
-      depends[i, ] <- covars %in% all.vars(parse(text=turm))
+  ## map from canonical covariates to term labels
+  ass <- attr(mm, "assign") %orifnull% object[["assign"]]
+  ## determine which canonical covariate depends on which supplied covariate
+  if(length(ass) == ncol(mm)) {
+    for(i in seq(along=ass)) {
+      if(ass[i] == 0) # 0 is the intercept term
+        depends[i,] <- FALSE
+      else {
+        turm <- lab[ass[i]]
+        depends[i, ] <- covars %in% all.vars(parse(text=turm))
+      }
     }
+  } else {
+    warning("model.depends: unable to determine the dependence structure",
+            call.=FALSE)
   }
-  rownames(depends) <- colnames(mm)
-  colnames(depends) <- covars
-  # detect offsets
+  ## detect offsets
   if(!is.null(oo <- attr(tt, "offset")) && ((noo <- length(oo)) > 0)) {
     # entries of 'oo' index the list of variables in terms object
     vv <- attr(tt, "variables")
