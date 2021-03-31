@@ -64,7 +64,7 @@ reset.spatstat.options()
 #'                    and inhomogeneous summary functions
 #'                    and idw, adaptive.density, intensity
 #'
-#'  $Revision: 1.57 $  $Date: 2021/01/22 08:08:42 $
+#'  $Revision: 1.58 $  $Date: 2021/03/31 01:57:48 $
 #'
 
 if(!FULLTEST)
@@ -74,12 +74,16 @@ local({
 
   # test all cases of density.ppp and densityfun.ppp
   
-  tryit <- function(..., do.fun=TRUE) {
+  tryit <- function(..., do.fun=TRUE, badones=FALSE) {
     Z <- density(cells, ..., at="pixels")
     Z <- density(cells, ..., at="points")
     if(do.fun) {
       f <- densityfun(cells, ...)
       U <- f(0.1, 0.3)
+      if(badones) {
+        U2 <- f(1.1, 0.3)
+        U3 <- f(1.1, 0.3, drop=FALSE)
+      }
     }
     return(invisible(NULL))
   }
@@ -91,6 +95,7 @@ local({
     tryit(0.05, weights=expression(x))
     tryit(0.07, kernel="epa")
     tryit(sigma=Inf)
+    tryit(0.05, badones=TRUE)
   }
   if(FULLTEST) {
     tryit(0.07, kernel="quartic")

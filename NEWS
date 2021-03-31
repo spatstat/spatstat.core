@@ -1,9 +1,11 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.002
+        CHANGES IN spatstat.core VERSION 2.0-0.003
 
 OVERVIEW
 
     o Improved output in summary.mppm
+
+    o densityfun.ppp handles query points outside original window
 
     o Bug fix in model.depends
     
@@ -13,6 +15,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Improved summary of the dependence of the
     interpoint interaction on the covariates.
 
+    o densityfun.ppp
+    The resulting function can now handle query points which lie
+    outside the window of the original data,
+    and has argument 'drop=TRUE' which specifies how to handle them.
+    
 BUG FIXES
 
     o model.depends
