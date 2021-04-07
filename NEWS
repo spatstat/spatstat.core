@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.003
+        CHANGES IN spatstat.core VERSION 2.0-0.005
 
 OVERVIEW
 
@@ -7,8 +7,12 @@ OVERVIEW
 
     o densityfun.ppp handles query points outside original window
 
-    o Bug fix in model.depends
+    o Improvement to 'rpoint'
     
+    o Bug fix in model.depends
+
+    o Bug fix in predict.slrm
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o summary.mppm
@@ -19,18 +23,25 @@ SIGNIFICANT USER-VISIBLE CHANGES
     The resulting function can now handle query points which lie
     outside the window of the original data,
     and has argument 'drop=TRUE' which specifies how to handle them.
+
+    o rpoint
+    New argument 'forcewin' forces the code to use the window 'win'
+    when 'f' is a pixel image.
     
 BUG FIXES
-
-    o model.depends
-    Crashed for models fitted using 'gam'.
-    Fixed.
 
     o model.matrix.mppm
     If the model was fitted using 'gam', the resulting matrix
     did not have an 'assign' attribute.
 
+    o model.depends
+    Crashed for models fitted using 'gam'.
+    Fixed.
 
+    o predict.slrm, fitted.slrm
+    Crashed if the model was fitted using split pixels (argument 'splitby').
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.0-0
 
 OVERVIEW

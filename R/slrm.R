@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.30 $   $Date: 2021/03/21 10:13:00 $
+#  $Revision: 1.31 $   $Date: 2021/03/31 09:10:11 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -359,14 +359,15 @@ predict.slrm <- function(object, ..., type="intensity",
                        intensity="intensity",
                        lambda="intensity"))
   
-  FIT  <- object$Fit$FIT
-  link <- object$CallInfo$link
-  W    <- object$Data$W
-  df   <- object$Data$df
-  loga <- df$logpixelarea
+  FIT     <- object$Fit$FIT
+  link    <- object$CallInfo$link
+  splitby <- object$CallInfo$splitby
+  W       <- object$Data$W
+  df      <- object$Data$df
+  loga    <- df$logpixelarea
 
-  if(is.null(newdata) && is.null(window)) {
-    # fitted values from existing fit
+  if(is.null(newdata) && is.null(window) && is.null(splitby)) {
+    # fitted pixel values from existing fit
     switch(type,
            probabilities={
              values <- fitted(FIT)
@@ -388,34 +389,36 @@ predict.slrm <- function(object, ..., type="intensity",
     out <- im(values, xcol=W$xcol, yrow=W$yrow, unitname=unitname(W))
     return(out)
   } else {
-    # prediction using new values
-    # update arguments that may affect pixel resolution
+    ## prediction using new values
+    ## update arguments that may affect pixel resolution
     CallInfo <- object$CallInfo
     CallInfo$dotargs <- resolve.defaults(list(...), CallInfo$dotargs)
-    #
+    ## prevent pixel splitting
+    CallInfo$splitby <- NULL
+    ## 
     if(!is.null(window)) {
-      # insert fake response in new window
+      ## insert fake response in new window
       if(is.null(newdata)) newdata <- list()
       window <- as.owin(window)
       newdata[[CallInfo$responsename]] <- ppp(numeric(0), numeric(0),
                                             window=window)
     }
-    # process new data
+    ## process new data
     newData <- slr.prepare(CallInfo, environment(CallInfo$formula), newdata,
                            clip=!is.null(window))
     newdf   <- newData$df
     newW    <- newData$W
     newloga <- newdf$logpixelarea
-    # avoid NA etc
+    ## avoid NA etc
     npixel <- nrow(newdf)
     ok <- complete.cases(newdf)
     if(!all(ok)) {
       newdf   <- newdf[ok, , drop=FALSE]
       newloga <- newloga[ok]
     }
-    # compute link values
+    ## compute link values
     linkvalues <- predict(FIT, newdata=newdf, type="link")
-    # transform to desired scale
+    ## transform to desired scale
     linkinv <- family(FIT)$linkinv
     switch(type,
            probabilities={
@@ -434,7 +437,7 @@ predict.slrm <- function(object, ..., type="intensity",
              }
            }
            )
-    # form image
+    ## form image
     v <- rep.int(NA_real_, npixel)
     v[ok] <- values
     out <- im(v, xcol=newW$xcol, yrow=newW$yrow, unitname=unitname(W))
@@ -634,3 +637,4 @@ simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
   attr(out, "seed") <- RNGstate
   return(out)
 }
+

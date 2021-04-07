@@ -205,7 +205,7 @@ runifpoispp <- function(lambda, win = owin(c(0,1),c(0,1)), ...,
 
 rpoint <- function(n, f, fmax=NULL,
                    win=unit.square(), ..., giveup=1000,verbose=FALSE,
-                   nsim=1, drop=TRUE) {
+                   nsim=1, drop=TRUE, forcewin=FALSE) {
   
   if(missing(f) || (is.numeric(f) && length(f) == 1))
     ## uniform distribution
@@ -224,32 +224,55 @@ rpoint <- function(n, f, fmax=NULL,
   
   if(is.im(f)) {
     ## ------------ PIXEL IMAGE ---------------------
-    wf <- as.owin(f)
+    if(forcewin) {
+      ## force simulation points to lie inside 'win'
+      f <- f[win, drop=FALSE]
+      win.out <- win
+    } else {
+      ## default - ignore 'win'
+      win.out <- as.owin(f)
+    }
     if(n == 0) {
       ## return empty pattern(s)
-      emp <- ppp(window=wf)
+      emp <- ppp(window=win.out)
       result <- rep(list(emp), nsim)
       result <- simulationresult(result, nsim, drop)
       return(result)
     }
-    w <- as.mask(wf)
+    w <- as.mask(win.out)
     M <- w$m
     dx <- w$xstep
     dy <- w$ystep
+    halfdx <- dx/2.0
+    halfdy <- dy/2.0
     ## extract pixel coordinates and probabilities
     rxy <- rasterxy.mask(w, drop=TRUE)
     xpix <- rxy$x
     ypix <- rxy$y
+    npix <- length(xpix)
     ppix <- as.vector(f$v[M]) ## not normalised - OK
     ##
     result <- vector(mode="list", length=nsim)
     for(isim in 1:nsim) {
       ## select pixels
-      id <- sample(length(xpix), n, replace=TRUE, prob=ppix)
-      ## extract pixel centres and randomise within pixels
-      x <- xpix[id] + runif(n, min= -dx/2, max=dx/2)
-      y <- ypix[id] + runif(n, min= -dy/2, max=dy/2)
-      result[[isim]] <- ppp(x, y, window=wf, check=FALSE)
+      id <- sample(npix, n, replace=TRUE, prob=ppix)
+      ## extract pixel centres and randomise location within pixels
+      x <- xpix[id] + runif(n, min= -halfdx, max=halfdx)
+      y <- ypix[id] + runif(n, min= -halfdy, max=halfdy)
+      if(forcewin) {
+        edgy <- which(!inside.owin(x,y,win.out))
+        ## reject points just outside boundary
+        ntries <- 0
+        while((nedgy <- length(edgy)) > 0) {
+          ntries <- ntries + 1
+          ide <- sample(npix, nedgy, replace=TRUE, prob=ppix)
+          x[edgy] <- xe <- xpix[ide] + runif(nedgy, min= -halfdx, max=halfdx)
+          y[edgy] <- ye <- ypix[ide] + runif(nedgy, min= -halfdy, max=halfdy)
+          edgy <- edgy[!inside.owin(xe, ye, win.out)]
+          if(ntries > giveup) break;
+        }
+      }
+      result[[isim]] <- ppp(x, y, window=win.out, check=FALSE)
     }
     result <- simulationresult(result, nsim, drop)
     return(result)

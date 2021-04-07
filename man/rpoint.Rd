@@ -9,7 +9,7 @@
 \usage{
  rpoint(n, f, fmax=NULL, win=unit.square(),
         \dots, giveup=1000, verbose=FALSE,
-        nsim=1, drop=TRUE)
+        nsim=1, drop=TRUE, forcewin=FALSE)
 }
 \arguments{
   \item{n}{
@@ -27,7 +27,7 @@
   }
   \item{win}{
     Window in which to simulate the pattern.
-    Ignored if \code{f} is a pixel image.
+    (Ignored if \code{f} is a pixel image, unless \code{forcewin=TRUE}).
   }
   \item{\dots}{
     Arguments passed to the function \code{f}.
@@ -45,6 +45,11 @@
     Logical. If \code{nsim=1} and \code{drop=TRUE} (the default), the
     result will be a point pattern, rather than a list 
     containing a point pattern.
+  }
+  \item{forcewin}{
+    Logical. If \code{TRUE}, then simulations will be generated
+    inside \code{win} in all cases. If \code{FALSE} (the default),
+    the argument \code{win} is ignored when \code{f} is a pixel image.
   }
 }
 \value{
@@ -70,11 +75,21 @@
       vector of function values. Additional arguments \code{...} of any kind
       may be passed to the function.
     }
-    \item{a pixel image:}{if \code{f} is a pixel image object
-      of class \code{"im"} (see \code{\link{im.object}}) then
-      random points will be generated
-      in the window of this pixel image, with probability density
+    \item{a pixel image:}{
+      if \code{f} is a pixel image
+      (object of class \code{"im"}, see \code{\link{im.object}})
+      then random points will be generated
+      with probability density
       proportional to the pixel values of \code{f}.
+      To be precise, pixels are selected with probabilities proportional
+      to the pixel values, and within each selected pixel,
+      a point is generated with a uniform distribution inside the pixel.
+
+      The window of the simulated point pattern is determined as follows.
+      If \code{forcewin=FALSE} (the default) then the argument
+      \code{win} is ignored, and the simulation window is the
+      window of the pixel image, \code{Window(f)}.
+      If \code{forcefit=TRUE} then the simulation window is \code{win}.
     }
   }
   The algorithm is as follows:
@@ -122,11 +137,8 @@
  # 100 points with density proportional to pixel values
  X <- rpoint(100, Z)
 }
-\author{\adrian
-  
-  
-  and \rolf
-  
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{datagen}
