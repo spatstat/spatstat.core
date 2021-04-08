@@ -10,11 +10,13 @@
   Information criteria for selecting the intensity function model of a Poisson, cluster or Cox point process.
 }
 \usage{
-  kppm(K)
+  kppm(K,X)
 }
 \arguments{
   \item{K}{
     An object returned by ppm representing a fitted Poisson point process model or an object returned by kppm representing a fitted cluster or Cox point process model.
+    \item{X}
+    The point pattern data (just used to provide number of points).
 }
 \details{
   This function returns information criteria for selecting the intensity function model of a Poisson, cluster or Cox point process fitted by first order composite likelihood (i.e. using the Poisson likelihood function). 
@@ -44,14 +46,16 @@
 }
 \examples{
 
-  #model with two covariates
-  fit2=kppm(bei~elev+grad)
-  ic2=ic.kppm(fit)
-  
   #model with one covariate
-  fit1=kppm(bei~elev)
-  ic1=ic.kppm(fit)
+  fit1=kppm(bei~elev,data=bei.extra)
+  ic1=ic.kppm(fit1,bei)
   
+
+  #model with two covariates
+  fit2=kppm(bei~elev+grad,data=bei.extra)
+  ic2=ic.kppm(fit2,bei)
+  
+  #smallest cbic for fit1 but smallest cic for fit2
 }
 \author{
   Achmad Choiruddin, Jean-Francois Coeurjolly and Rasmus Waagepetersen.
