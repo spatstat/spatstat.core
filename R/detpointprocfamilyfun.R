@@ -326,6 +326,11 @@ dppGauss <- detpointprocfamilyfun(
     rslt <- lambda*exp(-(x/alpha)^2)
     return(rslt)
   },
+  dpcf=function(x, lambda, alpha, d){
+    dx<- 4*x*exp(-(x/alpha)^2)^2/alpha^2
+    dalpha <- -4*x^2*(-(x/alpha)^2)^2/alpha^3
+    return(c(x=dx, lambda=0, alpha=dalpha, d=0))
+  },
   specden=function(x, lambda, alpha, d){
     lambda * (sqrt(pi)*alpha)^d * exp(-(x*alpha*pi)^2)
   },
