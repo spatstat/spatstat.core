@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.31 $   $Date: 2021/03/31 09:10:11 $
+#  $Revision: 1.36 $   $Date: 2021/04/08 02:37:21 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -90,83 +90,172 @@ slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
 
 ################ UTILITY TO FIND AND RESHAPE DATA #################
 
-slr.prepare <- function(CallInfo, envir, data,
+slr.prepare <- local({
+
+  slr.prepare <- function(CallInfo, envir, data,
                         dataAtPoints=NULL, splitby=NULL,
                         clip=TRUE) {
-  # CallInfo is produced by slrm()
-  # envir is parent environment of model formula
-  # data  is 'data' argument that takes precedence over 'envir'
-  # 'clip' is TRUE if the data should be clipped to the domain of Y
-  Yname    <- CallInfo$responsename
-#  varnames <- CallInfo$varnames
-  covnames <- CallInfo$covnames
-  dotargs  <- CallInfo$dotargs
-  #
+    ## CallInfo is produced by slrm()
+    ## envir is parent environment of model formula
+    ## data  is 'data' argument that takes precedence over 'envir'
+    ## 'clip' is TRUE if the data should be clipped to the domain of Y
+    Yname    <- CallInfo$responsename
+    ##  varnames <- CallInfo$varnames
+    covnames <- CallInfo$covnames
+    dotargs  <- CallInfo$dotargs
+    ##
+    ## Get the response point pattern Y 
+    Y <- getobj(Yname, envir, data)
+    if(!is.ppp(Y))
+      stop(paste("The response", sQuote(Yname), "must be a point pattern"))
+    ##
+    if(!is.null(dataAtPoints)) {
+      dataAtPoints <- as.data.frame(dataAtPoints)
+      if(nrow(dataAtPoints) != npoints(Y))
+        stop(paste("dataAtPoints should have one row for each point in",
+                   dQuote(Yname)))
+    }
+    ## Find the covariates
+    ncov <- length(covnames)
+    covlist <- lapply(as.list(covnames), getobj, env = envir, dat=data)
+    names(covlist) <- covnames
+    ## Each covariate should be an image, a window, a function, or single number
+    if(ncov == 0) {
+      isim <- isowin <- ismask <- isfun <- isnum <-
+        isspatial <- israster <- logical(0)
+    } else {
+      isim  <- sapply(covlist, is.im)
+      isowin  <- sapply(covlist, is.owin)
+      ismask  <- sapply(covlist, is.mask)
+      isfun  <- sapply(covlist, is.function)
+      isspatial <- isim | isowin | isfun
+      israster <- isim | ismask
+      isnum <- sapply(covlist, is.numeric) & (lengths(covlist) == 1)
+    }
+    if(!all(ok <- (isspatial | isnum))) {
+      n <- sum(!ok)
+      stop(paste(ngettext(n, "The argument", "Each of the arguments"),
+                 commasep(sQuote(covnames[!ok])),
+                 "should be either an image, a window, or a single number"))
+    }
+    ## 'splitby' 
+    if(!is.null(splitby)) {
+      splitwin <- covlist[[splitby]]
+      if(!is.owin(splitwin))
+        stop("The splitting covariate must be a window")
+      ## ensure it is a polygonal window
+      covlist[[splitby]] <- splitwin <- as.polygonal(splitwin)
+      ## delete splitting covariate from lists to be processed
+      issplit <- (covnames == splitby)
+      isspatial[issplit] <- FALSE
+      israster[issplit] <- FALSE
+    }
+    ## 
+    ##  nnum <- sum(isnum)
+    ##  nspatial <- sum(isspatial)
+    nraster <- sum(israster)
+    ##
+    numlist <- covlist[isnum]
+    spatiallist <- covlist[isspatial]
+    rasterlist <- covlist[israster]
+    ##
+    numnames <- names(numlist)
+    spatialnames <- names(spatiallist)
+    ##  rasternames <- names(rasterlist)
+    ##
+  
+    ########  CONVERT TO RASTER DATA  ###############################
+
+    ## determine spatial domain & common resolution: convert all data to it
+    if(length(dotargs) > 0 || nraster == 0) {
+      ## Pixel resolution is determined by explicit arguments
+      if(clip) {
+        ## Window extent is determined by response point pattern
+        D <- as.owin(Y)
+      } else {
+        ## Window extent is union of domains of data
+        domains <- lapply(append(spatiallist, list(Y)), as.owin)
+        D <- do.call(union.owin, domains)
+      }
+      ## Create template mask
+      W <- do.call.matched(as.mask, append(list(w=D), dotargs))
+      ## Convert all spatial objects to this resolution
+      spatiallist <- lapply(spatiallist, convert, W=W)
+    } else {
+      ## Pixel resolution is determined implicitly by covariate data
+      W <- do.call(commonGrid, rasterlist)
+      if(clip) {
+        ## Restrict data to spatial extent of response point pattern
+        W <- intersect.owin(W, as.owin(Y))
+      }
+      ## Adjust spatial objects to this resolution
+      spatiallist <- lapply(spatiallist, convert, W=W)
+    }
+    ## images containing coordinate values
+    xcoordim <- as.im(function(x,y){x}, W=W)
+    ycoordim <- as.im(function(x,y){y}, W=W)
+    ##
+    ## create a list of covariate images, with names as in formula
+    covimages <- append(list(x=xcoordim, y=ycoordim), spatiallist)
+
+    basepixelarea <- W$xstep * W$ystep
+
+    ########  ASSEMBLE DATA FRAME  ###############################
+
+    if(is.null(splitby)) {
+      df <- slrAssemblePixelData(Y, Yname, W,
+                                 covimages, dataAtPoints, basepixelarea)
+      sumYloga <- Y$n * log(basepixelarea)
+      serial  <- attr(df, "serial")
+      Yserial <- attr(df, "Yserial")
+    } else {
+      ## fractional pixel areas
+      pixsplit <- pixellate(splitwin, W)
+      splitpixelarea <- as.vector(as.matrix(pixsplit))
+      ## determine which points of Y are inside/outside window
+      ins <- inside.owin(Y$x, Y$y, splitwin)
+      ## split processing
+      dfIN <- slrAssemblePixelData(Y[ins], Yname, W, covimages,
+                                   dataAtPoints[ins, ], splitpixelarea)
+      serialIN <- attr(dfIN, "serial")
+      YserialIN   <- attr(dfIN, "Yserial")
+      dfIN[[splitby]] <- TRUE
+      dfOUT <- slrAssemblePixelData(Y[!ins], Yname, W, covimages,
+                                    dataAtPoints[!ins, ],
+                                    basepixelarea - splitpixelarea)
+      serialOUT    <- attr(dfOUT, "serial")
+      YserialOUT   <- attr(dfOUT, "Yserial")
+      dfOUT[[splitby]] <- FALSE
+      df <- rbind(dfIN, dfOUT)
+      serial <- c(serialIN, serialOUT)
+      Yserial <- c(YserialIN, YserialOUT)
+      ## sum of log pixel areas associated with points
+      Ysplit <- pixsplit[Y]
+      sumYloga <- sum(log(ifelseXY(ins, Ysplit, basepixelarea - Ysplit)))
+    }
+  
+    ## tack on any numeric values
+    df <- do.call(cbind, append(list(df), numlist))
+  
+    ### RETURN ALL 
+    Data <- list(response=Y,
+                 covariates=covlist,
+                 spatialnames=spatialnames,
+                 numnames=numnames,
+                 W=W,
+                 df=df,
+                 serial=serial,
+                 Yserial=Yserial,
+                 sumYloga=sumYloga,
+                 dataAtPoints=dataAtPoints)
+    return(Data)
+  }
+
   getobj <- function(nama, env, dat) {
     if(!is.null(dat) && !is.null(x <- dat[[nama]]))
       return(x)
     else return(get(nama, envir=env))
   }
-  # Get the response point pattern Y 
-  Y <- getobj(Yname, envir, data)
-  if(!is.ppp(Y))
-    stop(paste("The response", sQuote(Yname), "must be a point pattern"))
-  #
-  if(!is.null(dataAtPoints)) {
-    dataAtPoints <- as.data.frame(dataAtPoints)
-    if(nrow(dataAtPoints) != npoints(Y))
-      stop(paste("dataAtPoints should have one row for each point in",
-                 dQuote(Yname)))
-  }
-  # Find the covariates
-  ncov <- length(covnames)
-  covlist <- lapply(as.list(covnames), getobj, env = envir, dat=data)
-  names(covlist) <- covnames
-  # Each covariate should be an image, a window, a function, or a single number
-  if(ncov == 0) {
-    isim <- isowin <- ismask <- isfun <- isnum <- isspatial <- israster <- logical(0)
-  } else {
-    isim  <- sapply(covlist, is.im)
-    isowin  <- sapply(covlist, is.owin)
-    ismask  <- sapply(covlist, is.mask)
-    isfun  <- sapply(covlist, is.function)
-    isspatial <- isim | isowin | isfun
-    israster <- isim | ismask
-    isnum <- sapply(covlist, is.numeric) & (lengths(covlist) == 1)
-  }
-  if(!all(ok <- (isspatial | isnum))) {
-    n <- sum(!ok)
-    stop(paste(ngettext(n, "The argument", "Each of the arguments"),
-               commasep(sQuote(covnames[!ok])),
-               "should be either an image, a window, or a single number"))
-  }
-  # 'splitby' 
-  if(!is.null(splitby)) {
-    splitwin <- covlist[[splitby]]
-    if(!is.owin(splitwin))
-      stop("The splitting covariate must be a window")
-    # ensure it is a polygonal window
-    covlist[[splitby]] <- splitwin <- as.polygonal(splitwin)
-    # delete splitting covariate from lists to be processed
-    issplit <- (covnames == splitby)
-    isspatial[issplit] <- FALSE
-    israster[issplit] <- FALSE
-  }
-  # 
-#  nnum <- sum(isnum)
-#  nspatial <- sum(isspatial)
-  nraster <- sum(israster)
-  #
-  numlist <- covlist[isnum]
-  spatiallist <- covlist[isspatial]
-  rasterlist <- covlist[israster]
-  #
-  numnames <- names(numlist)
-  spatialnames <- names(spatiallist)
-#  rasternames <- names(rasterlist)
-  #
-  
-  ########  CONVERT TO RASTER DATA  ###############################
 
   convert <- function(x,W) {
     if(is.im(x) || is.function(x)) return(as.im(x,W))
@@ -174,136 +263,69 @@ slr.prepare <- function(CallInfo, envir, data,
     return(NULL)
   }
 
-  # determine spatial domain & common resolution: convert all data to it
-  if(length(dotargs) > 0 || nraster == 0) {
-    # Pixel resolution is determined by explicit arguments
-    if(clip) {
-      # Window extent is determined by response point pattern
-      D <- as.owin(Y)
-    } else {
-      # Window extent is union of domains of data
-      domains <- lapply(append(spatiallist, list(Y)), as.owin)
-      D <- do.call(union.owin, domains)
-    }
-    # Create template mask
-    W <- do.call(as.mask, append(list(D), dotargs))
-    # Convert all spatial objects to this resolution
-    spatiallist <- lapply(spatiallist, convert, W=W)
-  } else {
-    # Pixel resolution is determined implicitly by covariate data
-    W <- do.call(commonGrid, rasterlist)
-    if(clip) {
-      # Restrict data to spatial extent of response point pattern
-      W <- intersect.owin(W, as.owin(Y))
-    }
-    # Adjust spatial objects to this resolution
-    spatiallist <- lapply(spatiallist, convert, W=W)
-  }
-  # images containing coordinate values
-  xcoordim <- as.im(function(x,y){x}, W=W)
-  ycoordim <- as.im(function(x,y){y}, W=W)
-  #
-  # create a list of covariate images, with names as in formula
-  covimages <- append(list(x=xcoordim, y=ycoordim), spatiallist)
+  slr.prepare
+})
 
-  basepixelarea <- W$xstep * W$ystep
+## .............................................................
 
-  ########  ASSEMBLE DATA FRAME  ###############################
-
-  if(is.null(splitby)) {
-    df <- slrAssemblePixelData(Y, Yname, W,
-                               covimages, dataAtPoints, basepixelarea)
-    sumYloga <- Y$n * log(basepixelarea)
-    serial <- attr(df, "serial")
-  } else {
-    # fractional pixel areas
-    pixsplit <- pixellate(splitwin, W)
-    splitpixelarea <- as.vector(as.matrix(pixsplit))
-    # determine which points of Y are inside/outside window
-    ins <- inside.owin(Y$x, Y$y, splitwin)
-    # split processing
-    dfIN <- slrAssemblePixelData(Y[ins], Yname, W, covimages,
-                                 dataAtPoints[ins, ], splitpixelarea)
-    serialIN <- attr(dfIN, "serial")
-    dfIN[[splitby]] <- TRUE
-    dfOUT <- slrAssemblePixelData(Y[!ins], Yname, W, covimages,
-                                  dataAtPoints[!ins, ],
-                                  basepixelarea - splitpixelarea)
-    serialOUT <- attr(dfOUT, "serial")
-    dfOUT[[splitby]] <- FALSE
-    df <- rbind(dfIN, dfOUT)
-    serial <- c(serialIN, serialOUT)
-    # sum of log pixel areas associated with points
-    Ysplit <- pixsplit[Y]
-    sumYloga <- sum(log(ifelseXY(ins, Ysplit, basepixelarea - Ysplit)))
-  }
+slrAssemblePixelData <- local({
   
-  # tack on any numeric values
-  df <- do.call(cbind, append(list(df), numlist))
-  
-  ### RETURN ALL 
-  Data <- list(response=Y,
-               covariates=covlist,
-               spatialnames=spatialnames,
-               numnames=numnames,
-               W=W,
-               df=df,
-               serial=serial,
-               sumYloga=sumYloga,
-               dataAtPoints=dataAtPoints)
-  return(Data)
-}
-
-#  
-slrAssemblePixelData <- function(Y, Yname, W,
+  slrAssemblePixelData <- function(Y, Yname, W,
                                  covimages, dataAtPoints, pixelarea) {
-  # pixellate point pattern
-  Z <- pixellate(Y, W=W)
-  Z <- eval.im(as.integer(Z>0))
-  # overwrite pixel entries for data points using exact values
-  # coordinates
-  xcoordim <- covimages[["x"]]
-  ycoordim <- covimages[["y"]]
-  xcoordim[Y] <- Y$x
-  ycoordim[Y] <- Y$y
-  covimages[["x"]] <- xcoordim
-  covimages[["y"]] <- ycoordim
-  # overwrite pixel entries
-  if(!is.null(dataAtPoints)) {
-    enames <- colnames(dataAtPoints)
-    relevant <- enames %in% names(covimages)
-    for(v in enames[relevant]) {
-      cova <- covimages[[v]]
-      cova[Y] <- dataAtPoints[, v, drop=TRUE]
-      covimages[[v]] <- cova
+    #' pixellate point pattern
+    PY <- pixellate(Y, W=W, savemap=TRUE)
+    IY <- eval.im(as.integer(PY>0))
+    #'
+    if(!is.null(dataAtPoints)) {
+      #' overwrite pixel entries for data points using exact values
+      #' spatial coordinates
+      covimages[["x"]][Y] <- Y$x
+      covimages[["y"]][Y] <- Y$y
+      #' other values provided
+      enames <- colnames(dataAtPoints)
+      relevant <- enames %in% names(covimages)
+      for(v in enames[relevant]) {
+        cova <- covimages[[v]]
+        cova[Y] <- dataAtPoints[, v, drop=TRUE]
+        covimages[[v]] <- cova
+      }
     }
-  }
-  # assemble list of all images
-  Ylist <- list(Z)
-  names(Ylist) <- Yname
-  allimages <- append(Ylist, covimages)
-  # extract pixel values of each image
-  pixelvalues <-
-    function(z) {
-      v <- as.vector(as.matrix(z))
-      if(z$type != "factor") return(v)
-      lev <- levels(z)
-      return(factor(v, levels=seq_along(lev), labels=lev))
+    #' assemble list of all images
+    Ylist <- list(IY)
+    names(Ylist) <- Yname
+    allimages <- append(Ylist, covimages)
+    #' extract pixel values of each image, convert to data frame
+    pixdata <- lapply(allimages, pixelvalues)
+    df <- as.data.frame(pixdata)
+    serial <- seq_len(nrow(df))
+    ## add log(pixel area) column
+    if(length(pixelarea) == 1) {
+      df <- cbind(df, logpixelarea=log(pixelarea))
+    } else {
+      ok <- (pixelarea > 0)
+      df <- cbind(df[ok, ], logpixelarea=log(pixelarea[ok]))
+      serial <- serial[ok]
     }
-  pixdata <- lapply(allimages, pixelvalues)
-  df <- as.data.frame(pixdata)
-  serial <- seq_len(nrow(df))
-  # add log(pixel area) column
-  if(length(pixelarea) == 1) {
-    df <- cbind(df, logpixelarea=log(pixelarea))
-  } else {
-    ok <- (pixelarea > 0)
-    df <- cbind(df[ok, ], logpixelarea=log(pixelarea[ok]))
-    serial <- serial[ok]
+    attr(df, "serial") <- serial
+    #' map original data points to pixels
+    Yrowcol <- attr(PY, "map")
+    attr(df, "Yserial") <- Yrowcol[,"row"] + (nrow(PY) - 1L) * Yrowcol[,"col"]
+    return(df)
   }
-  attr(df, "serial") <- serial
-  return(df)
-}
+
+  pixelvalues <- function(z) {
+    v <- as.vector(as.matrix(z))
+    if(z$type != "factor") return(v)
+    lev <- levels(z)
+    return(factor(v, levels=seq_along(lev), labels=lev))
+  }
+
+  slrAssemblePixelData
+
+})
+
+## ................. Methods ...................................
+
 
 is.slrm <- function(x) {
   inherits(x, "slrm")
@@ -539,8 +561,10 @@ model.images.slrm <- function(object, ...) {
 
 update.slrm <- function(object, ..., evaluate=TRUE, env=parent.frame()) {
   e <- update.default(object, ..., evaluate=FALSE)
-  if(evaluate)
+  if(evaluate) {
+    if(!missing(env)) environment(e$formula) <- env
     e <- eval(e, envir=env)
+  }
   return(e)
 }
 

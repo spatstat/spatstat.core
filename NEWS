@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.005
+        CHANGES IN spatstat.core VERSION 2.0-0.008
 
 OVERVIEW
 
@@ -8,11 +8,15 @@ OVERVIEW
     o densityfun.ppp handles query points outside original window
 
     o Improvement to 'rpoint'
+
+    o Modification to handling of covariates in slrm
     
     o Bug fix in model.depends
 
     o Bug fix in predict.slrm
 
+    o Bug fix in update.slrm
+    
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o summary.mppm
@@ -27,19 +31,34 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o rpoint
     New argument 'forcewin' forces the code to use the window 'win'
     when 'f' is a pixel image.
+
+    o slrm
+    In the default case (where dataAtPoints is not given)
+    all spatial covariates, including the spatial coordinates x and y,
+    are now evaluated at the centre of each pixel. This improves
+    consistency with other implementations of spatial logistic regression.
+    
+    o slrm
+    Silently ignores any arguments '...' that are not recognised by 'as.mask'
+
     
 BUG FIXES
 
     o model.matrix.mppm
     If the model was fitted using 'gam', the resulting matrix
     did not have an 'assign' attribute.
-
+    Fixed.
+    
     o model.depends
     Crashed for models fitted using 'gam'.
     Fixed.
 
     o predict.slrm, fitted.slrm
     Crashed if the model was fitted using split pixels (argument 'splitby').
+    Fixed.
+
+    o update.slrm
+    Failed to find covariates that were provided in 'env'.
     Fixed.
     
         CHANGES IN spatstat.core VERSION 2.0-0

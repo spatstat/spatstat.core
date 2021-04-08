@@ -12,7 +12,7 @@ slrm(formula, ..., data = NULL, offset = TRUE, link = "logit",
 \arguments{
   \item{formula}{The model formula. See Details.}
   \item{\dots}{
-    Optional arguments passed to \code{\link{pixellate}}
+    Optional arguments passed to \code{\link{as.mask}}
     determining the pixel resolution for the discretisation
     of the point pattern.
   }
@@ -103,6 +103,13 @@ slrm(formula, ..., data = NULL, offset = TRUE, link = "logit",
     Otherwise, the default pixel grid size is given by
     \code{spatstat.options("npixel")}.
   }
+
+  The covariates are evaluated at the centre of each pixel.
+  If \code{dataAtPoints} is given, then 
+  the covariate values at the corresponding pixels
+  are overwritten by the entries of \code{dataAtPoints}
+  (and the spatial coordinates are overwritten by the exact spatial
+  coordinates of the data points).
   
   If \code{link="logit"} (the default), the algorithm fits a Spatial Logistic
   Regression model. This model states that the probability
