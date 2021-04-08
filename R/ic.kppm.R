@@ -1,7 +1,7 @@
 ic.kppm <- function(object){
   loglike<-object$loglike
   betahat<-object$betahat
-  n <- object$n;  W<- object$W; N<-object$N
+  n <- object$n
   p <-sum(betahat!=0)
   if (is.poisson(object$obj.kppm))
     df<-p
@@ -11,12 +11,9 @@ ic.kppm <- function(object){
     df<-p+sum(diag(as.matrix(cov$J.inv%*%cov$E))) #compute p_approx
   }
 
-  bic = -2*loglike+df*log(n)
-  aic = -2*loglike+df*2
-  bic.W = -2*loglike+df*log(W)
-  bic.N = -2*loglike+df*log(N)
-
-  #NB: aic is cic (and bic is cbic) if not Poisson !
-
-  return(list(loglike=loglike,bic=bic,aic=aic,bic.W=bic.W,bic.N=bic.N,df=df))
+  cbic = -2*loglike+df*log(n)
+  cic = -2*loglike+df*2
+  #NB: cbic is BIC and cic is AIC in case of Poisson process
+  
+  return(list(loglike=loglike,cbic=cbic,cic=cic))
 }
