@@ -27,7 +27,7 @@
   
   The composite information criterion (cic) is \eqn{-2l + 2 df} and reduces to the AIC in case of a Poisson process.
   
-  NOTE: the information criteria are for selecting the intensity function model (a set of covariates) within a given model class. It can not be used to choose among different cluster or Cox point process models.
+  NOTE: the information criteria are for selecting the intensity function model (a set of covariates) within a given model class. It can not be used to choose among different types cluster or Cox point process models (e.g. can not choose between Thomas and LGCP).
 }
 \value{
   A list with entries loglike, cbic, cic and df. Here loglike is the fitted log first order composite likelihood, cbic is composite Bayesian information criterion, cic is is the composite likelihood criterion and df is the adjusted degrees of freedom for the fitted intensity function model.
