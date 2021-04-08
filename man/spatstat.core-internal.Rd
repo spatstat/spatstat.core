@@ -513,8 +513,8 @@ envelopeTest(X, \dots, exponent, alternative,
 equalpairs(U, X, marked=FALSE)
 evalCovar(model, covariate, \dots)
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
-          dimyx, eps, interpolate, jitter, modelname, covname, dataname,
-          subset) 
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
 evalCovariate(covariate, locations)
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
                 precomputed,savecomputed)

@@ -3,7 +3,7 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.35 $ $Date: 2020/06/14 10:37:28 $
+#' $Revision: 1.36 $ $Date: 2021/04/08 03:42:40 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
@@ -15,7 +15,8 @@ evalCovar.ppm <- local({
   evalCovar.ppm <- function(model, covariate, ...,
                             lambdatype=c("cif", "trend", "intensity"),
                             dimyx=NULL, eps=NULL,
-                            interpolate=TRUE, jitter=TRUE, 
+                            interpolate=TRUE,
+                            jitter=TRUE, jitterfactor=1,
                             modelname=NULL, covname=NULL,
                             dataname=NULL, subset=NULL) {
     lambdatype <- match.arg(lambdatype)
@@ -193,10 +194,8 @@ evalCovar.ppm <- local({
 
     #' apply jittering to avoid ties
     if(jitter) {
-      nX <- length(ZX)
-      dZ <- 0.3 * quantile(diff(sortunique(c(ZX, Zvalues))), 1/min(20, nX))
-      ZX <- ZX + rnorm(nX, sd=dZ)
-      Zvalues <- Zvalues + rnorm(length(Zvalues), sd=dZ)
+      ZX <- jitter(ZX, factor=jitterfactor)
+      Zvalues <- jitter(Zvalues, factor=jitterfactor)
     }
 
     lambdaname <- if(is.poisson(model)) "intensity" else lambdatype

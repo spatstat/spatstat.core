@@ -1,27 +1,17 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.008
+        CHANGES IN spatstat.core VERSION 2.0-0.009
 
 OVERVIEW
 
-    o Improved output in summary.mppm
+    o Modified handling of covariates in slrm
 
     o densityfun.ppp handles query points outside original window
 
-    o Improvement to 'rpoint'
+    o Improved output in summary.mppm
 
-    o Modification to handling of covariates in slrm
-    
-    o Bug fix in model.depends
+    o Minor improvements and bug fixes.
 
-    o Bug fix in predict.slrm
-
-    o Bug fix in update.slrm
-    
 SIGNIFICANT USER-VISIBLE CHANGES
-
-    o summary.mppm
-    Improved summary of the dependence of the
-    interpoint interaction on the covariates.
 
     o densityfun.ppp
     The resulting function can now handle query points which lie
@@ -40,6 +30,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
     
     o slrm
     Silently ignores any arguments '...' that are not recognised by 'as.mask'
+
+    o summary.mppm
+    Improved summary of the dependence of the
+    interpoint interaction on the covariates.
 
     
 BUG FIXES
@@ -60,7 +54,11 @@ BUG FIXES
     o update.slrm
     Failed to find covariates that were provided in 'env'.
     Fixed.
-    
+
+    o cdf.test
+    Crashed if the covariate was constant.
+    Fixed.
+
         CHANGES IN spatstat.core VERSION 2.0-0
 
 OVERVIEW
