@@ -2040,12 +2040,45 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
     pcfunargs <- append(clargs, pcfunargs)
   } else clargs <- NULL
   
+  #' ............ experimental .........................
+  strict <- !isFALSE(spatstat.options("kppm.strict"))
+  if(!strict) pcfunargs <- append(pcfunargs, list(strict=FALSE))
+  #' ............ experimental .........................
+  usecanonical <- spatstat.options("kppm.canonical")
+  if(usecanonical) {
+    tocanonical <- info$tocanonical
+    tohuman <- info$tohuman
+    if(is.null(tocanonical) || is.null(tohuman)) {
+      warning("Canonical parameters are not yet supported for this model")
+      usecanonical <- FALSE
+    }
+  }
+
+  #' ............ experimental/debugger .........................
+  whiu <- pint$whiu
+  if(is.function(whiu) && usecanonical) {
+    whiu.human <- whiu
+    whiu <- function(par, ...) { whiu.human(tohuman(par), ...) }
+  }
+  TRACE <- isTRUE(pint$trace)
+  if(SAVE <- isTRUE(pint$save)) {
+    saveplace <- new.env()
+    assign("h", NULL, envir=saveplace)
+  } else saveplace <- NULL
+  # .....................................................
+  
   # determine starting parameter values
   startpar <- selfstart(X)
   startpar.human <- startpar
   pcftheo <- pcfun
   dpcftheo <- dpcfun
   # optimization later in terms of log of params
+  if(usecanonical){
+    startpar <- log(tocanonical(startpar))
+    pcfun <- function(par, ...) { pcftheo(tohuman(exp(par)), ...) }
+    dpcfun <- function(par, ...) { dpcftheo(tohuman(exp(par)), ...) }
+  }
+  
   startpar <- log(startpar)
   pcfun <- function(par, ...) { pcftheo(exp(par), ...) }
   dpcfun <- function(par, ...) { dpcftheo(exp(par), ...) }
@@ -2110,6 +2143,17 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
                  dIJ=dIJ, gscale=gscale, epsilon=epsilon)
     
   ## .......... extract fitted parameters .....................
+  if(!usecanonical) {
+    optpar.canon <- NULL
+    optpar.human <- exp(opt$x)
+    names(optpar.human) <- names(startpar.human)
+  } else {
+    optpar.canon <- exp(opt$x)
+    names(optpar.canon) <- names(startpar)
+    optpar.human <- tohuman(optpar.canon)
+    names(optpar.human) <- names(startpar.human)
+  }
+
   ## Finish in DPP case
   if(isDPP){
     # all info that depends on the fitting method:
@@ -2133,8 +2177,6 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
     return(result)
   }
   
-  optpar.canon <- NULL
-  optpar.human <- exp(opt$x)
   ## meaningful model parameters
   modelpar <- info$interpret(optpar.human, lambda)
   # infer parameter 'mu'
