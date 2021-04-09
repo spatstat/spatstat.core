@@ -1351,6 +1351,7 @@ print.kppm <- print.dppm <- function(x, ...) {
            },
            cladap = {
              splat("Fitted by adaptive second order composite likelihood")
+             splat("\tepsilon =", x$Fit$epsilon)
              if(!is.null(wtf <- x$Fit$weightfun)) {
                a <- attr(wtf, "selfprint") %orifnull% pasteFormula(wtf)
                splat("\tweight function:", a)
@@ -2161,6 +2162,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
                 cladapfit = opt,
                 weightfun = weightfun,
                 rmax      = rmax,
+                epsilon   = epsilon,
                 objfun    = wlogcl2score,
                 objargs   = NULL,
                 maxwlogcl  = opt$fvec)
@@ -2174,6 +2176,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
                    po         = po,
                    lambda     = lambda,
                    Fit        = Fit)
+    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
     return(result)
   }
   
@@ -2197,6 +2200,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
               clfit     = opt,
               weightfun = weightfun,
               rmax      = rmax,
+              epsilon   = epsilon,
               objfun    = wlogcl2score,
               objargs   = NULL,
               maxwlogcl  = opt$fvec)
@@ -2217,6 +2221,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
                  modelpar   = modelpar,
                  covmodel   = clargs,
                  Fit        = Fit)
-
+  
+  if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
   return(result)
 }

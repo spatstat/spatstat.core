@@ -95,6 +95,14 @@ print.summary.kppm <- function(x, ...) {
              }
              printStatus(x$optim.status)
            },
+           cladap = {
+             splat("Fitted by adaptive second order composite likelihood")
+             splat("\tepsilon =", x$Fit$epsilon)
+             if(!is.null(wtf <- x$Fit$weightfun)) {
+               a <- attr(wtf, "selfprint") %orifnull% pasteFormula(wtf)
+               splat("\tweight function:", a)
+             }
+           },
            palm = {
              splat("Fitted by maximum Palm likelihood")
              splat("\trmax =", Fit$rmax)
