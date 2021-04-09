@@ -1349,6 +1349,13 @@ print.kppm <- print.dppm <- function(x, ...) {
                splat("\tweight function:", a)
              }
            },
+           cladap = {
+             splat("Fitted by adaptive second order composite likelihood")
+             if(!is.null(wtf <- x$Fit$weightfun)) {
+               a <- attr(wtf, "selfprint") %orifnull% pasteFormula(wtf)
+               splat("\tweight function:", a)
+             }
+           },
            palm = {
              splat("Fitted by maximum Palm likelihood")
              splat("\trmax =", x$Fit$rmax)
@@ -1976,6 +1983,13 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
   dIJ <- cl$d #pairwise distances
   Rmin <- min(dIJ)
   indexmin <- which(dIJ==Rmin) #for later use
+  
+  # convert window to mask, saving other arguments for later
+  dcm <- do.call.matched(as.mask,
+                         append(list(w=W), list(...)),
+                         sieve=TRUE)
+  M         <- dcm$result
+  otherargs <- dcm$otherargs
   
   # compute intensity at pairs of data points
   # and c.d.f. of interpoint distance in window

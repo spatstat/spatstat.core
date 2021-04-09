@@ -7,7 +7,7 @@ dppm <-
   function(formula, family, data=NULL,
            ...,
            startpar = NULL,
-           method = c("mincon", "clik2", "palm"),
+           method = c("mincon", "clik2", "palm","cladap"),
            weightfun=NULL,
            control=list(),
            algorithm="Nelder-Mead",
