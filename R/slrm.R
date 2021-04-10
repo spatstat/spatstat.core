@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.36 $   $Date: 2021/04/08 02:37:21 $
+#  $Revision: 1.37 $   $Date: 2021/04/10 04:29:57 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -384,10 +384,13 @@ predict.slrm <- function(object, ..., type="intensity",
   FIT     <- object$Fit$FIT
   link    <- object$CallInfo$link
   splitby <- object$CallInfo$splitby
+  Yname   <- object$CallInfo$responsename
   W       <- object$Data$W
   df      <- object$Data$df
   loga    <- df$logpixelarea
 
+  if(!is.null(window)) window <- as.owin(window)
+  
   if(is.null(newdata) && is.null(window) && is.null(splitby)) {
     # fitted pixel values from existing fit
     switch(type,
@@ -411,20 +414,24 @@ predict.slrm <- function(object, ..., type="intensity",
     out <- im(values, xcol=W$xcol, yrow=W$yrow, unitname=unitname(W))
     return(out)
   } else {
-    ## prediction using new values
-    ## update arguments that may affect pixel resolution
+    ## prediction from new data and/or at new locations
+    if(use.old.data <- is.null(newdata)) {
+      ## prediction at new locations using existing covariates
+      newdata <- object$Data$covariates
+    } else {
+      ## prediction with new data
+      stopifnot(is.list(newdata))
+    }
+    ## ensure newdata includes response pattern to placate internal code
+    if(!(Yname %in% names(newdata)))
+      newdata[[Yname]] <- ppp(window=window %orifnull% W)
+
+    ## Update arguments that may affect pixel resolution
     CallInfo <- object$CallInfo
     CallInfo$dotargs <- resolve.defaults(list(...), CallInfo$dotargs)
     ## prevent pixel splitting
     CallInfo$splitby <- NULL
-    ## 
-    if(!is.null(window)) {
-      ## insert fake response in new window
-      if(is.null(newdata)) newdata <- list()
-      window <- as.owin(window)
-      newdata[[CallInfo$responsename]] <- ppp(numeric(0), numeric(0),
-                                            window=window)
-    }
+
     ## process new data
     newData <- slr.prepare(CallInfo, environment(CallInfo$formula), newdata,
                            clip=!is.null(window))

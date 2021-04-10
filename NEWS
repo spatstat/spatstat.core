@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.010
+        CHANGES IN spatstat.core VERSION 2.0-0.011
 
 OVERVIEW
 
@@ -61,6 +61,10 @@ BUG FIXES
 
     o predict.slrm, fitted.slrm
     Crashed if the model was fitted using split pixels (argument 'splitby').
+    Fixed.
+
+    o predict.slrm, fitted.slrm
+    Crashed in some cases when 'window' was given.
     Fixed.
 
     o update.slrm
