@@ -40,4 +40,6 @@ jobs:
 
       - name: Coverage
         if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: ./run.sh coverage
+        run: |
+          sudo apt-get -y --no-install-recommends --allow-unauthenticated install r-cran-covr
+          Rscript -e "covr::codecov(type = 'all')"
