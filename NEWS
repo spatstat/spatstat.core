@@ -1,8 +1,13 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.009
+        CHANGES IN spatstat.core VERSION 2.0-0.010
 
 OVERVIEW
 
+    o We thank Achmad Choiruddin, Jean-Francois Coeurjolly
+    and Rasmus Waagepetersen for contributions.
+
+    o Information criteria for model selection in kppm
+    
     o Modified handling of covariates in slrm
 
     o densityfun.ppp handles query points outside original window
@@ -11,6 +16,13 @@ OVERVIEW
 
     o Minor improvements and bug fixes.
 
+NEW FUNCTIONS
+
+    o ic
+    Information criteria for model selection in ppm and kppm.
+    Kindly contributed by Achmad Choiruddin, Jean-Francois Coeurjolly
+    and Rasmus Waagepetersen.
+    
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o densityfun.ppp

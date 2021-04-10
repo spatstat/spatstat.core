@@ -1,6 +1,6 @@
 Package: spatstat.core
-Version: 2.0-0.009
-Date: 2021-04-08
+Version: 2.0-0.010
+Date: 2021-04-10
 Title: Core Functionality of the 'spatstat' Family
 Authors@R: c(person("Adrian", "Baddeley", 
                     role = c("aut", "cre"),
@@ -12,6 +12,10 @@ Authors@R: c(person("Adrian", "Baddeley",
                     role = "aut",
 		    email = "rubak@math.aau.dk"),
 	     person("Kasper", "Klitgaard Berthelsen",
+	            role = "ctb"),
+	     person("Achmad", "Choiruddin",
+	            role = "ctb"),
+	     person("Jean-Francois", "Coeurjolly",
 	            role = "ctb"),
 	     person("Ottmar", "Cronie",
 	            role = "ctb"),
