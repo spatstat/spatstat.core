@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.011
+        CHANGES IN spatstat.core VERSION 2.0-0.013
 
 OVERVIEW
 
@@ -47,6 +47,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Improved summary of the dependence of the
     interpoint interaction on the covariates.
 
+    o pairs.im
+    New argument 'drop'.
     
 BUG FIXES
 
