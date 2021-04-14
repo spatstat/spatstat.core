@@ -97,7 +97,7 @@ local({
 #
 #  tests/imageops.R
 #
-#   $Revision: 1.31 $   $Date: 2020/11/02 07:03:26 $
+#   $Revision: 1.32 $   $Date: 2021/04/14 08:57:21 $
 #
 
 
@@ -169,6 +169,14 @@ local({
   Z <- split(X, as.im(Y))
   
   ## ...........  cases of "[.im" ........................
+  ## index window has zero overlap area with image window
+  Out <- owin(c(-0.5, 0), c(0,1))
+  oo <- X[Out]
+  oo <- X[Out, drop=FALSE]
+  if(!is.im(oo)) stop("Wrong format in [.im with disjoint index window")
+  oon <- X[Out, drop=TRUE, rescue=FALSE]
+  if(length(oon)) stop("Nonempty result in [.im where it should be empty")
+  ## 
   Empty <- cells[FALSE]
   EmptyFun <- ssf(Empty, numeric(0))
   ff <- d[Empty]
