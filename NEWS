@@ -1,13 +1,15 @@
 
-        CHANGES IN spatstat.core VERSION 2.0-0.013
+        CHANGES IN spatstat.core VERSION 2.0-0.014
 
 OVERVIEW
 
     o We thank Achmad Choiruddin, Jean-Francois Coeurjolly
     and Rasmus Waagepetersen for contributions.
 
-    o Information criteria for model selection in kppm
+    o Conditional simulation in kppm
     
+    o Information criteria for model selection in kppm
+
     o Modified handling of covariates in slrm
 
     o densityfun.ppp handles query points outside original window
@@ -25,6 +27,10 @@ NEW FUNCTIONS
     
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o simulate.kppm
+    Conditional simulation of the model, given a fixed number of points,
+    is now supported using the new arguments 'n.cond' and 'w.cond'.
+    
     o densityfun.ppp
     The resulting function can now handle query points which lie
     outside the window of the original data,

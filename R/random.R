@@ -239,7 +239,7 @@ rpoint <- function(n, f, fmax=NULL,
       result <- simulationresult(result, nsim, drop)
       return(result)
     }
-    w <- as.mask(win.out)
+    w <- as.mask(if(forcewin) f else win.out)
     M <- w$m
     dx <- w$xstep
     dy <- w$ystep

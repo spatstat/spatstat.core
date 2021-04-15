@@ -40,6 +40,7 @@
 \alias{coef.vblogit} 
 \alias{compatible.rat}
 \alias{compileCDF}
+\alias{condSimCox}
 \alias{conform.ratfv}
 \alias{CressieReadStatistic}
 \alias{CressieReadSymbol}
@@ -442,6 +443,8 @@ clarkevansCalc(X, correction, clipregion, working)
 \method{coef}{vblogit}(object, \dots) 
 \method{compatible}{rat}(A, B, \dots) 
 compileCDF(D, B, r, \dots, han.denom, check)
+condSimCox(object, nsim, \dots, window, n.cond, w.cond,
+           giveup, maxchunk, verbose, drop)
 conform.ratfv(x)
 CressieReadStatistic(OBS,EXP,lambda,normalise,named)
 CressieReadSymbol(lambda)

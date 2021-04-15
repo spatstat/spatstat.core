@@ -97,7 +97,7 @@ local({
 #
 #  tests/imageops.R
 #
-#   $Revision: 1.32 $   $Date: 2021/04/14 08:57:21 $
+#   $Revision: 1.33 $   $Date: 2021/04/15 06:13:47 $
 #
 
 
@@ -175,7 +175,8 @@ local({
   oo <- X[Out, drop=FALSE]
   if(!is.im(oo)) stop("Wrong format in [.im with disjoint index window")
   oon <- X[Out, drop=TRUE, rescue=FALSE]
-  if(length(oon)) stop("Nonempty result in [.im where it should be empty")
+  if(is.im(oon)) stop("Expected a vector of values, not an image, from [.im")
+  if(!all(is.na(oon))) stop("Expected a vector of NA values in [.im")
   ## 
   Empty <- cells[FALSE]
   EmptyFun <- ssf(Empty, numeric(0))
