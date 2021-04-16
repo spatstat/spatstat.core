@@ -1,4 +1,17 @@
 
+        CHANGES IN spatstat.core VERSION 2.1-1
+
+OVERVIEW
+
+    o Minor bug fix
+
+BUG FIXES
+
+    o simulate.kppm
+    Conditional simulation crashed on rare occasions,
+    with an error about negative probabilities.
+    Fixed.
+
         CHANGES IN spatstat.core VERSION 2.1-0
 
 OVERVIEW

@@ -3,7 +3,7 @@
 #'
 #'    simulate.kppm
 #'
-#'    $Revision: 1.5 $ $Date: 2021/04/16 02:11:37 $
+#'    $Revision: 1.6 $ $Date: 2021/04/16 11:06:37 $
 
 simulate.kppm <- function(object, nsim=1, seed=NULL, ...,
                           window=NULL, covariates=NULL,
@@ -249,6 +249,8 @@ condSimCox <- function(object, nsim=1,
       nremaining <- nremaining - naccepted
       for(j in jaccept) {
         lamj <- lamlist[[j]]
+        if(min(lamj) < 0)
+          lamj <- eval.im(pmax(lamj, 0))
         if(fullwindow) {
           Y <- rpoint(n.cond, lamj, win=w.sim, forcewin=TRUE)
         } else {

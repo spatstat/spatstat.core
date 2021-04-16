@@ -5,7 +5,7 @@
 ##  - clusterfield
 ##  - clusterradius.
 ##
-##   $Revision: 1.4 $  $Date: 2019/10/17 08:46:15 $
+##   $Revision: 1.6 $  $Date: 2021/04/16 11:05:06 $
 ##
 
 clusterkernel <- function(model, ...) {
