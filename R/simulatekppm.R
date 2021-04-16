@@ -3,7 +3,7 @@
 #'
 #'    simulate.kppm
 #'
-#'    $Revision: 1.4 $ $Date: 2021/04/15 06:39:59 $
+#'    $Revision: 1.5 $ $Date: 2021/04/16 02:11:37 $
 
 simulate.kppm <- function(object, nsim=1, seed=NULL, ...,
                           window=NULL, covariates=NULL,
@@ -41,6 +41,7 @@ simulate.kppm <- function(object, nsim=1, seed=NULL, ...,
                       window=win, covariates=covariates, 
                       n.cond=n.cond, w.cond=w.cond,
                       verbose=verbose, retry=retry, drop=drop)
+    out <- timed(out, starttime=starttime)
     attr(out, "seed") <- RNGstate
     return(out)
   }
