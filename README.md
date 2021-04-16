@@ -1,5 +1,9 @@
 # spatstat.core
 
+## Statistical analysis and modelling of spatial data for the spatstat family
+
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/spatstat.core)](http://cran.r-project.org/web/packages/spatstat.core) 
+
 The original `spatstat` package has been split into
 several sub-packages.
 
