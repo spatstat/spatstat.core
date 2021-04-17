@@ -107,12 +107,16 @@
   See Details.
 }
 \examples{
-  fit <- kppm(redwood ~1, "Thomas")
+  if(offline <- !interactive()) {
+    spatstat.options(npixel=32, ndummy.min=16)
+  }
+
+  fit <- kppm(redwood ~x, "Thomas")
   simulate(fit, 2)
-  fitx <- kppm(redwood ~x, "Thomas")
-  simulate(fitx)
 
   simulate(fit, n.cond=60)
+
+  if(offline) reset.spatstat.options()
 }
 \references{
   Baddeley, A., Rubak, E. and Turner, R. (2015)

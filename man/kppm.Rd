@@ -397,8 +397,8 @@
   \emph{Biometrics} \bold{63}, 252--258.
 }
 \examples{
-  offline <- !interactive()
-  if(offline) op <- spatstat.options(npixel=32, ndummy.min=16)
+  online <- interactive()
+  if(!online) op <- spatstat.options(npixel=32, ndummy.min=16)
 
   # method for point patterns
   kppm(redwood, ~1, "Thomas")
@@ -406,7 +406,7 @@
   kppm(redwood ~ 1, "Thomas")
 
   # different models for clustering
-  kppm(redwood ~ x, "MatClust") 
+  if(online) kppm(redwood ~ x, "MatClust") 
   kppm(redwood ~ x, "MatClust", statistic="pcf", statargs=list(stoyan=0.2)) 
   kppm(redwood ~ x, cluster="Cauchy", statistic="K")
   kppm(redwood, cluster="VarGamma", nu = 0.5, statistic="pcf")
@@ -426,7 +426,7 @@
   # quasi-likelihood improvement 
   kppm(redwood ~ x, "Thomas", improve.type = "quasi")
 
-  if(offline) spatstat.options(op)
+  if(!online) spatstat.options(op)
 }
 \author{
   \spatstatAuthors,

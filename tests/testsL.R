@@ -41,7 +41,7 @@ local({
 #'
 #'   leverage and influence for Gibbs models
 #' 
-#'   $Revision: 1.32 $ $Date: 2021/03/23 06:22:02 $
+#'   $Revision: 1.34 $ $Date: 2021/04/17 04:25:26 $
 #' 
 
 if(FULLTEST) {
@@ -155,7 +155,9 @@ local({
     chk(as.im(levS),         as.im(levSB),         "leverage")
     chk(dfbS$val,            dfbSB$val,            "dfbetas$value")
     chk(dfbS$density,        dfbSB$density,        "dfbetas$density")
+  }
 
+  if(FULLTEST) {
     ## also check case of zero cif
     cat("Check zero cif cases...", fill=TRUE)
     levHB <- Leverage(fitH)
@@ -226,31 +228,37 @@ local({
   cat("Logistic fits...", fill=TRUE)
   #'  special algorithm for delta2
   fitSlogi <- ppm(Cells ~ x, Strauss(0.12), rbord=0, method="logi")
-  pmiSlogi <- Everything(fitSlogi)
-  #'  special algorithm for delta2
-  fitGlogi <- ppm(Redwood ~ 1, Geyer(0.1, 2), rbord=0, method="logi")
-  pmiGlogi <- Everything(fitGlogi)
-  #'  generic algorithm for delta2
-  fitDlogi <- ppm(Cells ~ 1, DiggleGatesStibbard(0.12), rbord=0, method="logi")
-  pmiDlogi <- Everything(fitDlogi)
-  #'  generic algorithm for delta2 : offset; zero-dimensional 
-  fitHlogi <- ppm(Cells ~ 1, Hardcore(0.07), method="logi")
-  pmiHlogi <- Everything(fitHlogi)
-  #'  generic algorithm for delta2 : offset; 1-dimensional 
-  fitHxlogi <- ppm(Cells ~ x, Hardcore(0.07), rbord=0, method="logi")
-  pmiHxlogi <- Everything(fitHxlogi)
-  #' plotting
-  plot(leverage(fitSlogi))
-  plot(influence(fitSlogi))
-  plot(dfbetas(fitSlogi))
   
-  #' other code blocks - check execution only
-  cat("Other code blocks...", fill=TRUE)
-  b <- Everything(fitSlogi)  # i.e. full set of results
-  b <- Everything(fitSlogi, method="interpreted") 
-  b <- Everything(fitSlogi, method="interpreted", entrywise=FALSE)
-  b <- Everything(fitSlogi,                       entrywise=FALSE) 
+  if(FULLTEST) {
+    pmiSlogi <- Everything(fitSlogi)
+    #'  special algorithm for delta2
+    fitGlogi <- ppm(Redwood ~ 1, Geyer(0.1, 2), rbord=0, method="logi")
+    pmiGlogi <- Everything(fitGlogi)
+    #'  generic algorithm for delta2
+    fitDlogi <- ppm(Cells ~ 1, DiggleGatesStibbard(0.12),
+                    rbord=0, method="logi")
+    pmiDlogi <- Everything(fitDlogi)
+    #'  generic algorithm for delta2 : offset; zero-dimensional 
+    fitHlogi <- ppm(Cells ~ 1, Hardcore(0.07), method="logi")
+    pmiHlogi <- Everything(fitHlogi)
+    #'  generic algorithm for delta2 : offset; 1-dimensional 
+    fitHxlogi <- ppm(Cells ~ x, Hardcore(0.07), rbord=0, method="logi")
+    pmiHxlogi <- Everything(fitHxlogi)
+    #' plotting
+    plot(leverage(fitSlogi))
+    plot(influence(fitSlogi))
+    plot(dfbetas(fitSlogi))
+  }
 
+  if(ALWAYS) {
+    #' other code blocks - check execution only
+    cat("Other code blocks...", fill=TRUE)
+    b <- Everything(fitSlogi)  # i.e. full set of results
+    b <- Everything(fitSlogi, method="interpreted") 
+    b <- Everything(fitSlogi, method="interpreted", entrywise=FALSE)
+    b <- Everything(fitSlogi,                       entrywise=FALSE) 
+  }
+  
   #' irregular parameters
   cat("Irregular parameters...", fill=TRUE)
   ytoa <- function(x,y, alpha=1) { y^alpha }
@@ -289,24 +297,28 @@ local({
   gogogo("Offset model Strauss (logistic) ...", 
          ippm(X ~ offset(ytoa), Strauss(0.07), start=list(alpha=1),
               method="logi", iterlim=40))
-  gogogo("Offset+x model Strauss ...", 
-         ippm(X ~ x + offset(ytoa), Strauss(0.07), start=list(alpha=1),
-              iterlim=40))
-  gogogo("Offset+x model Strauss (logistic)...", 
-         ippm(X ~ x + offset(ytoa), Strauss(0.07), start=list(alpha=1),
-              method="logi", iterlim=40))
+  if(FULLTEST) {
+    gogogo("Offset+x model Strauss ...", 
+           ippm(X ~ x + offset(ytoa), Strauss(0.07), start=list(alpha=1),
+                iterlim=40))
+    gogogo("Offset+x model Strauss (logistic)...", 
+           ippm(X ~ x + offset(ytoa), Strauss(0.07), start=list(alpha=1),
+                method="logi", iterlim=40))
+  }
   #'
-  set.seed(452)
-  foo <- ppm(Cells ~ 1, Strauss(0.15), method="ho", nsim=5)
-  aa <- Everything(foo)
+  if(FULLTEST) {
+    set.seed(452)
+    foo <- ppm(Cells ~ 1, Strauss(0.15), method="ho", nsim=5)
+    aa <- Everything(foo)
 
-  #' Gradient and Hessian obtained by symbolic differentiation
-  f <- deriv(expression((1+x)^a),
-             "a", function.arg=c("x", "y", "a"),
-             hessian=TRUE)
-  #' check they can be extracted
-  fit <- ippm(Cells ~offset(f), start=list(a=0.7))
-  Everything(fit)
+    #' Gradient and Hessian obtained by symbolic differentiation
+    f <- deriv(expression((1+x)^a),
+               "a", function.arg=c("x", "y", "a"),
+               hessian=TRUE)
+    #' check they can be extracted
+    fit <- ippm(Cells ~offset(f), start=list(a=0.7))
+    Everything(fit)
+  }
 })
 
 reset.spatstat.options()

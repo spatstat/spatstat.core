@@ -36,17 +36,11 @@
  \code{\link{dppm}}
 }
 \examples{
-   fit <- dppm(swedishpines ~ x, dppGauss())
+   fit <- dppm(swedishpines ~ x, dppGauss, method="c")
    rr <- residuals(fit)
 }
 \author{
-\adrian
-
-
-\rolf
-
-and \ege
-
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{models}

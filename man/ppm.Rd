@@ -315,8 +315,8 @@
   determinantal point process models.
 }
 \examples{
- offline <- !interactive()
- if(offline) {
+ online <- interactive()
+ if(!online) {
     # reduce grid sizes for efficiency in tests
     spatstat.options(npixel=32, ndummy.min=16)
  }
@@ -326,28 +326,28 @@
 
  ppm(nztrees ~ 1)
 
- if(!offline) {
- Q <- quadscheme(nztrees) 
- ppm(Q ~ 1) 
- # equivalent.
+ if(online) {
+   Q <- quadscheme(nztrees) 
+   ppm(Q ~ 1) 
+   # equivalent.
  }
 
-fit1 <- ppm(nztrees ~ x)
+ fit1 <- ppm(nztrees ~ x)
  # fit the nonstationary Poisson process 
  # with intensity function lambda(x,y) = exp(a + bx)
  # where x,y are the Cartesian coordinates
  # and a,b are parameters to be estimated
 
-fit1
-coef(fit1)
-coef(summary(fit1))
+ fit1
+ coef(fit1)
+ coef(summary(fit1))
 
  ppm(nztrees ~ polynom(x,2))
 
  # fit the nonstationary Poisson process 
  # with intensity function lambda(x,y) = exp(a + bx + cx^2)
 
- if(!offline) {
+ if(online) {
    library(splines)
    ppm(nztrees ~ bs(x,df=3))
  }
@@ -367,10 +367,10 @@ coef(summary(fit1))
  # using the periodic correction.
 
   # Compare Maximum Pseudolikelihood, Huang-Ogata and Variational Bayes fits:
-  if(!offline) ppm(swedishpines ~ 1, Strauss(9))
+  if(online) ppm(swedishpines ~ 1, Strauss(9))
 
   ppm(swedishpines ~ 1, Strauss(9), method="ho",
-      nsim=if(offline) 8 else 99)
+      nsim=if(!online) 8 else 99)
 
   ppm(swedishpines ~ 1, Strauss(9), method="VBlogi")
 
@@ -406,7 +406,7 @@ ppm(X ~ x + f, covfunargs=list(a=1/2))
  ## MULTITYPE POINT PROCESSES ### 
  # fit stationary marked Poisson process
  # with different intensity for each species
- if(!offline) {
+ if(online) {
    ppm(lansing ~  marks, Poisson())
  } else {
   ama <- amacrine[square(0.7)]
@@ -415,7 +415,7 @@ ppm(X ~ x + f, covfunargs=list(a=1/2))
 
  # fit nonstationary marked Poisson process
  # with different log-cubic trend for each species
- if(!offline) {
+ if(online) {
   ppm(lansing ~  marks * polynom(x,y,3), Poisson())
  } else {
   b <- ppm(ama ~  marks * polynom(x,y,2), Poisson(), nd=16)

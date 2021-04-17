@@ -278,37 +278,38 @@ markcorr(X, f = function(m1, m2) { m1 * m2}, r=NULL,
     plot(ms)
 
     # (2) simulated data with independent marks
-    X <- rpoispp(100)
-    X <- X \%mark\% runif(npoints(X))
+    # X <- rpoispp(100)
+    # X <- X \%mark\% runif(npoints(X))
     # Xc <- markcorr(X)
     # plot(Xc)
     
     # MULTITYPE DATA:
     # Hughes' amacrine data
     # Cells marked as 'on'/'off'
+    X <- if(interactive()) amacrine else amacrine[c(FALSE, TRUE)]
     # (3) Kernel density estimate with Epanecnikov kernel
     # (as proposed by Stoyan & Stoyan)
-    M <- markcorr(amacrine, function(m1,m2) {m1==m2},
+    M <- markcorr(X, function(m1,m2) {m1==m2},
                   correction="translate", method="density",
                   kernel="epanechnikov")
-    plot(M)
     # Note: kernel="epanechnikov" comes from help(density)
 
     # (4) Same again with explicit control over bandwidth
-    # M <- markcorr(amacrine, 
+    # M <- markcorr(X, 
     #             correction="translate", method="density",
     #             kernel="epanechnikov", bw=0.02)
     # see help(density) for correct interpretation of 'bw'
 
    \testonly{
-    niets <- markcorr(amacrine, function(m1,m2){m1 == m2}, method="loess")
+    niets <- markcorr(X, function(m1,m2){m1 == m2}, method="loess")
     if(require(sm))
-      niets <- markcorr(X, correction="isotropic", method="smrep", hmult=2)
+    niets <- markcorr(X, correction="isotropic", method="smrep", hmult=2)
     }
 
    # weighted mark correlation
-   Y <- subset(betacells, select=type)
-   a <- marks(betacells)$area
+   X <- if(interactive()) betacells else betacells[c(TRUE,FALSE)]
+   Y <- subset(X, select=type)
+   a <- marks(X)$area
    v <- markcorr(Y, weights=a)
 }
 \author{

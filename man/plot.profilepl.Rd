@@ -93,7 +93,7 @@
   \code{\link{profilepl}}
 }
 \examples{
-  rstep <- if(interactive()) 0.005 else 0.02
+  rstep <- if(interactive()) 0.005 else 0.025
 
   # one irregular parameter
   rr <- data.frame(r=seq(0.05,0.15, by=rstep))

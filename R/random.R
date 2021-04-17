@@ -3,7 +3,7 @@
 ##
 ##    Functions for generating random point patterns
 ##
-##    $Revision: 4.103 $   $Date: 2021/01/07 03:08:41 $
+##    $Revision: 4.104 $   $Date: 2021/04/17 03:29:58 $
 ##
 ##    runifpoint()      n i.i.d. uniform random points ("binomial process")
 ##    runifdisc()       special case of disc (faster)
@@ -239,6 +239,11 @@ rpoint <- function(n, f, fmax=NULL,
       result <- simulationresult(result, nsim, drop)
       return(result)
     }
+    ## need to check simulated point coordinates?
+    checkinside <- forcewin
+    if(checkinside && is.rectangle(win) && is.subset.owin(Frame(f), win))
+      checkinside <- FALSE
+    ## prepare
     w <- as.mask(if(forcewin) f else win.out)
     M <- w$m
     dx <- w$xstep
@@ -251,7 +256,7 @@ rpoint <- function(n, f, fmax=NULL,
     ypix <- rxy$y
     npix <- length(xpix)
     ppix <- as.vector(f$v[M]) ## not normalised - OK
-    ##
+    ## generate
     result <- vector(mode="list", length=nsim)
     for(isim in 1:nsim) {
       ## select pixels
@@ -259,7 +264,7 @@ rpoint <- function(n, f, fmax=NULL,
       ## extract pixel centres and randomise location within pixels
       x <- xpix[id] + runif(n, min= -halfdx, max=halfdx)
       y <- ypix[id] + runif(n, min= -halfdy, max=halfdy)
-      if(forcewin) {
+      if(checkinside) {
         edgy <- which(!inside.owin(x,y,win.out))
         ## reject points just outside boundary
         ntries <- 0

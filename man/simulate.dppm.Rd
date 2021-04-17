@@ -103,13 +103,7 @@
   \bold{77}, 853--977.
 }
 \author{
-  \adrian
-  
-  
-  \rolf
-  
-  and \ege
-  
+  \spatstatAuthors.
 }
 \seealso{
   \code{\link{rdpp}},
@@ -117,7 +111,8 @@
 }
 \examples{
 model <- dppGauss(lambda=100, alpha=.05, d=2)
-simulate(model, 2)
+nsim <- if(interactive()) 2 else 1
+simulate(model, nsim)
 }
 \keyword{datagen}
 \keyword{spatial}

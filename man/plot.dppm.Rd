@@ -53,18 +53,15 @@
   Null.
 }
 \examples{
-  fit <- dppm(swedishpines ~ x + y, dppGauss())
+  fit <- dppm(swedishpines ~ x + y, dppGauss, method="c")
   plot(fit)
 }
 \seealso{
   \code{\link{dppm}},
   \code{\link{plot.ppm}},
 }
-\author{\adrian
-  
-  
-  and \rolf
-  
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{models}
