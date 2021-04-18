@@ -10,6 +10,7 @@ on:
 env:
   USE_BSPM: "true"
   _R_CHECK_FORCE_SUGGESTS_: "false"
+  SPATSTAT_TEST: "true"
 
 jobs:
   ci:
@@ -19,7 +20,6 @@ jobs:
         include:
           - {os: macOS-latest}
           - {os: ubuntu-latest}
-          - {os: ubuntu-latest, env: R_VERSION=3.5}
 
     runs-on: ${{ matrix.os }}
 
@@ -34,6 +34,9 @@ jobs:
 
       - name: Dependencies
         run: ./run.sh install_all
+
+      - name: Matrix_devel
+        run: Rscript -e "install.packages("Matrix", repos = "http://R-Forge.R-project.org")"
 
       - name: Test
         run: ./run.sh run_tests
