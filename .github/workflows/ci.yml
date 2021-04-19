@@ -36,7 +36,7 @@ jobs:
         run: ./run.sh install_all
 
       - name: Matrix_devel
-        run: Rscript -e "install.packages('Matrix', repos = 'http://R-Forge.R-project.org')"
+        run: sudo Rscript -e "install.packages('Matrix', repos = 'https://r-forge.r-universe.dev')"
 
       - name: Test
         run: ./run.sh run_tests
