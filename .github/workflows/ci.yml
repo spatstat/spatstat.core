@@ -48,4 +48,5 @@ jobs:
           Rscript -e "covr::codecov(type = 'all')"
 
       - name: Dump logs
+        if: failure()
         run: ./run.sh dump_logs
