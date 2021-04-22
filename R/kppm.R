@@ -1138,11 +1138,10 @@ improve.kppm <- local({
 
   improve.kppm <- function(object, type=c("quasi", "wclik1", "clik1"),
                            rmax = NULL, eps.rmax = 0.01,
-                           dimyx = 50, maxIter = 100, tolerance = 1e-06,
+                           dimyx = c(50,50), maxIter = 100, tolerance = 1e-06,
                            fast = TRUE, vcov = FALSE, fast.vcov = FALSE,
                            verbose = FALSE,
                            save.internals = FALSE) {
-    verifyclass(object, "kppm")
     type <- match.arg(type)
     gfun <- pcfmodel(object)
     X <- object$X
@@ -2023,7 +2022,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
   # get pair correlation function (etc) for model
   info <- spatstatClusterModelInfo(clusters)
   pcfun      <- info$pcf
-  dpcfun       <- info$dpcf
+  dpcfun     <- info$dpcf
   funaux     <- info$funaux
   selfstart  <- info$selfstart
   isPCP      <- info$isPCP
@@ -2104,7 +2103,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
     y <- paco(d=d, par=par)
     # calculate M
     M <- abs(paco(d=0, par=par)-1)
-    return(weightfun(epsilon*M/abs((y-1))))
+    return(weightfun(epsilon*M/(y-1)))
   }
 
   wlogcl2score <- function(par, paco, dpaco, dIJ, gscale, epsilon, cdf=g){
@@ -2217,7 +2216,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, ep
                  par        = optpar.human,
                  par.canon  = optpar.canon,
                  clustpar   = info$checkpar(par=optpar.human, old=FALSE, strict=strict),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE, strict=strict), #clargs$margs,
+                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE, strict=strict),
                  modelpar   = modelpar,
                  covmodel   = clargs,
                  Fit        = Fit)
