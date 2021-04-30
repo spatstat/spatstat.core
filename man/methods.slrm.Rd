@@ -3,6 +3,7 @@
 \alias{formula.slrm}
 \alias{update.slrm}
 \alias{print.slrm}
+\alias{summary.slrm}
 \alias{terms.slrm}
 \alias{labels.slrm}
 \title{
@@ -14,6 +15,7 @@
 \usage{
 \method{formula}{slrm}(x, \dots)
 \method{print}{slrm}(x, ...)
+\method{summary}{slrm}(object, ...)
 \method{terms}{slrm}(x, \dots)
 \method{labels}{slrm}(object, \dots)
 \method{update}{slrm}(object, ..., evaluate = TRUE, env = parent.frame())
@@ -40,6 +42,7 @@
   \code{\link{formula}},
   \code{\link{update}},
   \code{\link{print}},
+  \code{\link{summary}},
   \code{\link{terms}} and
   \code{\link{labels}}
   for the class \code{"slrm"}.
@@ -52,8 +55,6 @@
 }
 \author{
   \adrian
-  
-  
 }
 \seealso{
   \code{\link{slrm}},  \code{\link{plot.slrm}},
@@ -62,7 +63,6 @@
   \code{\link{coef.slrm}}.
 }
 \examples{
-  data(redwood)
   fit <- slrm(redwood ~ x)
   coef(fit)
   formula(fit)

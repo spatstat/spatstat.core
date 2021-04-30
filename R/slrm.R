@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.37 $   $Date: 2021/04/10 04:29:57 $
+#  $Revision: 1.40 $   $Date: 2021/04/30 08:42:59 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -354,6 +354,51 @@ print.slrm <- function(x, ...) {
   print(coef(x))
   return(invisible(NULL))
 }
+
+summary.slrm <- function(object, ...) {
+  y <- object$CallInfo[c("link", "formula", "callstring")]
+  co <- coef(object)
+  se <- sqrt(diag(vcov(object)))
+  two <- qnorm(0.975)
+  lo <- co - two * se
+  hi <- co + two * se
+  zval <- co/se
+  pval <- 2 * pnorm(abs(zval), lower.tail = FALSE)
+  psig <- cut(pval, c(0, 0.001, 0.01, 0.05, 1),
+              labels = c("***", "**", "*", "  "),
+              include.lowest = TRUE)
+  y$coefs.SE.CI <- data.frame(Estimate = co,
+                              S.E.     = se, 
+                              CI95.lo  = lo,
+                              CI95.hi  = hi,
+                              Ztest    = psig,
+                              Zval     = zval)
+  class(y) <- c(class(y), "summary.slrm")
+  return(y)
+}
+
+print.summary.slrm <- function(x, ...) {
+  switch(x$link,
+         logit= {
+           splat("Fitted spatial logistic regression model")
+         },
+         cloglog= {
+           splat("Fitted spatial regression model (complementary log-log)")
+         },
+         {
+           splat("Fitted spatial regression model")
+           splat("Link =", dQuote(x$link))
+         })
+  cat("Call:\t")
+  print(x$callstring)
+  cat("Formula:\t")
+  print(x$formula)
+  splat("Fitted coefficients:\t")
+  print(x$coefs.SE.CI)
+  return(invisible(NULL))
+}
+
+coef.summary.slrm <- function(object, ...) { object$coefs.SE.CI }
 
 logLik.slrm <- function(object, ..., adjust=TRUE) {
   FIT  <- object$Fit$FIT

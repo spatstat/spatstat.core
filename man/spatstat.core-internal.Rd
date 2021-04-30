@@ -37,6 +37,7 @@
 \alias{clarkevansCalc}
 \alias{coef.summary.kppm}
 \alias{coef.summary.ppm}
+\alias{coef.summary.slrm}
 \alias{coef.vblogit} 
 \alias{compatible.rat}
 \alias{compileCDF}
@@ -272,6 +273,7 @@
 \alias{print.summary.mppm}
 \alias{print.summary.rmhexpand}
 \alias{print.summary.ssf}
+\alias{print.summary.slrm}
 \alias{print.vblogit}
 \alias{quad.mppm}
 \alias{quadBlockSizes}
@@ -440,6 +442,7 @@ circticks(R, at, unit, start, clockwise, labels)
 clarkevansCalc(X, correction, clipregion, working)
 \method{coef}{summary.kppm}(object, \dots)
 \method{coef}{summary.ppm}(object, \dots)
+\method{coef}{summary.slrm}(object, \dots)
 \method{coef}{vblogit}(object, \dots) 
 \method{compatible}{rat}(A, B, \dots) 
 compileCDF(D, B, r, \dots, han.denom, check)
@@ -762,6 +765,7 @@ prefixfv(x, tagprefix, descprefix, lablprefix, whichtags)
 \method{print}{Smoothfun}(x, \dots)
 \method{print}{summary.mppm}(x, \dots, brief)
 \method{print}{summary.rmhexpand}(x, \dots)
+\method{print}{summary.slrm}(x, \dots)
 \method{print}{summary.ssf}(x, \dots)
 \method{print}{vblogit}(x, \dots)
 quad.mppm(x)

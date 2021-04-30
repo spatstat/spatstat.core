@@ -3,14 +3,14 @@
 #'
 #' cdf of |X1-X2| when X1,X2 are iid uniform in W, etc
 #'
-#'  $Revision: 1.11 $  $Date: 2020/11/30 09:45:59 $
+#'  $Revision: 1.12 $  $Date: 2021/04/30 07:55:26 $
 #'
 
 distcdf <- function(W, V=W, ..., dW=1, dV=dW, nr=1024, regularise=TRUE) {
-  reflexive <- missing(V) && missing(dV)
+  reflexive <- (missing(V) || is.null(V)) && (missing(dV) || is.null(dV))
   diffuse <- is.owin(W) && is.owin(V)
-  uniformW <- identical(dW, 1)
-  uniformV <- identical(dV, 1)
+  uniformW <- is.null(dW) || identical(dW, 1)
+  uniformV <- is.null(dV) || identical(dV, 1)
   uniform <- uniformW && uniformV
 
   if(is.owin(W)) {

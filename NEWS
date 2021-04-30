@@ -1,4 +1,24 @@
 
+        CHANGES IN spatstat.core VERSION 2.1-2.002
+
+OVERVIEW
+
+    o summary method for spatial logistic regression models
+
+NEW FUNCTIONS
+
+    o summary.slrm, print.summary.slrm
+    Summary method for spatial logistic regression models
+
+    o coef.summary.slrm
+    Print the fitted coefficients, confidence interval and p-values
+    for a spatial logistic regression model.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o distcdf
+    Arguments which are NULL will be treated as missing.
+    
         CHANGES IN spatstat.core VERSION 2.1-2
 
 OVERVIEW
