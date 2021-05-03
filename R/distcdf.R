@@ -3,10 +3,11 @@
 #'
 #' cdf of |X1-X2| when X1,X2 are iid uniform in W, etc
 #'
-#'  $Revision: 1.12 $  $Date: 2021/04/30 07:55:26 $
+#'  $Revision: 1.13 $  $Date: 2021/05/03 02:37:01 $
 #'
 
-distcdf <- function(W, V=W, ..., dW=1, dV=dW, nr=1024, regularise=TRUE) {
+distcdf <- function(W, V=W, ..., dW=1, dV=dW, nr=1024,
+                    regularise=TRUE, savedenom=FALSE) {
   reflexive <- (missing(V) || is.null(V)) && (missing(dV) || is.null(dV))
   diffuse <- is.owin(W) && is.owin(V)
   uniformW <- is.null(dW) || identical(dW, 1)
@@ -30,30 +31,29 @@ distcdf <- function(W, V=W, ..., dW=1, dV=dW, nr=1024, regularise=TRUE) {
       dW <- pixellate(W, weights=dW, ...)
     }
   } else stop("W should be a point pattern or a window")
-  
-  if(is.owin(V)) {
-    V <- as.mask(as.owin(V), ...)
-    dV <- as.im(dV, W=V)
-  } else if(is.ppp(V)) {
-    if(uniformV) {
-      #' discrete uniform distribution on V
-      dV <- pixellate(V, ...)
-    } else {
-      #' dV should be a weight or vector of weights
-      if(!is.vector(dV) || !is.numeric(dV))
-        stop("If V is a point pattern, dV should be a vector of weights")
-      if(length(dV) == 1L) {
-        dV <- rep(dV, npoints(V))
-      } else stopifnot(length(dV) == npoints(V))
-      dV <- pixellate(V, weights=dV, ...)
-    }
-  } else stop("V should be a point pattern or a window")
 
-  if(!uniformW && min(dW) < 0) 
-    stop("Negative values encountered in dW")
-  
-  if(!uniformV && min(dV) < 0) 
-    stop("Negative values encountered in dV")
+  if(!reflexive) {
+    if(is.owin(V)) {
+      V <- as.mask(as.owin(V), ...)
+      dV <- as.im(dV, W=V)
+    } else if(is.ppp(V)) {
+      if(uniformV) {
+        #' discrete uniform distribution on V
+        dV <- pixellate(V, ...)
+      } else {
+        #' dV should be a weight or vector of weights
+        if(!is.vector(dV) || !is.numeric(dV))
+          stop("If V is a point pattern, dV should be a vector of weights")
+        if(length(dV) == 1L) {
+          dV <- rep(dV, npoints(V))
+        } else stopifnot(length(dV) == npoints(V))
+        dV <- pixellate(V, weights=dV, ...)
+      }
+    } else stop("V should be a point pattern or a window")
+
+    if(!uniformV && min(dV) < 0) 
+      stop("Negative values encountered in dV")
+  }
 
   #' compute
   if(diffuse && uniform) {
@@ -81,6 +81,12 @@ distcdf <- function(W, V=W, ..., dW=1, dV=dW, nr=1024, regularise=TRUE) {
                "f", , range(rvals), c("r","%s(r)"),
                c("Interpoint distance","Cumulative probability"),
                fname="CDF")
+  #'
+  if(savedenom) {
+    denomW <- integral(dW)
+    denomV <- if(reflexive) denomW else integral(dV)
+    attr(result, "denom") <- denomW * denomV
+  }
   return(result)
 }
 

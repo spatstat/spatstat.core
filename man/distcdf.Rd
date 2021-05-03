@@ -7,7 +7,8 @@
   or windows.
 }
 \usage{
-  distcdf(W, V=W, \dots, dW=1, dV=dW, nr=1024, regularise=TRUE)
+  distcdf(W, V=W, \dots, dW=1, dV=dW, nr=1024,
+          regularise=TRUE, savedenom=FALSE)
 }
 \arguments{
   \item{W}{
@@ -38,6 +39,10 @@
   \item{regularise}{
     Logical value indicating whether to smooth the results
     for very small distances, to avoid discretisation artefacts.
+  }
+  \item{savedenom}{
+    Logical value indicating whether to save the denominator of the
+    double integral as an attribute of the result.
   }
 }
 \value{
@@ -96,11 +101,8 @@
  B <- disc()
  plot(distcdf(B))
 }
-\author{\adrian
-  
-  
-  and \rolf
-  
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{math}
