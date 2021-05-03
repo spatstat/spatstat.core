@@ -1,11 +1,16 @@
 
-        CHANGES IN spatstat.core VERSION 2.1-2.002
+        CHANGES IN spatstat.core VERSION 2.1-2.003
 
 OVERVIEW
 
     o summary method for spatial logistic regression models
 
+    o estimate the spatial covariance function of a pixel image
+
 NEW FUNCTIONS
+
+    o spatcov
+    Estimate the spatial covariance function of a pixel image.
 
     o summary.slrm, print.summary.slrm
     Summary method for spatial logistic regression models
@@ -14,11 +19,19 @@ NEW FUNCTIONS
     Print the fitted coefficients, confidence interval and p-values
     for a spatial logistic regression model.
 
+    o pairMean
+    Compute the mean of a specified function of interpoint distance
+    between random points in a window.
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o distcdf
     Arguments which are NULL will be treated as missing.
+
+    o distcdf
+    New argument 'savedenom'.
     
+
         CHANGES IN spatstat.core VERSION 2.1-2
 
 OVERVIEW
