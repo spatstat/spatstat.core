@@ -103,10 +103,15 @@ leverage(model, \dots)
   \code{\link{as.function.leverage.ppm}}
 }
 \examples{
+if(offline <- !interactive()) op <- spatstat.options(npixel=32, ndummy.min=16)
+
    X <- rpoispp(function(x,y) { exp(3+3*x) })
    fit <- ppm(X ~x+y)
-   plot(le <- leverage(fit))
+   le <- leverage(fit)
+   if(!offline) plot(le)
    mean(le)
+
+if(offline) spatstat.options(op)
 }
 \keyword{spatial}
 \keyword{models}

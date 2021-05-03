@@ -172,6 +172,8 @@ slrm(formula, ..., data = NULL, offset = TRUE, link = "logit",
   Proceedings, 38th Congress, International Statistical Institute.
 }
 \examples{
+if(offline <- !interactive()) op <- spatstat.options(npixel=32)
+
      X <- copper$SouthPoints
      slrm(X ~ 1)
      slrm(X ~ x+y)
@@ -190,6 +192,8 @@ slrm(formula, ..., data = NULL, offset = TRUE, link = "logit",
      slrm(gold ~ dfault, data=mur)
      slrm(gold ~ dfault + greenstone, data=mur)
      slrm(gold ~ dfault, data=mur, splitby="greenstone")
+
+if(offline) spatstat.options(op)
 }
 \author{\adrian
   and \rolf.

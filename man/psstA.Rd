@@ -181,11 +181,18 @@ psstA(object, r = NULL, breaks = NULL, \dots,
   Options: \code{\link{spatstat.options}}
 }
 \examples{
-   pso <- spatstat.options(psstA.ngrid=16,psstA.nr=10)
-   X <- rStrauss(200,0.1,0.05)
+   if(live <- interactive()) {
+     X <- rStrauss(200,0.1,0.05)
+   } else {
+     pso <- spatstat.options(psstA.ngrid=16,psstA.nr=10,
+            ndummy.min=16,npixel=32)
+     X <- cells
+   }
+
    plot(psstA(X))
    plot(psstA(X, interaction=Strauss(0.05)))
-   spatstat.options(pso)
+
+   if(!live) spatstat.options(pso)
 }
 \keyword{spatial}
 \keyword{models}
