@@ -79,22 +79,22 @@
   in which each element of the multivariate random intensity \eqn{\Lambda(u)} of the process 
   is obtained by 
    \deqn{
-      \Lambda_i(u) = \lambda_i(u) S_i(u) \prod_{j\neq i} E_{ji}(u)
+      \Lambda_i(u) = \lambda_i(u) S_i(u) \prod_{j \neq i} E_{ji}(u)
     }{
-      \Lambda[i](u) = \lambda[i](u) S[i](u) prod[j != i] E[ji](u)
+      Lambda[i](u) = lambda[i](u) S[i](u) prod[j != i] E[ji](u)
     }
   where \eqn{\lambda_i(u)} is then intensity of component \eqn{i} of 
   the process,
    \deqn{
-      S_i(u) = \frac{1}{\kappa_i} \sum_{v \in \Phi_i} k_{\omega_i}(u - v)
+      S_i(u) = \frac{1}{\kappa_{i}} \sum_{v \in \Phi_i} k_{i}(u - v)
     }{
-      S[i](u) = 1 / (kappa[i]) sum[v in Phi[i]] k[omega[i]](u - v)
+      S[i](u) = 1 / (kappa[i]) sum[v in Phi[i]] k[i](u - v)
     }
   is the shot-noise random feild for component \eqn{i} and 
   \deqn{
       E_{ji}(u) = \exp(-\kappa_{j} \alpha_{ji} / k_{j}(0)) \prod_{v \in \Phi_{j}} {1 + \alpha_{ji} \frac{k_j(u-v)}{k_j(0)}}
     }{
-      E[ji](u) = \exp(-\kappa[j] \alpha[ji] / k[j](0)) prod[v in Phi[j]] (1 + alpha[ji] k[j](u-v) / k[j](0))
+      E[ji](u) = exp(-\kappa[j] \alpha[ji] / k[j](0)) prod[v in Phi[j]] (1 + alpha[ji] k[j](u-v) / k[j](0))
     }
   is a product fieds controling impulses from the parent Poisson process 
   \eqn{\Phi_j} with constant intensity \eqn{\kappa_j} of 
