@@ -28,7 +28,7 @@ bkernels$Cauchy <- function(r, omega, ...){
 # ===================================================================
 
 # simulation from the null model of independent shot-noise components
-rPSNCP0 <- function(lambda, kappa, omega, kernelss=NULL, nu.ker=NULL, 
+rPSNCP0 <- function(lambda, kappa, omega, kernels=NULL, nu.ker=NULL, 
                     win=owin(), nsim=1, names=NULL, 
                     eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 {
