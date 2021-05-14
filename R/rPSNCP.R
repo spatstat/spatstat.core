@@ -1,6 +1,7 @@
 #'   simulation of product shot-noise Cox process 
 
-# ===================================================================
+rPSNCP <- local({
+  # ===================================================================
 # kernels functions
 # ===================================================================
 
@@ -159,3 +160,6 @@ rPSNCP <- function(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4),
   names(outlist) <- paste("Simulation", 1:nsim)
   return(outlist)
 }
+  
+rPSNCP
+})
