@@ -93,8 +93,9 @@ rPSNCP <- function(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4),
     nu.ker <- rep(-1/4, m)
   diag(alpha) <- 0
   if (all(alpha == 0))
-    return(rPSNCP0(lambda=lambda, kappa=kappa, omega=omega, win=win, kernels=kernels, nsim=nsim,
-                   nu.ker=nu.ker, names=names, eps = eps, dimyx = dimyx, xy = xy, epsth=epsth, mc.cores=mc.cores))
+    return(rPSNCP0(lambda=lambda, kappa=kappa, omega=omega, kernels=kernels, 
+                   nu.ker=nu.ker, win=win, nsim=nsim, names=names, 
+                   eps=eps, dimyx=dimyx, xy=xy, epsth=epsth, mc.cores=mc.cores))
   
   lambda <- as.list(lambda)
   frame <- boundingbox(win)
@@ -158,29 +159,3 @@ rPSNCP <- function(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4),
   names(outlist) <- paste("Simulation", 1:nsim)
   return(outlist)
 }
-
-# ===================================================================
-# Example 1: homogeneous
-lambda <- c(250, 300, 180, 400)
-kappa <- c(30, 25, 20, 25)
-omega <- c(0.02, 0.025, 0.03, 0.02)
-alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-X <- rPSNCP(lambda, kappa, omega, alpha)
-plot(X)
-plot(split.ppp(X))
-
-#Example 2: inhomogeneous
-lambda <- list()
-z1 <- scaletointerval.im(bei.extra$elev, from=0, to=1)
-z2 <- scaletointerval.im(bei.extra$grad, from=0, to=1)
-lambda[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
-lambda[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
-lambda[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
-lambda[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
-lapply(lambda, function(o){ integral.im(o) })
-kappa <- c(35, 30, 20, 25) / (1000 * 500)
-omega <- c(15, 35, 40, 25)
-alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-X <- rPSNCP(lambda, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
-plot(X)
-plot(split.ppp(X), cex=0.5)
