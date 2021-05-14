@@ -66,7 +66,7 @@ rPSNCP0 <- function(lambda, kappa, omega, kernelss=NULL, nu.ker=NULL,
     #  attr(out, "parents") <- Phi
   }
   outlist <- if (mc.cores == 1) lapply(1:nsim, corefun0) 
-  else mclapply(1:nsim, corefun0, mc.cores=mc.cores)
+  else parallel::mclapply(1:nsim, corefun0, mc.cores=mc.cores)
   if (nsim == 1) 
     return(outlist[[1]])
   names(outlist) <- paste("Simulation", 1:nsim)
@@ -153,7 +153,7 @@ rPSNCP <- function(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4),
     # attr(simout, "parents") <- Phi
   }
   outlist <- if (mc.cores == 1) lapply(1:nsim, corefun) 
-  else mclapply(1:nsim, corefun, mc.cores=mc.cores)
+  else parallel::mclapply(1:nsim, corefun, mc.cores=mc.cores)
   if (nsim == 1) 
     return(outlist[[1]])
   names(outlist) <- paste("Simulation", 1:nsim)
