@@ -6,31 +6,31 @@
   product shot-noise Cox process.
 }
 \usage{
- rPSNCP(rho=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4), 
+ rPSNCP(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4), 
         alpha=matrix(runif(16, -1, 3), nrow=4, ncol=4), 
         kernels=NULL, nu.ker=NULL, win=owin(), nsim=1, names=NULL, 
         eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 }
 \arguments{
-  \item{rho}{
+  \item{lambda}{
     List of intensities of component processes. Either a
     numberic vector determining the constant (homogeneous) intensities 
     or a list pixel images (object of class \code{"im"}) determining 
     the (inhomogeneous) intensity functions of  component processes. 
-    The length of \code{rho} determines the number of component processes.
+    The length of \code{lambda} determines the number of component processes.
   }
   \item{kappa}{
     Numeric vector of intensities of the Poisson process of cluster centres
-    for component processes. Must have the same size as \code{rho}.
+    for component processes. Must have the same size as \code{lambda}.
   }
   \item{omega}{
     Numeric vector of bandwidths of cluster dispersal kernels
-    for component processes. Must have the same size as \code{rho} 
+    for component processes. Must have the same size as \code{lambda} 
     and \code{kappa}.
   }
   \item{alpha}{
     Matrix of interaction parameters. Square numeric matrix with the same 
-    number of rows and columns as the length of \code{rho}, \code{kappa} and \code{omega}.
+    number of rows and columns as the length of \code{lambda}, \code{kappa} and \code{omega}.
     All entries of \code{alpha} musb be greater than -1.
   }
   \item{kernels}{
@@ -40,7 +40,7 @@
     Variance-Gamma (Bessel) kernel (\code{"VarGamma"}) with 
     bandwidth \code{omega} and shape parameter \code{nu.ker} 
     and Cauchy kernel (\code{"Cauchy"}) with bandwidth \code{omega}.
-    Must have the same length as \code{rho}, \code{kappa} and \code{omega}.
+    Must have the same length as \code{lambda}, \code{kappa} and \code{omega}.
   }
   \item{nu.ker}{
     Numeric vector of bandwidths of shape parameters for Varaince-Gamma
@@ -136,27 +136,27 @@
 }
 \examples{
   # Example 1: homogeneous components
-  rho <- c(250, 300, 180, 400)
+  lambda <- c(250, 300, 180, 400)
   kappa <- c(30, 25, 20, 25)
   omega <- c(0.02, 0.025, 0.03, 0.02)
   alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-  X <- rPSNCP(rho, kappa, omega, alpha)
+  X <- rPSNCP(lambda, kappa, omega, alpha)
   plot(X)
   plot(split.ppp(X))
 
   #Example 2: inhomogeneous components
-  rho <- list()
+  lambda <- list()
   z1 <- scaletointerval.im(bei.extra$elev, from=0, to=1)
   z2 <- scaletointerval.im(bei.extra$grad, from=0, to=1)
-  rho[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
-  rho[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
-  rho[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
-  rho[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
-  lapply(rho, function(o){ integral.im(o) })
+  lambda[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
+  lambda[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
+  lambda[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
+  lambda[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
+  lapply(lambda, function(o){ integral.im(o) })
   kappa <- c(35, 30, 20, 25) / (1000 * 500)
   omega <- c(15, 35, 40, 25)
   alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-  X <- rPSNCP(rho, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
+  X <- rPSNCP(lambda, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
   plot(X)
   plot(split.ppp(X), cex=0.5) 
 }
