@@ -53,7 +53,7 @@ rPSNCP0 <- function(lambda, kappa, omega, kernelss=NULL, nu.ker=NULL,
         mui <- rhoi / kappa[i]
       else if (is.im(rhoi)) 
         mui <- eval.im(rhoi / kappa[i])
-      Xi <- switch(clusters[i], 
+      Xi <- switch(kernels[i], 
                    Thomas = rThomas(kappa[i], omega[i], mui, win=win),
                    Cauchy =  rCauchy(kappa[i], omega[i], mui, win=win, eps=epsth),
                    VarGamma = rVarGamma(kappa[i], nu.ker=nu.ker[i], omega[i], mui, win=win, eps=epsth, nu.pcf=NULL))
@@ -75,24 +75,26 @@ rPSNCP0 <- function(lambda, kappa, omega, kernelss=NULL, nu.ker=NULL,
 
 # ===================================================================
 # simulation from the model
-rPSNCP <- function(lambda, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
-                   nu.ker=NULL, ij=NULL, eps = NULL, dimyx = NULL, xy = NULL, epsth=0.001, mc.cores=1L)
+rPSNCP <- function(lambda=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4), 
+        alpha=matrix(runif(16, -1, 3), nrow=4, ncol=4), 
+        kernels=NULL, nu.ker=NULL, win=owin(), nsim=1, names=NULL, 
+        eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 {
   m <- length(lambda)
   if ((length(kappa) != m) || length(omega) != m ) 
     stop("kappa and omega paramters must be of the same size.")
   if (!all(dim(alpha) == c(m, m)))
     stop("alpha paramter is not a matrix of correct dimensions.")
-  if (is.null(clusters))
-    clusters <- rep("Thomas", m)
-  else if(length(clusters) != m)
-    stop("clusters must be a vector of the size of the number of components.")
+  if (is.null(kernels))
+    kernels <- rep("Thomas", m)
+  else if(length(kernels) != m)
+    stop("kernels must be a vector of the size of the number of components.")
   if (is.null(nu.ker))
     nu.ker <- rep(-1/4, m)
   diag(alpha) <- 0
   if (all(alpha == 0))
-    return(rPSNCP0(lambda=lambda, kappa=kappa, omega=omega, win=win, clusters=clusters, nsim=nsim,
-                   nu.ker=nu.ker, ij=ij, eps = eps, dimyx = dimyx, xy = xy, epsth=epsth, mc.cores=mc.cores))
+    return(rPSNCP0(lambda=lambda, kappa=kappa, omega=omega, win=win, kernels=kernels, nsim=nsim,
+                   nu.ker=nu.ker, names=names, eps = eps, dimyx = dimyx, xy = xy, epsth=epsth, mc.cores=mc.cores))
   
   lambda <- as.list(lambda)
   frame <- boundingbox(win)
@@ -106,7 +108,7 @@ rPSNCP <- function(lambda, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=
   {
     if(is.im(lambda[[i]])) 
       lambda[[i]] <- as.im(lambda[[i]], dimyx=W$dim, W=W)
-    keri <- function(r){ bkernels[[clusters[i]]](r, omega[i], nu.ker[i]) }
+    keri <- function(r){ bkernels[[kernels[i]]](r, omega[i], nu.ker[i]) }
     keri0 <- keri(0)
     sigma[i] <- kappa[i] / keri0
     kerithresh <- function(r){ keri(r) / keri0 - epsth}
@@ -121,13 +123,13 @@ rPSNCP <- function(lambda, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=
     fr <- vector("list", length=m)
     for (i in 1:m)
     {
-      keri <- function(r){ bkernels[[clusters[i]]](r, omega[i], nu.ker[i]) }
+      keri <- function(r){ bkernels[[kernels[i]]](r, omega[i], nu.ker[i]) }
       keri0 <- keri(0)
       fr[[i]] <- keri(crossdist.default(wx, wy, Phi[[i]]$x, Phi[[i]]$y)) / keri0
     }
     
-    if (is.null(ij))
-      ij <- 1:m
+    if (is.null(names))
+      names <- 1:m
     xp <- yp <- mp <- NULL
     for (i in 1:m)
     {
@@ -143,7 +145,7 @@ rPSNCP <- function(lambda, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=
       Xi <- rpoispp(eval.im(rhoi * Lam))
       xp <- c(xp, Xi$x)
       yp <- c(yp, Xi$y)
-      mp <- c(mp, rep(ij[i], Xi$n))
+      mp <- c(mp, rep(names[i], Xi$n))
     }
     
     simout <- ppp(xp, yp, window=win, marks=as.factor(mp))
