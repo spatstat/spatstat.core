@@ -8,7 +8,7 @@
 \usage{
  rPSNCP(rho=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4), 
         alpha=matrix(runif(16, -1, 3), nrow=4, ncol=4), 
-        kernels=NULL, nu.ker=NULL, win=owin(), nsim=1, ij=NULL, 
+        kernels=NULL, nu.ker=NULL, win=owin(), nsim=1, names=NULL, 
         eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 }
 \arguments{
@@ -17,11 +17,7 @@
     numberic vector determining the constant (homogeneous) intensities 
     or a list pixel images (object of class \code{"im"}) determining 
     the (inhomogeneous) intensity functions of  component processes. 
-    
-    character string: the short name of a covariance model for
-    the Gaussian random field. After adding the prefix \code{"RM"},
-    the code will search for a function of this name
-    in the \pkg{RandomFields} package.
+    The length of \code{rho} determines the number of component processes.
   }
   \item{kappa}{
     Numeric vector of intensities of the Poisson process of cluster centres
@@ -47,28 +43,33 @@
     Must have the same length as \code{rho}, \code{kappa} and \code{omega}.
   }
   \item{nu.ker}{
-    
+    Numeric vector of bandwidths of shape parameters for Varaince-Gamma
+    kernels. 
   }
   \item{win}{
     Window in which to simulate the pattern.
     An object of class \code{"owin"}.
   }
+  \item{nsim}{Number of simulated realisations to be generated.}
+  \item{names}{
+    Optional vector of character string indicating names of component processes.
+  }
+  \item{eps,dimyx,xy}{
+    Optional parameters passed to \code{\link{as.mask}}
+    which determine the pixel array geometry.
+    See \code{\link{as.mask}}.
   \item{\dots}{
     Additional parameters for the covariance,
     or arguments passed to \code{\link{as.mask}} to determine
     the pixel resolution.
   }
-
-  \item{saveLambda}{
-    Logical. If \code{TRUE} (the default) then the
-    simulated random intensity will also be saved,
-    and returns as an attribute of the point pattern.
+  \item{epsth}{
+    Numerical threshold to determine the maximum interaction range for 
+    cluster kernels. See Details.
   }
-  \item{nsim}{Number of simulated realisations to be generated.}
-  \item{drop}{
-    Logical. If \code{nsim=1} and \code{drop=TRUE} (the default), the
-    result will be a point pattern, rather than a list 
-    containing a point pattern.
+  \item{mc.cores}{
+    Integer value indicating the number of cores for parallel computing using
+    \code{"mclapply"} function in the \pkg{parallel} package.
   }
 }
 \value{
