@@ -1,6 +1,4 @@
 #'   simulation of product shot-noise Cox process 
-# as described in the following reference:
-# Jalilian, A., Guan, Y., Mateu, J., & Waagepetersen, R. (2015). Multivariate product‐shot‐noise Cox point process models. Biometrics, 71(4), 1022-1033.
 
 # ===================================================================
 # kernels functions
@@ -29,27 +27,28 @@ bkernels$Cauchy <- function(r, omega, ...){
 # ===================================================================
 
 # simulation from the null model of independent shot-noise components
-rPSNCP0 <- function(rho, kappa, omega, win=owin(), clusters=NULL, nsim=1,
-                    nu.ker=NULL, ij=NULL, eps = NULL, dimyx = NULL, xy = NULL, epsth=0.001, mc.cores=1L)
+rPSNCP0 <- function(lambda, kappa, omega, kernelss=NULL, nu.ker=NULL, 
+                    win=owin(), nsim=1, names=NULL, 
+                    eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 {
-  m <- length(rho)
+  m <- length(lambda)
   if ((length(kappa) != m) || length(omega) != m ) 
     stop("kappa and omega paramters must be of the same size.")
-  if (is.null(clusters))
-    clusters <- rep("Thomas", m)
-  else if(length(clusters) != m)
-    stop("clusters must be a vector of the size of the number of components.")
+  if (is.null(kernels))
+    kernels <- rep("Thomas", m)
+  else if(length(kernels) != m)
+    stop("kernels must be a vector of the size of the number of components.")
   if (is.null(nu.ker))
     nu.ker <- rep(-1/4, m)
-  rho <- as.list(rho)
-  if (is.null(ij))
-    ij <- 1:m
+  lambda <- as.list(lambda)
+  if (is.null(names))
+    names <- 1:m
   corefun0 <- function(dumm)
   {
     xp <- yp <- mp <- NULL
     for (i in 1:m)
     {
-      rhoi <- rho[[i]]
+      rhoi <- lambda[[i]]
       if (is.numeric(rhoi))
         mui <- rhoi / kappa[i]
       else if (is.im(rhoi)) 
@@ -60,7 +59,7 @@ rPSNCP0 <- function(rho, kappa, omega, win=owin(), clusters=NULL, nsim=1,
                    VarGamma = rVarGamma(kappa[i], nu.ker=nu.ker[i], omega[i], mui, win=win, eps=epsth, nu.pcf=NULL))
       xp <- c(xp, Xi$x)
       yp <- c(yp, Xi$y)
-      mp <- c(mp, rep(ij[i], Xi$n))
+      mp <- c(mp, rep(names[i], Xi$n))
     }
     
     out <- ppp(xp, yp, window=win, marks=as.factor(mp))
@@ -76,10 +75,10 @@ rPSNCP0 <- function(rho, kappa, omega, win=owin(), clusters=NULL, nsim=1,
 
 # ===================================================================
 # simulation from the model
-rPSNCP <- function(rho, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
+rPSNCP <- function(lambda, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
                    nu.ker=NULL, ij=NULL, eps = NULL, dimyx = NULL, xy = NULL, epsth=0.001, mc.cores=1L)
 {
-  m <- length(rho)
+  m <- length(lambda)
   if ((length(kappa) != m) || length(omega) != m ) 
     stop("kappa and omega paramters must be of the same size.")
   if (!all(dim(alpha) == c(m, m)))
@@ -92,10 +91,10 @@ rPSNCP <- function(rho, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
     nu.ker <- rep(-1/4, m)
   diag(alpha) <- 0
   if (all(alpha == 0))
-    return(rPSNCP0(rho=rho, kappa=kappa, omega=omega, win=win, clusters=clusters, nsim=nsim,
+    return(rPSNCP0(lambda=lambda, kappa=kappa, omega=omega, win=win, clusters=clusters, nsim=nsim,
                    nu.ker=nu.ker, ij=ij, eps = eps, dimyx = dimyx, xy = xy, epsth=epsth, mc.cores=mc.cores))
   
-  rho <- as.list(rho)
+  lambda <- as.list(lambda)
   frame <- boundingbox(win)
   dframe <- diameter(frame)
   W <- as.mask(win, eps = eps, dimyx = dimyx, xy = xy)
@@ -105,8 +104,8 @@ rPSNCP <- function(rho, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
   sigma <- rmax <- numeric(m)
   for (i in 1:m)
   {
-    if(is.im(rho[[i]])) 
-      rho[[i]] <- as.im(rho[[i]], dimyx=W$dim, W=W)
+    if(is.im(lambda[[i]])) 
+      lambda[[i]] <- as.im(lambda[[i]], dimyx=W$dim, W=W)
     keri <- function(r){ bkernels[[clusters[i]]](r, omega[i], nu.ker[i]) }
     keri0 <- keri(0)
     sigma[i] <- kappa[i] / keri0
@@ -140,7 +139,7 @@ rPSNCP <- function(rho, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
       }
       values <-  Si * apply(E, 1, prod)
       Lam <- im(values, xcol=W$xcol, yrow=W$yrow, unitname = unitname(W))
-      rhoi <- rho[[i]]
+      rhoi <- lambda[[i]]
       Xi <- rpoispp(eval.im(rhoi * Lam))
       xp <- c(xp, Xi$x)
       yp <- c(yp, Xi$y)
@@ -160,26 +159,26 @@ rPSNCP <- function(rho, kappa, omega, alpha, win=owin(), clusters=NULL, nsim=1,
 
 # ===================================================================
 # Example 1: homogeneous
-rho <- c(250, 300, 180, 400)
+lambda <- c(250, 300, 180, 400)
 kappa <- c(30, 25, 20, 25)
 omega <- c(0.02, 0.025, 0.03, 0.02)
 alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-X <- rPSNCP(rho, kappa, omega, alpha)
+X <- rPSNCP(lambda, kappa, omega, alpha)
 plot(X)
 plot(split.ppp(X))
 
 #Example 2: inhomogeneous
-rho <- list()
+lambda <- list()
 z1 <- scaletointerval.im(bei.extra$elev, from=0, to=1)
 z2 <- scaletointerval.im(bei.extra$grad, from=0, to=1)
-rho[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
-rho[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
-rho[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
-rho[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
-lapply(rho, function(o){ integral.im(o) })
+lambda[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
+lambda[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
+lambda[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
+lambda[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
+lapply(lambda, function(o){ integral.im(o) })
 kappa <- c(35, 30, 20, 25) / (1000 * 500)
 omega <- c(15, 35, 40, 25)
 alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
-X <- rPSNCP(rho, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
+X <- rPSNCP(lambda, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
 plot(X)
 plot(split.ppp(X), cex=0.5)
