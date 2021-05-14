@@ -7,9 +7,9 @@
 }
 \usage{
  rPSNCP(rho=rep(100, 4), kappa=rep(25, 4), omega=rep(0.03, 4), 
-        alpha=matrix(runif(16, -1, 1), nrow=4, ncol=4), win=owin(), 
-        clusters=NULL, nu.ker=NULL, nsim=1, ij=NULL, 
-        eps = NULL, dimyx = NULL, xy = NULL, epsth=0.001, mc.cores=1L)
+        alpha=matrix(runif(16, -1, 3), nrow=4, ncol=4), 
+        kernels=NULL, nu.ker=NULL, win=owin(), nsim=1, ij=NULL, 
+        eps=NULL, dimyx=NULL, xy=NULL, epsth=0.001, mc.cores=1L)
 }
 \arguments{
   \item{rho}{
@@ -23,24 +23,42 @@
     the code will search for a function of this name
     in the \pkg{RandomFields} package.
   }
-  \item{mu}{
-    mean function of the Gaussian random field. Either a
-    single number, a \code{function(x,y, ...)} or a pixel
-    image (object of class \code{"im"}).
+  \item{kappa}{
+    Numeric vector of intensities of the Poisson process of cluster centres
+    for component processes. Must have the same size as \code{rho}.
   }
-  \item{param}{
-    List of parameters for the covariance.
-    Standard arguments are \code{var} and \code{scale}.
+  \item{omega}{
+    Numeric vector of bandwidths of cluster dispersal kernels
+    for component processes. Must have the same size as \code{rho} 
+    and \code{kappa}.
+  }
+  \item{alpha}{
+    Matrix of interaction parameters. Square numeric matrix with the same 
+    number of rows and columns as the length of \code{rho}, \code{kappa} and \code{omega}.
+    All entries of \code{alpha} musb be greater than -1.
+  }
+  \item{kernels}{
+    Vector of character string determining the cluster dispersal kernels
+    of component processes. Impleneted kernels are Gaussian 
+    kernel (\code{"Thomas"}) with bandwidth \code{omega}, 
+    Variance-Gamma (Bessel) kernel (\code{"VarGamma"}) with 
+    bandwidth \code{omega} and shape parameter \code{nu.ker} 
+    and Cauchy kernel (\code{"Cauchy"}) with bandwidth \code{omega}.
+    Must have the same length as \code{rho}, \code{kappa} and \code{omega}.
+  }
+  \item{nu.ker}{
+    
+  }
+  \item{win}{
+    Window in which to simulate the pattern.
+    An object of class \code{"owin"}.
   }
   \item{\dots}{
     Additional parameters for the covariance,
     or arguments passed to \code{\link{as.mask}} to determine
     the pixel resolution.
   }
-  \item{win}{
-    Window in which to simulate the pattern.
-    An object of class \code{"owin"}.
-  }
+
   \item{saveLambda}{
     Logical. If \code{TRUE} (the default) then the
     simulated random intensity will also be saved,
