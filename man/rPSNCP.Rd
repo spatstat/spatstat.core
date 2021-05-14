@@ -73,12 +73,9 @@
   }
 }
 \value{
-  A point pattern (object of class \code{"ppp"})
-  or a list of point patterns.
-
-  Additionally, the simulated intensity function for each point pattern is
-  returned as an attribute \code{"Lambda"} of the point pattern,
-  if \code{saveLambda=TRUE}.
+  A point pattern (an object of class \code{"ppp"}) if \code{nsim=1}, or a
+     list of point patterns if \code{nsim > 1}.  Each point pattern is
+     multitype (it carries a vector of marks which is a factor).
 }
 \details{
   This function generates a realisation of a log-Gaussian Cox
@@ -126,37 +123,44 @@
   The LGCP model can be fitted to data using \code{\link{kppm}}.
 }
 \seealso{
-\code{\link{rpoispp}},
-\code{\link{rMatClust}},
-\code{\link{rGaussPoisson}},
-\code{\link{rNeymanScott}},
-\code{\link{lgcp.estK}},
-\code{\link{kppm}}
+\code{\link{rmpoispp}},
+\code{\link{rThomas}},
+\code{\link{rVarGamma}},
+\code{\link{rCauchy}},
+\code{\link{rNeymanScott}}
 }
 \references{
-  \Moller, J., Syversveen, A. and Waagepetersen, R. (1998)
-  Log Gaussian Cox Processes.
-  \emph{Scandinavian Journal of Statistics} \bold{25}, 451--482.
+  Jalilian, A., Guan, Y., Mateu, J. and Waagepetersen, R. (2015)
+  Multivariate product‐shot‐noise Cox point process models. 
+  \emph{Biometrics}  \bold{71}(4), 1022--1033.
 }
 \examples{
-  if(require(RandomFields)) {
-  # homogeneous LGCP with exponential covariance function
-  X <- rLGCP("exp", 3, var=0.2, scale=.1)
-
-  # inhomogeneous LGCP with Gaussian covariance function
-  m <- as.im(function(x, y){5 - 1.5 * (x - 0.5)^2 + 2 * (y - 0.5)^2}, W=owin())
-  X <- rLGCP("gauss", m, var=0.15, scale =0.5)
-  plot(attr(X, "Lambda"))
-  points(X)
-
-  # inhomogeneous LGCP with Matern covariance function
-  X <- rLGCP("matern", function(x, y){ 1 - 0.4 * x},
-             var=2, scale=0.7, nu=0.5,
-             win = owin(c(0, 10), c(0, 10)))
+  # Example 1: homogeneous components
+  rho <- c(250, 300, 180, 400)
+  kappa <- c(30, 25, 20, 25)
+  omega <- c(0.02, 0.025, 0.03, 0.02)
+  alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
+  X <- rPSNCP(rho, kappa, omega, alpha)
   plot(X)
-  }
+  plot(split.ppp(X))
+
+  #Example 2: inhomogeneous components
+  rho <- list()
+  z1 <- scaletointerval.im(bei.extra$elev, from=0, to=1)
+  z2 <- scaletointerval.im(bei.extra$grad, from=0, to=1)
+  rho[[1]] <- exp(-8 + 1.5 * z1 + 0.5 * z2)
+  rho[[2]] <- exp(-7.25 + 1 * z1  - 1.5 * z2)
+  rho[[3]] <- exp(-6 - 1.5 * z1 + 0.5 * z2)
+  rho[[4]] <- exp(-7.5 + 2 * z1 - 3 * z2)
+  lapply(rho, function(o){ integral.im(o) })
+  kappa <- c(35, 30, 20, 25) / (1000 * 500)
+  omega <- c(15, 35, 40, 25)
+  alpha <- matrix(runif(16, -1, 1), nrow=4, ncol=4)
+  X <- rPSNCP(rho, kappa, omega, alpha, win = bei$window, dimyx=c(101, 201))
+  plot(X)
+  plot(split.ppp(X), cex=0.5) 
 }
-\author{Abdollah Jalilian and Rasmus Waagepetersen.
+\author{Abdollah Jalilian.
   Modified by \spatstatAuthors.
 }
 \keyword{spatial}
