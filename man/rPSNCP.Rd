@@ -58,10 +58,6 @@
     Optional parameters passed to \code{\link{as.mask}}
     which determine the pixel array geometry.
     See \code{\link{as.mask}}.
-  \item{\dots}{
-    Additional parameters for the covariance,
-    or arguments passed to \code{\link{as.mask}} to determine
-    the pixel resolution.
   }
   \item{epsth}{
     Numerical threshold to determine the maximum interaction range for 
