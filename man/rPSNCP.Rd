@@ -113,7 +113,7 @@
 }
 \references{
   Jalilian, A., Guan, Y., Mateu, J. and Waagepetersen, R. (2015)
-  Multivariate product‐shot‐noise Cox point process models. 
+  Multivariate product-shot-noise Cox point process models. 
   \emph{Biometrics}  \bold{71}(4), 1022--1033.
 }
 \examples{
