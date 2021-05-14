@@ -9,6 +9,9 @@ OVERVIEW
 
 NEW FUNCTIONS
 
+    o rPSNCP
+    Simulate from a product shot-noise Cox process
+    
     o spatcov
     Estimate the spatial covariance function of a pixel image.
 
