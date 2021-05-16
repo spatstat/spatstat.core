@@ -11,7 +11,7 @@ ic.ppm <- function(object) {
   loglike <- logLik(object)
   ll <- as.numeric(loglike)
   df <- attr(loglike, "df")
-  betahat <- coef(object)
+  ## betahat <- coef(object)
   n <- npoints(data.ppm(object))
   cbic <- -2*ll+df*log(n)
   cic  <- -2*ll+df*2

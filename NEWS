@@ -1,16 +1,22 @@
 
-        CHANGES IN spatstat.core VERSION 2.1-2.003
+        CHANGES IN spatstat.core VERSION 2.1-2.004
 
 OVERVIEW
 
+    o We thank Abdollah Jalilian, Yongtao Guan and Rasmus Waagepetersen
+    for contributions.
+    
     o summary method for spatial logistic regression models
 
-    o estimate the spatial covariance function of a pixel image
+    o estimation of the spatial covariance function of a pixel image
 
+    o simulation of the product shot noise Cox process.
+    
 NEW FUNCTIONS
 
     o rPSNCP
-    Simulate from a product shot-noise Cox process
+    Generate simulated realisations of the product shot noise Cox process.
+    Contributed by Abdollah Jalilian, Yongtao Guan and Rasmus Waagepetersen.
     
     o spatcov
     Estimate the spatial covariance function of a pixel image.

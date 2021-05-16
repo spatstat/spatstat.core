@@ -460,11 +460,11 @@ predict.slrm <- function(object, ..., type="intensity",
     return(out)
   } else {
     ## prediction from new data and/or at new locations
-    if(use.old.data <- is.null(newdata)) {
-      ## prediction at new locations using existing covariates
+    if(is.null(newdata)) {
+      ## prediction using existing covariates, at new locations
       newdata <- object$Data$covariates
     } else {
-      ## prediction with new data
+      ## prediction with completely new data
       stopifnot(is.list(newdata))
     }
     ## ensure newdata includes response pattern to placate internal code
