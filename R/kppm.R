@@ -73,6 +73,7 @@ kppm.ppp <- kppm.quad <-
            statistic="K",
            statargs=list(),
            rmax = NULL,
+           epsilon=0.01,
            covfunargs=NULL,
            use.gam=FALSE,
            nd=NULL, eps=NULL) {
@@ -141,8 +142,8 @@ kppm.ppp <- kppm.quad <-
          palm   = kppmPalmLik(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, weightfun=weightfun, 
                              rmax=rmax, algorithm=algorithm, ...),
-         cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
-                       control=control, weightfun=weightfun, 
+         cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters, 
+                             epsilon=epsilon, weightfun=weightfun, 
                        rmax=rmax, ...))
   ##
   h <- attr(out, "h")
@@ -1972,7 +1973,7 @@ psib.kppm <- function(object) {
 
 
 # needs non linear equation solver nleqslv
-kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, rmax=NULL, epsilon=0.01, DPP=NULL, ..., pint=NULL) {
+kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.01, DPP=NULL, ..., pint=NULL) {
   W <- as.owin(X)
   
   if(is.null(rmax)) # specified for numerical stability
