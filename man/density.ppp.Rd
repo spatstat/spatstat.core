@@ -18,9 +18,10 @@
     Point pattern (object of class \code{"ppp"}).
   }
   \item{sigma}{
-    Standard deviation of isotropic smoothing kernel.
-    Either a numerical value, or a function that computes an
-    appropriate value of \code{sigma}.
+    The smoothing bandwidth (the amount of smoothing).
+    The standard deviation of the isotropic smoothing kernel.
+    Either a numerical value, 
+    or a function that computes an appropriate value of \code{sigma}.
   }
   \item{weights}{
     Optional weights to be attached to the points.
@@ -113,56 +114,29 @@
   It computes a fixed-bandwidth kernel estimate 
   (Diggle, 1985) of the intensity function of the point process
   that generated the point pattern \code{x}.
-  
-  By default it computes the convolution of the
-  isotropic Gaussian kernel of standard deviation \code{sigma}
+
+  The amount of smoothing is controlled by \code{sigma}
+  if it is specified.
+
+  By default, smoothing is performed using a Gaussian kernel.  
+  The resulting density estimate is the convolution of the
+  isotropic Gaussian kernel, of standard deviation \code{sigma},
   with point masses at each of the data points in \code{x}.
-  Anisotropic Gaussian kernels, and non-Gaussian kernels, are also supported.
+
+  Anisotropic kernels, and non-Gaussian kernels, are also supported.
   Each point has unit weight, unless the argument \code{weights} is
   given.
 
-  If \code{edge=TRUE}, the intensity estimate is corrected for
-  edge effect bias in one of two ways:
-  \itemize{
-    \item If \code{diggle=FALSE} (the default) the intensity estimate is
-    correted by dividing it by the convolution of the
-    Gaussian kernel with the window of observation.
-    This is the approach originally described in Diggle (1985).
-    Thus the intensity value at a point \eqn{u} is
-    \deqn{
-      \hat\lambda(u) = e(u) \sum_i k(x_i - u) w_i
-    }{
-      \lambda(u) = e(u) \sum[i] k(x[i] - u) w[i]
-    }
-    where \eqn{k} is the Gaussian smoothing kernel,
-    \eqn{e(u)} is an edge correction factor, 
-    and \eqn{w_i}{w[i]} are the weights.
-    \item
-    If \code{diggle=TRUE} then the code uses the improved edge correction
-    described by Jones (1993) and Diggle (2010, equation 18.9).
-    This has been shown to have better performance (Jones, 1993)
-    but is slightly slower to compute. 
-    The intensity value at a point \eqn{u} is 
-    \deqn{
-      \hat\lambda(u) = \sum_i k(x_i - u) w_i e(x_i)
-    }{
-      \lambda(u) = \sum[i] k(x[i] - u) w[i] e(x[i])
-    }
-    where again \eqn{k} is the Gaussian smoothing kernel,
-    \eqn{e(x_i)}{e(x[i])} is an edge correction factor, 
-    and \eqn{w_i}{w[i]} are the weights.
-  }
-  In both cases, the edge correction term \eqn{e(u)} is the reciprocal of the
-  kernel mass inside the window:
-  \deqn{
-    \frac{1}{e(u)} = \int_W k(v-u) \, {\rm d}v
-  }{
-    1/e(u) = integral[v in W] k(v-u) dv
-  }
-  where \eqn{W} is the observation window.
+  If \code{edge=TRUE} (the default), the intensity estimate is corrected
+  for edge effect bias.
 
-  By default, smoothing is performed using a Gaussian kernel,
-  with smoothing bandwidth determined by the arguments
+  If \code{at="pixels"} (the default), the result is a pixel image
+  giving the estimated intensity at each pixel in a grid.
+  If \code{at="points"}, the result is a numeric vector giving the
+  estimated intensity at each of the original data points in \code{x}.
+}
+\section{Amount of smoothing}{
+  The amount of smoothing is determined by the arguments
   \code{sigma}, \code{varcov} and \code{adjust}.
   \itemize{
     \item if \code{sigma} is a single numerical value,
@@ -203,7 +177,51 @@
     is permitted, and yields an intensity estimate which is constant
     over the spatial domain.
   }
-
+}
+\section{Edge correction}{
+  If \code{edge=TRUE}, the intensity estimate is corrected for
+  edge effect bias in one of two ways:
+  \itemize{
+    \item If \code{diggle=FALSE} (the default) the intensity estimate is
+    correted by dividing it by the convolution of the
+    Gaussian kernel with the window of observation.
+    This is the approach originally described in Diggle (1985).
+    Thus the intensity value at a point \eqn{u} is
+    \deqn{
+      \hat\lambda(u) = e(u) \sum_i k(x_i - u) w_i
+    }{
+      \lambda(u) = e(u) \sum[i] k(x[i] - u) w[i]
+    }
+    where \eqn{k} is the Gaussian smoothing kernel,
+    \eqn{e(u)} is an edge correction factor, 
+    and \eqn{w_i}{w[i]} are the weights.
+    \item
+    If \code{diggle=TRUE} then the code uses the improved edge correction
+    described by Jones (1993) and Diggle (2010, equation 18.9).
+    This has been shown to have better performance (Jones, 1993)
+    but is slightly slower to compute. 
+    The intensity value at a point \eqn{u} is 
+    \deqn{
+      \hat\lambda(u) = \sum_i k(x_i - u) w_i e(x_i)
+    }{
+      \lambda(u) = \sum[i] k(x[i] - u) w[i] e(x[i])
+    }
+    where again \eqn{k} is the Gaussian smoothing kernel,
+    \eqn{e(x_i)}{e(x[i])} is an edge correction factor, 
+    and \eqn{w_i}{w[i]} are the weights.
+  }
+  In both cases, the edge correction term \eqn{e(u)} is the reciprocal of the
+  kernel mass inside the window:
+  \deqn{
+    \frac{1}{e(u)} = \int_W k(v-u) \, {\rm d}v
+  }{
+    1/e(u) = integral[v in W] k(v-u) dv
+  }
+  where \eqn{W} is the observation window.
+}
+\section{Smoothing kernel}{
+  By default, smoothing is performed using a Gaussian kernel.
+  
   The choice of smoothing kernel is determined by the argument \code{kernel}.
   This should be a character string giving the name of a recognised
   two-dimensional kernel
@@ -222,7 +240,8 @@
   and the arguments \code{sigma}, \code{varcov} and \code{adjust}
   are ignored. This is the default behaviour when \code{kernel} is a
   pixel image or a function.
-  
+}
+\section{Desired output}{
   If \code{at="pixels"} (the default), intensity values are
   computed at every location \eqn{u} in a fine grid,
   and are returned as a pixel image. The point pattern is first discretised 
@@ -263,7 +282,8 @@
   If \code{leaveoneout=FALSE} then the sum is taken over all \eqn{j},
   so that the intensity value at a data point includes a contribution
   from the same point.
-
+}
+\section{Weights}{
   If \code{weights} is a matrix with more than one column, then the
   calculation is effectively repeated for each column of weights. The
   result is a list of images (if \code{at="pixels"}) or a matrix of
@@ -281,39 +301,8 @@
   (object of class \code{"im"}). numerical weights for the data points
   will be extracted from this image (by looking up the pixel values
   at the locations of the data points in \code{x}).
-  
-  To select the bandwidth \code{sigma} automatically by
-  cross-validation, use
-  \code{\link{bw.diggle}},
-  \code{\link{bw.CvL}},
-  \code{\link{bw.scott}}
-  or
-  \code{\link{bw.ppl}}.
-  
-  To perform spatial interpolation of values that were observed
-  at the points of a point pattern, use \code{\link{Smooth.ppp}}.
-
-  For adaptive nonparametric estimation, see
-  \code{\link{adaptive.density}}.
-  For data sharpening, see \code{\link{sharpen.ppp}}.
-
-  To compute a relative risk surface or probability map for
-  two (or more) types of points, use \code{\link{relrisk}}.
 }
-\seealso{
-  \code{\link{bw.diggle}},
-  \code{\link{bw.CvL}},
-  \code{\link{bw.scott}}
-  \code{\link{bw.ppl}} for bandwidth selection.
-  
-  \code{\link{Smooth.ppp}},
-  \code{\link{sharpen.ppp}},
-  \code{\link{adaptive.density}},
-  \code{\link{relrisk}},
-  \code{\link{ppp.object}},
-  \code{\link{im.object}}.
-}
-\note{
+\section{The meaning of \code{density.ppp}}{
   This function is often misunderstood.
 
   The result of \code{density.ppp} is not a spatial smoothing 
@@ -341,7 +330,7 @@
   probability map or relative risk surface (the spatially-varying
   probability of a given type), use \code{\link{relrisk}}.
 }
-\section{Negative Values}{
+\section{Technical issue: Negative Values}{
   Negative and zero values of the density estimate are possible
   when \code{at="pixels"} because of numerical errors in finite-precision
   arithmetic.
@@ -352,6 +341,29 @@
 
   To ensure that the resulting density values are always positive,
   set \code{positive=TRUE}.
+}
+\seealso{
+  To select the bandwidth \code{sigma} automatically by
+  cross-validation, use
+  \code{\link{bw.diggle}},
+  \code{\link{bw.CvL}},
+  \code{\link{bw.scott}}
+  or
+  \code{\link{bw.ppl}}.
+  
+  To perform spatial interpolation of values that were observed
+  at the points of a point pattern, use \code{\link{Smooth.ppp}}.
+
+  For adaptive nonparametric estimation, see
+  \code{\link{adaptive.density}}.
+  For data sharpening, see \code{\link{sharpen.ppp}}.
+
+  To compute a relative risk surface or probability map for
+  two (or more) types of points, use \code{\link{relrisk}}.
+
+  For information about the data structures, see
+  \code{\link{ppp.object}},
+  \code{\link{im.object}}.
 }
 \examples{
   if(interactive()) {
@@ -369,7 +381,16 @@
   # evaluate intensity at points
   density(cells, 0.05, at="points")
 
+  # non-Gaussian kernel
   plot(density(cells, sigma=0.4, kernel="epanechnikov"))
+
+  if(interactive()) {
+    # see effect of changing pixel resolution
+    opa <- par(mfrow=c(1,2))
+    plot(density(cells, sigma=0.4)
+    plot(density(cells, sigma=0.4, eps=0.05))
+    par(opa)
+  }
 
   # relative risk calculation by hand (see relrisk.ppp)
   lung <- split(chorley)$lung
