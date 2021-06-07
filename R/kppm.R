@@ -144,7 +144,7 @@ kppm.ppp <- kppm.quad <-
                              rmax=rmax, algorithm=algorithm, ...),
          cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters, 
                              epsilon=epsilon, weightfun=weightfun, 
-                       rmax=rmax, ...))
+                             rmax=rmax, ...))
   ##
   h <- attr(out, "h")
   out <- append(out, list(ClusterArgs=ClusterArgs,
