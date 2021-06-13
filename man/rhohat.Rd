@@ -415,13 +415,16 @@ rhohat(object, covariate, ...)
   rho <- rhohat(X, "x")
   rho <- rhohat(X, function(x,y){x})
   plot(rho)
-  curve(exp(3+3*x), lty=3, col=2, add=TRUE)
+  curve(exp(3+3*x), lty=3, col=4, lwd=2, add=TRUE)
 
   rhoB <- rhohat(X, "x", method="reweight")
   rhoC <- rhohat(X, "x", method="transform")
 
   rhoM <- rhohat(X, "x", smoother="increasing")
-  plot(rhoM, add=TRUE, col=5)
+
+  plot(rhoM, add=TRUE, .y ~ .x, col=6)
+  legend("top", lty=c(3, 1), col=c(4, 6), lwd=c(2, 1),
+         legend=c("true", "increasing"))
 
   \testonly{rh <- rhohat(X, "x", dimyx=32)}
 
