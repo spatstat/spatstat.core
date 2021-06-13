@@ -387,7 +387,7 @@
   if(interactive()) {
     # see effect of changing pixel resolution
     opa <- par(mfrow=c(1,2))
-    plot(density(cells, sigma=0.4)
+    plot(density(cells, sigma=0.4))
     plot(density(cells, sigma=0.4, eps=0.05))
     par(opa)
   }
