@@ -811,12 +811,14 @@ resolve.2D.kernel(\dots,
 rhohatEngine(model, covariate, reference, volume, \dots,
                subset, weights, method, horvitz, smoother, resolution, 
                n, bw, adjust, from, to, 
-               bwref, covname, covunits, confidence, modelcall, callstring)
+               bwref, covname, covunits, confidence,
+               breaks,
+               modelcall, callstring)
 rhohatCalc(ZX, Zvalues, lambda, denom, \dots,
            weights, lambdaX,
            method, horvitz, smoother,
            n, bw, adjust, from, to, 
-           bwref, covname, confidence, positiveCI, markovCI,
+           bwref, covname, confidence, breaks, positiveCI, markovCI,
            covunits, modelcall, callstring, savestuff)
 rMaternInhibition(type, kappa, r, win, stationary, \dots, nsim, drop)
 rmax.Rigid(X, g)

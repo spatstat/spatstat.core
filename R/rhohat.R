@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.93 $  $Date: 2020/11/18 03:07:14 $
+#'  $Revision: 1.95 $  $Date: 2021/06/13 04:50:00 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -20,11 +20,13 @@ rhohat.ppp <- rhohat.quad <-
            baseline=NULL, weights=NULL,
            method=c("ratio", "reweight", "transform"),
            horvitz=FALSE,
-           smoother=c("kernel", "local", "decreasing", "increasing"),
+           smoother=c("kernel", "local",
+                      "decreasing", "increasing",
+                      "piecewise"),
            subset=NULL,
            dimyx=NULL, eps=NULL,
            n=512, bw="nrd0", adjust=1, from=NULL, to=NULL, 
-           bwref=bw, covname, confidence=0.95, positiveCI) {
+           bwref=bw, covname, confidence=0.95, positiveCI, breaks=NULL) {
   callstring <- short.deparse(sys.call())
   smoother <- match.arg(smoother)
   method <- match.arg(method)
@@ -74,7 +76,8 @@ rhohat.ppp <- rhohat.quad <-
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence,
-               positiveCI=positiveCI, 
+               positiveCI=positiveCI,
+               breaks=breaks,
                modelcall=modelcall, callstring=callstring)
 }
 
@@ -82,12 +85,14 @@ rhohat.ppm <- function(object, covariate, ...,
                        weights=NULL,
                        method=c("ratio", "reweight", "transform"),
                        horvitz=FALSE,
-                       smoother=c("kernel", "local", "decreasing", "increasing"),
+                       smoother=c("kernel", "local",
+                                  "decreasing", "increasing",
+                                  "piecewise"),
                        subset=NULL,
                        dimyx=NULL, eps=NULL,
                        n=512, bw="nrd0", adjust=1, from=NULL, to=NULL, 
                        bwref=bw, covname, confidence=0.95,
-                       positiveCI) {
+                       positiveCI, breaks=NULL) {
   callstring <- short.deparse(sys.call())
   smoother <- match.arg(smoother)
   method <- match.arg(method)
@@ -135,6 +140,7 @@ rhohat.ppm <- function(object, covariate, ...,
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence, positiveCI=positiveCI,
+               breaks=breaks,
                modelcall=modelcall, callstring=callstring)
 }
 
@@ -146,10 +152,13 @@ rhohatEngine <- function(model, covariate,
                          weights=NULL,
                          method=c("ratio", "reweight", "transform"),
                          horvitz=FALSE,
-                         smoother=c("kernel", "local", "decreasing", "increasing"),
+                         smoother=c("kernel", "local",
+                                    "decreasing", "increasing",
+                                    "piecewise"),
                          resolution=list(), 
                          n=512, bw="nrd0", adjust=1, from=NULL, to=NULL, 
                          bwref=bw, covname, covunits=NULL, confidence=0.95,
+                         breaks=NULL,
                          modelcall=NULL, callstring="rhohat") {
   reference <- match.arg(reference)
   # evaluate the covariate at data points and at pixels
@@ -198,6 +207,7 @@ rhohatEngine <- function(model, covariate,
                        smoother=smoother,
                        n=n, bw=bw, adjust=adjust, from=from, to=to,
                        bwref=bwref, covname=covname, confidence=confidence,
+                       breaks=breaks,
                        covunits=covunits,
                        modelcall=modelcall, callstring=callstring,
                        savestuff=savestuff)
@@ -240,9 +250,12 @@ rhohatCalc <- local({
                          weights=NULL, lambdaX,
                          method=c("ratio", "reweight", "transform"),
                          horvitz=FALSE, 
-                         smoother=c("kernel", "local", "decreasing", "increasing"),
+                         smoother=c("kernel", "local",
+                                    "decreasing", "increasing",
+                                    "piecewise"),
                          n=512, bw="nrd0", adjust=1, from=NULL, to=NULL, 
                          bwref=bw, covname, confidence=0.95,
+                         breaks=NULL,
                          positiveCI=(smoother == "local"),
                          markovCI=TRUE,
                          covunits = NULL, modelcall=NULL, callstring=NULL,
@@ -445,6 +458,9 @@ rhohatCalc <- local({
     decreasing = {
       ## .................. nonparametric maximum likelihood ............
       if(is.null(weights)) weights <- rep(1, length(ZX))
+      if(method != "ratio") 
+        warning(paste("Argument method =", sQuote(method),
+                      "is ignored when smoother =", sQuote(smoother)))
       #' observed (sorted)
       oX <- order(ZX)
       ZX <- ZX[oX]
@@ -482,12 +498,76 @@ rhohatCalc <- local({
       #'
       vvv <- hi <- lo <- NULL
       savestuff$rhofun <- rhofun
+    },
+    piecewise = {
+      ## .................. piecewise constant ............
+      if(is.null(breaks)) {
+        breaks <- pretty(c(from, to))
+      } else {
+        stopifnot(is.numeric(breaks))
+        breaks <- exactCutBreaks(c(from, to), breaks)
+      }
+      if(method != "ratio") {
+        warning(paste("Argument method =", sQuote(method),
+                      "is not implemented when smoother = 'piecewise';",
+                      "replaced by method = 'ratio'"))
+        method <- "ratio"
+      }
+      ## convert numerical covariate values to factor
+      Zvalues <- cut(Zvalues, breaks=breaks)
+      ZX      <- cut(ZX, breaks=breaks)
+      ## denominator
+      areas <- denom * tapplysum(lambda, list(Zvalues))/sum(lambda)
+      ## numerator 
+      counts <- if(is.null(weights)) {
+                  as.numeric(table(ZX))
+                } else {
+                  tapplysum(weights, list(ZX))
+                }
+      ## estimate of rho(z) for each band of z values
+      rhovals <- counts/areas
+      #' convert to a stepfun
+      rhofun <- stepfun(x = breaks, y=c(0, rhovals, 0))
+      #' evaluate on a grid
+      xlim <- c(from, to)
+      xxx <- seq(from, to, length=n)
+      yyy <- rhofun(xxx)
+      #' variance
+      vvvname <- "Variance of estimator"
+      vvvlabel <- paste("bold(Var)~hat(%s)", paren(covname), sep="")
+      varnum <- if(is.null(weights)) counts else tapplysum(weights^2, list(ZX))
+      varvals <- varnum/areas^2
+      varfun <- stepfun(x = breaks, y=c(0, varvals, 0))
+      vvv <- varfun(xxx)
+      sd <- sqrt(vvv)
+      if(!positiveCI) {
+        hi <- yyy + crit * sd
+        lo <- yyy - crit * sd
+      } else {
+        sdlog <- ifelse(yyy > 0, sd/yyy, 0)
+        sss <- exp(crit * sdlog)
+        hi <- yyy * sss
+        lo <- yyy / sss
+        if(markovCI) {
+          ## truncate extremely large confidence intervals
+          ## using Markov's Inequality
+          hi <- pmin(hi, yyy/(1-confidence))
+        }
+      }
+      ## pack up
+      savestuff$rhofun <- rhofun
+      savestuff$breaks <- breaks
     })
     ## pack into fv object
-    df <- data.frame(xxx=xxx, rho=yyy)
+    df <- data.frame(xxx=xxx, rho=yyy, ave=kappahat)
     names(df)[1] <- covname
-    desc <- c(paste("covariate", covname), "Estimated intensity")
-    labl <- c(covname, paste("hat(%s)", paren(covname), sep=""))
+    desc <- c(paste("Covariate", covname),
+              "Estimated intensity",
+              "Average intensity")
+    parencov <- paren(covname)
+    labl <- c(covname,
+              paste0("hat(%s)",  parencov),
+              "bar(%s)")
     if(did.variance <- !is.null(vvv)) {
       df <- cbind(df, data.frame(var=vvv, hi=hi, lo=lo))
       desc <- c(desc,
@@ -496,24 +576,24 @@ rhohatCalc <- local({
                 paste("Lower limit of", CIblurb))
       labl <- c(labl,
                 vvvlabel,
-                paste("%s[hi]", paren(covname), sep=""),
-                paste("%s[lo]", paren(covname), sep=""))
+                paste0("%s[hi]", parencov),
+                paste0("%s[lo]", parencov))
     }
     rslt <- fv(df,
                argu=covname,
                ylab=substitute(rho(X), list(X=as.name(covname))),
                valu="rho",
                fmla= as.formula(paste(". ~ ", covname)),
-               alim=range(ZX),
+               alim=c(from, to),
                labl=labl,
                desc=desc,
                unitname=covunits,
                fname="rho",
                yexp=substitute(rho(X), list(X=as.name(covname))))
     if(did.variance) {
-      fvnames(rslt, ".")  <- c("rho", "hi", "lo")
+      fvnames(rslt, ".")  <- c("rho", "ave", "hi", "lo")
       fvnames(rslt, ".s") <- c("hi", "lo")
-    } else fvnames(rslt, ".")  <- "rho"
+    } else fvnames(rslt, ".")  <- c("rho", "ave")
     ## pack up
     class(rslt) <- c("rhohat", class(rslt))
     ## add info
@@ -540,6 +620,8 @@ rhohatCalc <- local({
 
 print.rhohat <- function(x, ...) {
   s <- attr(x, "stuff")
+  smoother <- s$smoother
+  method   <- s$method
   splat("Intensity function estimate (class rhohat)",
         "for the covariate", s$covname)
   switch(s$reference,
@@ -549,38 +631,53 @@ print.rhohat <- function(x, ...) {
            splat("Function values are relative to fitted model")
            print(s$modelcall)
          })
-  NPMLE <- s$smoother %in% c("increasing", "decreasing")
+  cat("Type of estimate: ")
+  switch(smoother,
+         kernel = ,
+         local  = splat("Smooth function of covariate"),
+         increasing = splat("Increasing function of covariate"),
+         decreasing = splat("Decreasing function of covariate"),
+         piecewise  = splat("Piecewise-constant function of covariate"),
+         splat("unknown smoother =", sQuote(smoother))
+         )
   cat("Estimation method: ")
-  if(NPMLE) splat("nonparametric maximum likelihood") else
-  switch(s$method,
-         ratio={
-           splat("ratio of fixed-bandwidth kernel smoothers")
-         },
-         reweight={
-           splat("fixed-bandwidth kernel smoother of weighted data")
-         },
-         transform={
-           splat("probability integral transform,",
-                 "edge-corrected fixed bandwidth kernel smoothing",
-                 "on [0,1]")
-         },
-         cat("UNKNOWN\n"))
-  if(identical(s$horvitz, TRUE))
-    splat("\twith Horvitz-Thompson weight")
-  cat("Smoother: ")
-  switch(s$smoother,
-         kernel={
-           splat("Kernel density estimator")
+  switch(smoother,
+         piecewise  = splat("average intensity in sub-regions"),
+         increasing = ,
+         decreasing = splat("nonparametric maximum likelihood"),
+         kernel = {
+           switch(method,
+                  ratio = splat("ratio of fixed-bandwidth kernel smoothers"),
+                  reweight={
+                    splat("fixed-bandwidth kernel smoother of weighted data")
+                  },
+                  transform={
+                    splat("probability integral transform,",
+                          "edge-corrected fixed bandwidth kernel smoothing",
+                          "on [0,1]")
+                  },
+                  splat("Unknown method =", sQuote(s$method)))
+           if(isTRUE(s$horvitz))
+             splat("\twith Horvitz-Thompson weight")
            splat("\tActual smoothing bandwidth sigma = ",
                  signif(s$sigma,5))
          },
-         local = splat("Local likelihood density estimator"),
-         increasing = splat("Increasing function of covariate"),
-         decreasing = splat("Decreasing function of covariate"),
-         splat("UNKNOWN")
-         )
-  if(!NPMLE) {
-    positiveCI <- s$positiveCI %orifnull% (s$smoother == "local")
+         local = {
+           switch(method,
+                  ratio = splat("ratio of local likelihood smoothers"),
+                  reweight={
+                    splat("local likelihood smoother of weighted data")
+                  },
+                  transform={
+                    splat("probability integral transform followed by",
+                          "local likelihood smoothing on [0,1]")
+                  },
+                  splat("Unknown method =", sQuote(s$method)))
+           if(isTRUE(s$horvitz))
+             splat("\twith Horvitz-Thompson weight")
+         })
+  if(!(smoother %in% c("increasing", "decreasing"))) {
+    positiveCI <- s$positiveCI %orifnull% (smoother == "local")
     confidence <- s$confidence %orifnull% 0.95
     splat("Pointwise", paste0(100 * confidence, "%"),
           "confidence bands for rho(x)\n\t based on asymptotic variance of",

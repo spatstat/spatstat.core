@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.1-2.004
+        CHANGES IN spatstat.core VERSION 2.1-2.006
 
 OVERVIEW
 
@@ -11,6 +11,8 @@ OVERVIEW
     o estimation of the spatial covariance function of a pixel image
 
     o simulation of the product shot noise Cox process.
+
+    o extensions to rhohat
     
 NEW FUNCTIONS
 
@@ -33,6 +35,13 @@ NEW FUNCTIONS
     between random points in a window.
 
 SIGNIFICANT USER-VISIBLE CHANGES
+
+    o rhohat
+    New option (smoother='piecewise') computes a piecewise-constant
+    estimate of rho(z).
+    
+    o rhohat
+    The result now includes the 'average' intensity rho.
 
     o distcdf
     Arguments which are NULL will be treated as missing.
