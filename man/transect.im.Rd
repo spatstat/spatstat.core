@@ -9,7 +9,7 @@
 }
 \usage{
 transect.im(X, ..., from="bottomleft", to="topright",
-            nsample=512, click=FALSE, add=FALSE)
+            nsample=512, click=FALSE, add=FALSE, curve=NULL)
 }
 \arguments{
   \item{X}{
@@ -39,6 +39,10 @@ transect.im(X, ..., from="bottomleft", to="topright",
     whether to perform interactive tasks on the current plot (\code{add=TRUE})
     or to start by plotting \code{X} (\code{add=FALSE}).
   }
+  \item{curve}{
+    Optional. A specification of a curved transect. See the section
+    on Curved Transect.
+  }
 }
 \details{
   The pixel values of the image \code{X} along a line segment 
@@ -52,27 +56,37 @@ transect.im(X, ..., from="bottomleft", to="topright",
   \code{from} and \code{to}. The default is a diagonal transect from
   bottom left to top right of the frame.
 }
+\section{Curved Transect}{
+  If \code{curve} is given, then the transect will be a curve.
+  The argument \code{curve} should be a list with the following
+  arguments:
+  \describe{
+    \item{f}{A function in the \R language with one argument \code{t}.}
+    \item{tlim}{A numeric vector of length 2 giving the range of values
+      of the argument \code{t}.}
+    \code{tname}{(Optional) a character string giving the symbolic name
+      of the function argument \code{t}; defaults to \code{"t"}.}
+    \item{tdescrip}{(Optional) a character string giving a short
+      description of the function argument \code{t}; defaults to
+      \code{"curve parameter"}.}
+  }
+  The function \code{f} must return a 2-column matrix or data frame
+  specifying the spatial coordinates \code{(x,y)} of locations along the
+  curve, determined by the values of the input argument \code{t}.
+}
 \value{
   An object of class \code{"fv"} which can be plotted.
 }
 \author{
   \adrian
-  
-  
   and \rolf
-  
 }
 \seealso{
   \code{\link{im}}
 }
 \examples{
-  Z <- density(redwood)
+  Z <- bei.extra$elev
   plot(transect.im(Z))
-  \dontrun{
-   if(FALSE) {
-    plot(transect.im(Z, click=TRUE))
-   }
-  }
 }
 \keyword{spatial}
 \keyword{manip}

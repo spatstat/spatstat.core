@@ -1,9 +1,15 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.001
+        CHANGES IN spatstat.core VERSION 2.2-0.002
 
 OVERVIEW
 
-    o Nothing yet!
+    o curved transects of images.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o transect.im
+    New argument 'curve' allows the user to specify a curved transect.
+
 
         CHANGES IN spatstat.core VERSION 2.2-0
 
