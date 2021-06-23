@@ -1,15 +1,21 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.002
+        CHANGES IN spatstat.core VERSION 2.2-0.003
 
 OVERVIEW
 
     o curved transects of images.
 
+    o summary method for 'objsurf'
+
+NEW FUNCTIONS
+
+    o summary.objsurf, print.summary.objsurf
+    Summary method for 'objsurf'
+    
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o transect.im
     New argument 'curve' allows the user to specify a curved transect.
-
 
         CHANGES IN spatstat.core VERSION 2.2-0
 
