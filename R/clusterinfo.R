@@ -81,16 +81,14 @@
          },
          dpcf= function(par,rvals, ..., strict=TRUE){
            if(strict && any(par <= 0)){
-             dx <- rep.int(Inf, length(rvals))
              dsigma2 <- rep.int(Inf, length(rvals))
              dkappa <- rep.int(Inf, length(rvals))
            } else {
-             dx <- -exp(-rvals^2/(4 * par[2L]))*rvals/(8 * pi * par[1L] * par[2L]^2)
              dsigma2 <- exp(-rvals^2/(4 * par[2L])) * (rvals/(4^2 * pi * par[1L] * par[2L]^3) - 1/(4 * pi * par[1L] * par[2L]^2))
              dkappa <- -exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L]^2 * par[2L])
            }
-           out <- rbind(dx, dkappa, dsigma2)
-           rownames(out) <- c("x","kappa","sigma2")
+           out <- rbind(dkappa, dsigma2)
+           rownames(out) <- c("kappa","sigma2")
            return(out)
          },
          ## sensible starting parameters
@@ -195,16 +193,14 @@
            g <- funaux$g
            gprime <- funaux$gprime
            if(any(par <= 0)){
-             dx <- rep.int(Inf, length(rvals))
              dkappa <- rep.int(Inf, length(rvals))
              dR <- rep.int(Inf, length(rvals))
            } else {
-             dx <- (1/(pi * kappa * R^2)) * gprime(rvals/(2 * R))/(2*R)
              dkappa <- -g(rvals/(2 * R)) / (pi * kappa^2 * R^2)
              dR <- -2*g(rvals/(2 * R))/(pi * kappa * R^3) - (1/(pi * kappa * R^2)) * gprime(rvals/(2 * R))*rvals/(2*R^2)
            }
-           out <- rbind(dx, dkappa, dR)
-           rownames(out) <- c("x","kappa","R")
+           out <- rbind(dkappa, dR)
+           rownames(out) <- c("kappa","R")
            return(out)
          },
          funaux=list(
@@ -332,16 +328,14 @@
          },
          dpcf= function(par,rvals, ...){
            if(any(par <= 0)){
-             dx <- rep.int(Inf, length(rvals))
              dkappa <- rep.int(Inf, length(rvals))
              deta2 <- rep.int(Inf, length(rvals))
            } else {
-             dx <- -1.5 *  (1 + rvals^2/par[2L])^(-2.5)*2*rvals/(2 * pi * par[2L]^2 * par[1L])
              dkappa <- -(1 + rvals^2/par[2L])^(-1.5)/(2 * pi * par[2L] * par[1L]^2)
              deta2 <- 1.5 * rvals^2 * (1 + rvals^2/par[2L])^(-2.5)/(2 * par[2L]^3 * par[1L] * pi) - (1 + rvals^2/par[2L])^(-1.5)/(2*pi*par[1L]*par[2L]^2)
            }
-           out <- rbind(dx, dkappa, deta2)
-           rownames(out) <- c("x","kappa","eta2")
+           out <- rbind(dkappa, deta2)
+           rownames(out) <- c("kappa","eta2")
            return(out)
          },
          selfstart = function(X) {
@@ -668,11 +662,10 @@
            if(!identical(model, "exponential")) {
              stop("Gradient of the pcf not available for this model.")
            } 
-           dx <- -par[1L]*exp(par[1L]*exp(-rvals/par[2L]))*exp(-rvals/par[2L])/par[2L]
            dsigma2 <- exp(-rvals/par[2L]) * exp(par[1L]*exp(-rvals/par[2L]))
            dalpha <- rvals * par[1L] * exp(-rvals/par[2L]) * exp(par[1L]*exp(-rvals/par[2L]))/par[2L]^2
-           out <- rbind(dx, dsigma2, dalpha)
-           rownames(out) <- c("x","sigma2","alpha")
+           out <- rbind(dsigma2, dalpha)
+           rownames(out) <- c("sigma2","alpha")
            return(out)
          },
          parhandler=function(model = "exponential", ...) {

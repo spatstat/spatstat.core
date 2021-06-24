@@ -142,9 +142,10 @@ kppm.ppp <- kppm.quad <-
          palm   = kppmPalmLik(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, weightfun=weightfun, 
                              rmax=rmax, algorithm=algorithm, ...),
-         cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters, 
-                             epsilon=epsilon, weightfun=weightfun, 
-                             rmax=rmax, ...))
+         cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
+                             control=control, epsilon=epsilon, 
+                             weightfun=weightfun, rmax=rmax, 
+                             ...))
   ##
   h <- attr(out, "h")
   out <- append(out, list(ClusterArgs=ClusterArgs,
@@ -1973,7 +1974,9 @@ psib.kppm <- function(object) {
 
 
 # needs non linear equation solver nleqslv
-kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.01, DPP=NULL, ..., pint=NULL) {
+kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, 
+                       rmax=NULL, epsilon=0.01, DPP=NULL, ..., 
+                       startparm=NULL, globStrat="dbldog", pint=NULL) {
   W <- as.owin(X)
   
   if(is.null(rmax)) # specified for numerical stability
@@ -2070,6 +2073,9 @@ kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.0
   
   # determine starting parameter values
   startpar <- selfstart(X)
+  if(!is.null(startparm)){
+    startpar <- startparm
+  }
   startpar.human <- startpar
   pcftheo <- pcfun
   dpcftheo <- dpcfun
@@ -2099,7 +2105,7 @@ kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.0
   
   
   #' ..........  define objective function ......................
-  # create local function to evaluate  weight(epsilon*M/|pcf(d)-1|)
+  # create local function to evaluate  weight(epsilon*M/(pcf(d)-1))
   weight <- function(d, par) {
     y <- paco(d=d, par=par)
     # calculate M
@@ -2128,19 +2134,19 @@ kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.0
     
     for(i in 1:p){
       parname <- names(par)[i]
-      # weighted derivatives wrt parname
-      dpcfweighted <- function(d){ 
-        y <- dpaco(d = d, par = par)[parname,]
+      # weighted derivatives wrt log of parname
+      dpcfweighted <- function(d, par){ 
+        y <- dpaco(d = d, par = par)[parname,]*exp(par[i])
         return(y*weight(d = d, par = par))
       } 
-      temp[i] <- sum(dpcfweighted(d = dIJcurrent)/paco(d = dIJcurrent, par = par)) - gscale * stieltjes(dpcfweighted,cdf)$f
+      temp[i] <- sum(dpcfweighted(d = dIJcurrent, par=par)/paco(d = dIJcurrent, par = par)) - gscale * stieltjes(dpcfweighted,cdf, par=par)$f
     }
-
     return(temp)
   }
   
   ## .................   optimize it ..............................
-  opt <- nleqslv(startpar, wlogcl2score, paco=paco, dpaco=dpaco, 
+  opt <- nleqslv(x = startpar, fn = wlogcl2score, global=globStrat, control=control, 
+                 paco=paco, dpaco=dpaco, 
                  dIJ=dIJ, gscale=gscale, epsilon=epsilon)
     
   ## .......... extract fitted parameters .....................
@@ -2164,8 +2170,8 @@ kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.0
                 rmax      = rmax,
                 epsilon   = epsilon,
                 objfun    = wlogcl2score,
-                objargs   = NULL,
-                maxwlogcl  = opt$fvec)
+                objargs   = control,
+                estfunc  = opt$fvec)
     # pack up
     clusters <- update(clusters, as.list(exp(opt$x)))
     result <- list(Xname      = Xname,
@@ -2197,13 +2203,13 @@ kppmCLadap <- function(X, Xname, po, clusters, weightfun, rmax=NULL, epsilon=0.0
   }
   # all info that depends on the fitting method:
   Fit <- list(method    = "cladap",
-              clfit     = opt,
+              cladapfit = opt,
               weightfun = weightfun,
               rmax      = rmax,
               epsilon   = epsilon,
               objfun    = wlogcl2score,
-              objargs   = NULL,
-              maxwlogcl  = opt$fvec)
+              objargs   = control,
+              estfunc  = opt$fvec)
   # pack up
   result <- list(Xname      = Xname,
                  X          = X,
