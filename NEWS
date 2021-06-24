@@ -1,11 +1,13 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.003
+        CHANGES IN spatstat.core VERSION 2.2-0.004
 
 OVERVIEW
 
     o curved transects of images.
 
     o summary method for 'objsurf'
+
+    o Minor bug fixes.
 
 NEW FUNCTIONS
 
@@ -17,6 +19,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o transect.im
     New argument 'curve' allows the user to specify a curved transect.
 
+BUG FIXES
+
+    o rhohat
+    Rug plot (produced by plot.rhohat) was incorrect
+    when rhohat was called with method="piecewise".
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.2-0
 
 OVERVIEW

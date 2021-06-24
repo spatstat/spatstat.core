@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.95 $  $Date: 2021/06/13 04:50:00 $
+#'  $Revision: 1.96 $  $Date: 2021/06/24 03:45:41 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -514,15 +514,15 @@ rhohatCalc <- local({
         method <- "ratio"
       }
       ## convert numerical covariate values to factor
-      Zvalues <- cut(Zvalues, breaks=breaks)
-      ZX      <- cut(ZX, breaks=breaks)
+      cutZvalues <- cut(Zvalues, breaks=breaks)
+      cutZX      <- cut(ZX,      breaks=breaks)
       ## denominator
-      areas <- denom * tapplysum(lambda, list(Zvalues))/sum(lambda)
+      areas <- denom * tapplysum(lambda, list(cutZvalues))/sum(lambda)
       ## numerator 
       counts <- if(is.null(weights)) {
-                  as.numeric(table(ZX))
+                  as.numeric(table(cutZX))
                 } else {
-                  tapplysum(weights, list(ZX))
+                  tapplysum(weights, list(cutZX))
                 }
       ## estimate of rho(z) for each band of z values
       rhovals <- counts/areas
@@ -535,7 +535,7 @@ rhohatCalc <- local({
       #' variance
       vvvname <- "Variance of estimator"
       vvvlabel <- paste("bold(Var)~hat(%s)", paren(covname), sep="")
-      varnum <- if(is.null(weights)) counts else tapplysum(weights^2, list(ZX))
+      varnum <- if(is.null(weights)) counts else tapplysum(weights^2, list(cutZX))
       varvals <- varnum/areas^2
       varfun <- stepfun(x = breaks, y=c(0, varvals, 0))
       vvv <- varfun(xxx)
