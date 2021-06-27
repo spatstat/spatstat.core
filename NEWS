@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.004
+        CHANGES IN spatstat.core VERSION 2.2-0.005
 
 OVERVIEW
 
@@ -25,7 +25,13 @@ BUG FIXES
     Rug plot (produced by plot.rhohat) was incorrect
     when rhohat was called with method="piecewise".
     Fixed.
-    
+
+    o clusterfield
+    Values of the cluster field were slightly incorrect (slightly higher
+    than the correct values) near the edge of the window,
+    because an 'edge correction' was mistakenly applied.
+    Fixed.
+
         CHANGES IN spatstat.core VERSION 2.2-0
 
 OVERVIEW

@@ -57,24 +57,25 @@ clusterfield.character <- function(model, locations = NULL, ...){
 }
 
 clusterfield.function <- function(model, locations = NULL, ..., mu = NULL) {
-    if(is.null(locations)){
-        locations <- ppp(.5, .5, window=square(1))
-    }
-    if(!inherits(locations, "ppp"))
-        stop("Argument ", sQuote("locations"), " must be a point pattern (ppp).")
+  if(is.null(locations)){
+    locations <- ppp(.5, .5, window=square(1))
+  } else if(!is.ppp(locations))
+    stop("Argument ", sQuote("locations"), " must be a point pattern (ppp).")
 
-    if("sigma" %in% names(list(...)) && "sigma" %in% names(formals(model)))
-        warning("Currently ", sQuote("sigma"),
-                "cannot be passed as an extra argument to the kernel function. ",
-                "Please redefine the kernel function to use another argument name.")
+  if("sigma" %in% names(list(...)) && "sigma" %in% names(formals(model)))
+    warning("Currently ", sQuote("sigma"),
+            "cannot be passed as an extra argument to the kernel function. ",
+            "Please redefine the kernel function to use another argument name.")
 
-    rslt <- density(locations, kernel=model, ...)
-    if(is.null(mu))
-        return(rslt)
-    mu <- as.im(mu, W=rslt)
-    if(min(mu)<0)
-        stop("Cluster reference intensity ", sQuote("mu"), " is negative.")
-    return(rslt*mu)
+  rslt <- density(locations, kernel=model, ..., edge=FALSE)
+  if(is.null(mu))
+    return(rslt)
+  
+  mu <- as.im(mu, W=rslt)
+  if(min(mu)<0)
+    stop("Cluster reference intensity ", sQuote("mu"), " is negative.")
+
+  return(rslt*mu)
 }
 
 clusterradius <- function(model, ...){

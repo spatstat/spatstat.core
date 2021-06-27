@@ -37,7 +37,8 @@
   }
   \item{correction}{
     Character string specifying the type of correction to use.
-    The options are "periodic" (default) and "border". See Details.
+    The options are \code{"periodic"} (default) and \code{"border"}.
+    See Details.
   }
   \item{rbord}{
     Numeric value specifying the extent of the border correction if this
@@ -110,8 +111,14 @@
   \code{\link[stats]{simulate}}
 }
 \examples{
-model <- dppGauss(lambda=100, alpha=.05, d=2)
-nsim <- if(interactive()) 2 else 1
+if(interactive()) {
+   nsim <- 2
+   lam <- 100
+} else {
+   nsim <- 1
+   lam <- 30
+}
+model <- dppGauss(lambda=lam, alpha=.05, d=2)
 simulate(model, nsim)
 }
 \keyword{datagen}
