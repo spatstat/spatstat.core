@@ -6,6 +6,7 @@
 \alias{summary.slrm}
 \alias{terms.slrm}
 \alias{labels.slrm}
+\alias{deviance.slrm}
 \title{
   Methods for Spatial Logistic Regression Models
 }
@@ -18,7 +19,8 @@
 \method{summary}{slrm}(object, ...)
 \method{terms}{slrm}(x, \dots)
 \method{labels}{slrm}(object, \dots)
-\method{update}{slrm}(object, ..., evaluate = TRUE, env = parent.frame())
+\method{deviance}{slrm}(object, \dots)
+\method{update}{slrm}(object, \dots, evaluate = TRUE, env = parent.frame())
 }
 \arguments{
   \item{x,object}{
@@ -39,12 +41,13 @@
 }
 \details{
   These functions are methods for the generic commands
-  \code{\link{formula}},
-  \code{\link{update}},
+  \code{\link[stats]{formula}},
+  \code{\link[stats]{update}},
   \code{\link{print}},
   \code{\link{summary}},
-  \code{\link{terms}} and
-  \code{\link{labels}}
+  \code{\link[stats]{terms}},
+  \code{\link{labels}} and 
+  \code{\link[stats]{deviance}}
   for the class \code{"slrm"}.
 
   An object of class \code{"slrm"} represents a fitted
@@ -67,7 +70,8 @@
   coef(fit)
   formula(fit)
   tf <- terms(fit)  
-  labels(fit)  
+  labels(fit)
+  deviance(fit) 
 }
 \keyword{spatial}
 \keyword{methods}

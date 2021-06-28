@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.40 $   $Date: 2021/04/30 08:42:59 $
+#  $Revision: 1.41 $   $Date: 2021/06/28 03:09:28 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -555,6 +555,11 @@ labels.slrm <- function(object, ...) {
   okterms <- unique(ass[coef.ok & relevant])
   return(lab[okterms])
 }
+
+deviance.slrm <- function(object, ...) {
+  deviance(object$Fit$FIT, ...)
+}
+
 
 extractAIC.slrm <- function (fit, scale = 0, k = 2, ...)
 {

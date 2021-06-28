@@ -79,6 +79,7 @@
 \alias{equalpairs}          
 \alias{evalCovar}
 \alias{evalCovar.ppm}
+\alias{evalCovar.slrm}
 \alias{evalCovariate}
 \alias{evalInteraction}
 \alias{evalInterEngine}
@@ -521,6 +522,9 @@ evalCovar(model, covariate, \dots)
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset) 
+\method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
+          jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
 evalCovariate(covariate, locations)
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
                 precomputed,savecomputed)
@@ -809,7 +813,8 @@ resid1panel(observedX, observedV,
 resolve.2D.kernel(\dots,
             sigma, varcov, x, mindist, adjust, bwfun, allow.zero)
 rhohatEngine(model, covariate, reference, volume, \dots,
-               subset, weights, method, horvitz, smoother, resolution, 
+               subset, weights, method, horvitz, smoother,
+               resolution, evalCovarArgs,
                n, bw, adjust, from, to, 
                bwref, covname, covunits, confidence,
                breaks,

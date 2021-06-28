@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.005
+        CHANGES IN spatstat.core VERSION 2.2-0.006
 
 OVERVIEW
 
@@ -7,12 +7,23 @@ OVERVIEW
 
     o summary method for 'objsurf'
 
+    o more support for spatial logistic regression models.
+
     o Minor bug fixes.
 
 NEW FUNCTIONS
 
     o summary.objsurf, print.summary.objsurf
     Summary method for 'objsurf'
+
+    o rhohat.slrm
+    Method for 'rhohat' for spatial logistic regression models.
+
+    o response
+    Generic function which extracts the values of the response
+    in a fitted model. There are methods for lm, glm (which extract the
+    numeric vector of responses), and ppm, kppm, slrm, lppm and mppm
+    (which extract the original data point pattern).
     
 SIGNIFICANT USER-VISIBLE CHANGES
 

@@ -3,6 +3,7 @@
 \alias{rhohat.ppp}
 \alias{rhohat.quad}
 \alias{rhohat.ppm}
+\alias{rhohat.slrm}
 \concept{Resource Selection Function}
 \concept{Prospectivity}
 \title{
@@ -48,13 +49,23 @@ rhohat(object, covariate, ...)
        bwref=bw,
        covname, confidence=0.95, positiveCI, breaks=NULL)
 
+\method{rhohat}{slrm}(object, covariate, ...,
+       weights=NULL,
+       method=c("ratio", "reweight", "transform"),
+       horvitz=FALSE,
+       smoother=c("kernel", "local", "decreasing", "increasing", "piecewise"),
+       subset=NULL, 
+       n = 512, bw = "nrd0", adjust=1, from = NULL, to = NULL,
+       bwref=bw,
+       covname, confidence=0.95, positiveCI, breaks=NULL)
+
 }
 \arguments{
   \item{object}{
     A point pattern (object of class \code{"ppp"} or \code{"lpp"}),
     a quadrature scheme (object of class \code{"quad"})
-    or a fitted point process model (object of class \code{"ppm"}
-    or \code{"lppm"}).
+    or a fitted point process model (object of class \code{"ppm"},
+    \code{"slrm"} or \code{"lppm"}).
   }
   \item{covariate}{
     Either a \code{function(x,y)} or a pixel image (object of
@@ -428,7 +439,7 @@ rhohat(object, covariate, ...)
 
   \testonly{rh <- rhohat(X, "x", dimyx=32)}
 
-  fit <- ppm(X, ~x)
+  fit <- ppm(X ~x)
   rr <- rhohat(fit, "y")
 
 }
