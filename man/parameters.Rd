@@ -2,6 +2,7 @@
 \alias{parameters}
 \alias{parameters.dppm}
 \alias{parameters.kppm}
+\alias{parameters.slrm}
 \alias{parameters.ppm}
 \alias{parameters.profilepl}
 \alias{parameters.interact}
@@ -20,6 +21,8 @@ parameters(model, \dots)
 \method{parameters}{dppm}(model, \dots)
 
 \method{parameters}{kppm}(model, \dots)
+
+\method{parameters}{slrm}(model, \dots)
 
 \method{parameters}{ppm}(model, \dots)
 

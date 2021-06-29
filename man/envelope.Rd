@@ -3,6 +3,7 @@
 \alias{envelope.ppp}
 \alias{envelope.ppm}
 \alias{envelope.kppm}
+\alias{envelope.slrm}
 \title{Simulation Envelopes of Summary Function}
 \description{
   Computes simulation envelopes of a summary function.
@@ -46,13 +47,25 @@
   nsim2=nsim, VARIANCE=FALSE, nSD=2, Yname=NULL, 
   maxnerr=nsim, rejectNA=FALSE, silent=FALSE,
   do.pwrong=FALSE, envir.simul=NULL)
+
+  \method{envelope}{slrm}(Y, fun=Kest, nsim=99, nrank=1, \dots, 
+  funargs=list(), funYargs=funargs,
+  simulate=NULL,
+  verbose=TRUE, clipdata=TRUE,
+  transform=NULL, global=FALSE, ginterval=NULL, use.theory=NULL, 
+  alternative=c("two.sided", "less", "greater"), 
+  scale=NULL, clamp=FALSE, 
+  savefuns=FALSE, savepatterns=FALSE,
+  nsim2=nsim, VARIANCE=FALSE, nSD=2, Yname=NULL, 
+  maxnerr=nsim, rejectNA=FALSE, silent=FALSE,
+  do.pwrong=FALSE, envir.simul=NULL)
 }
 \arguments{
   \item{Y}{
     Object containing point pattern data.
     A point pattern (object of class
     \code{"ppp"}) or a fitted point process model
-    (object of class \code{"ppm"} or \code{"kppm"}).
+    (object of class \code{"ppm"}, \code{"kppm"} or \code{"slrm"}).
   }
   \item{fun}{
     Function that computes the desired summary statistic
@@ -286,7 +299,7 @@
   \eqn{K} function for 39 simulations of CSR. 
   
   The \code{envelope} function is generic, with methods for
-  the classes \code{"ppp"}, \code{"ppm"} and \code{"kppm"}
+  the classes \code{"ppp"}, \code{"ppm"}, \code{"kppm"} and \code{"slrm"}
   described here. There are also methods for the classes \code{"pp3"},
   \code{"lpp"} and \code{"lppm"} which are described separately
   under \code{\link{envelope.pp3}}
@@ -311,7 +324,7 @@
     relative frequencies of marks in \code{Y}.)
     \item
     If \code{Y} is a fitted point process model (an object of class
-    \code{"ppm"} or \code{"kppm"}) and \code{simulate=NULL},
+    \code{"ppm"} or \code{"kppm"} or \code{"slrm"}) and \code{simulate=NULL},
     then this routine generates \code{nsim} simulated
     realisations of that model.
     \item

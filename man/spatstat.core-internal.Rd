@@ -158,7 +158,8 @@
 \alias{Krect.engine}
 \alias{Kount}
 \alias{Kwtsum}               
-\alias{Kpcf.kppm}               
+\alias{Kpcf.kppm}
+\alias{Kmodel.slrm}
 \alias{killinteraction}
 \alias{km.rs.opt}
 \alias{kppmComLik}
@@ -205,6 +206,7 @@
 \alias{partialModelMatrix}
 \alias{pcf3engine}
 \alias{pcfmulti.inhom}
+\alias{pcfmodel.slrm}
 \alias{ploterodewin}
 \alias{ploterodeimage}
 \alias{plot.addvar}
@@ -609,6 +611,7 @@ Krect.engine(X, rmax, nr, correction, weights,
 Kount(dIJ, bI, b, breaks)
 Kwtsum(dIJ, bI, wIJ, b, w, breaks, fatal)
 Kpcf.kppm(model, what)
+\method{Kmodel}{slrm}(model, \dots)
 killinteraction(model)
 km.rs.opt(o, cc, d, breaks, KM, RS)
 kppmComLik(X, Xname, po, clusters, control, weightfun, rmax,
@@ -698,6 +701,7 @@ pcfmulti.inhom(X, I, J, lambdaI = NULL, lambdaJ = NULL, \dots,
                sigma = NULL, varcov = NULL,
                Iname = "points satisfying condition I",
                Jname = "points satisfying condition J")
+\method{pcfmodel}{slrm}(model, \dots)
 ploterodewin(W1, W2, col.edge, col.inside, do.plot, \dots)
 ploterodeimage(W, Z, \dots, Wcol, rangeZ, colsZ, do.plot)
 \method{plot}{addvar}(x, \dots, do.points=FALSE)

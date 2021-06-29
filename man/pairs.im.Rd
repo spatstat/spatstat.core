@@ -15,6 +15,7 @@
     Any number of arguments, each of which is either
     a pixel image (object of class \code{"im"})
     or a named argument to be passed to \code{\link{pairs.default}}.
+    Alternatively, a single argument which is a list of pixel images.
   }
   \item{plot}{
     Logical. If \code{TRUE}, the scatterplot matrix is plotted.
@@ -85,6 +86,7 @@
   \code{\link{panel.contour}},
   \code{\link{panel.image}},
   \code{\link{plot.im}},
+  \code{\link{cov.im}},
   \code{\link{im}},
   \code{\link{par}}
 }

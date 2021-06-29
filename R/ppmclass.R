@@ -4,7 +4,7 @@
 #	Class 'ppm' representing fitted point process models.
 #
 #
-#	$Revision: 2.149 $	$Date: 2021/02/06 09:02:36 $
+#	$Revision: 2.150 $	$Date: 2021/06/29 02:28:26 $
 #
 #       An object of class 'ppm' contains the following:
 #
@@ -661,7 +661,7 @@ pseudoR2 <- function(object, ...) {
   UseMethod("pseudoR2")
 }
 
-pseudoR2.ppm <- function(object, ..., keepoffset=TRUE) {
+pseudoR2.slrm <- pseudoR2.ppm <- function(object, ..., keepoffset=TRUE) {
   dres <- deviance(object, ..., warn=FALSE)
   nullfmla <- . ~ 1
   if(keepoffset && has.offset.term(object)) {

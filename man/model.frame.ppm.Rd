@@ -2,6 +2,7 @@
 \alias{model.frame.ppm}
 \alias{model.frame.kppm}
 \alias{model.frame.dppm}
+\alias{model.frame.slrm}
 \title{
 Extract the Variables in a Point Process Model
 }
@@ -17,11 +18,13 @@ Extract the Variables in a Point Process Model
 
  \method{model.frame}{dppm}(formula, ...)
 
+ \method{model.frame}{slrm}(formula, ...)
+
 }
 \arguments{
   \item{formula}{
     A fitted point process model.
-    An object of class \code{"ppm"}, \code{"kppm"},
+    An object of class \code{"ppm"}, \code{"kppm"}, \code{"slrm"},
     or \code{"dppm"}.
   }
   \item{\dots}{
@@ -32,7 +35,7 @@ Extract the Variables in a Point Process Model
   The function \code{\link{model.frame}} is generic.
   These functions are method for \code{\link{model.frame}}
   for fitted point process models (objects of class \code{"ppm"},
-  \code{"kppm"}, 
+  \code{"kppm"}, \code{"slrm"},
   or \code{"dppm"}).
   The first argument should be a fitted point process model;
   it has to be named \code{formula} for consistency with the generic
@@ -59,6 +62,7 @@ Extract the Variables in a Point Process Model
   \code{\link{ppm}},
   \code{\link{kppm}},
   \code{\link{dppm}},
+  \code{\link{slrm}},
   \code{\link{model.frame}},
   \code{\link{model.matrix.ppm}}
 }
@@ -67,6 +71,8 @@ Extract the Variables in a Point Process Model
   mf <- model.frame(fit)
   kfit <- kppm(redwood ~ x, "Thomas")
   kmf <- model.frame(kfit)
+  sfit <- slrm(cells ~ x)
+  smf <- model.frame(sfit)
 }
 \author{
   \spatstatAuthors.

@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.41 $   $Date: 2021/06/28 03:09:28 $
+#  $Revision: 1.46 $   $Date: 2021/06/29 04:13:33 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -418,6 +418,12 @@ fitted.slrm <- function(object, ...) {
   predict(object, type="probabilities")
 }
 
+intensity.slrm <- function(X, ...) {
+  Z <- predict(X, type="intensity", ..., newdata=NULL, window=NULL)
+  if(is.stationary(X)) Z <- mean(Z)
+  return(Z)
+}
+
 predict.slrm <- function(object, ..., type="intensity",
                          newdata=NULL, window=NULL) {
   type <- pickoption("type", type,
@@ -568,6 +574,12 @@ extractAIC.slrm <- function (fit, scale = 0, k = 2, ...)
     c(edf, aic + (k - 2) * edf)
 }
 
+model.frame.slrm <- function(formula, ...) {
+  FIT <- formula$Fit$FIT
+  mf <- model.frame(FIT, ...)
+  return(mf)
+}
+
 model.matrix.slrm <- function(object,..., keepNA=TRUE) {
   FIT <- object$Fit$FIT
   mm <- model.matrix(FIT, ...)
@@ -640,7 +652,6 @@ anova.slrm <- local({
   anova.slrm
 })
 
-
 vcov.slrm <- function(object, ..., what=c("vcov", "corr", "fisher", "Fisher")) {
   stopifnot(is.slrm(object))
   what <- match.arg(what)
@@ -667,15 +678,41 @@ unitname.slrm <- function(x) {
   return(x)
 }
 
+domain.slrm <- Window.slrm <- function(X, ..., from=c("points", "covariates")) {
+  from <- match.arg(from)
+  as.owin(X, ..., from=from)
+}
+
+as.owin.slrm <- function(W, ..., from=c("points", "covariates")) {
+  from <- match.arg(from)
+  U <- switch(from,
+              points     = W$Data$response,
+              covariates = W$Data$W)
+  V <- as.owin(U, ...)
+  return(V)
+}
+  
 is.stationary.slrm <- function(x) {
-  fo <- formula(x)
-  trend <- fo[c(1,3)]
+  trend <- rhs.of.formula(formula(x))
   return(identical.formulae(trend, ~1))
 }
 
 is.poisson.slrm <- function(x) { TRUE }
 
+is.marked.slrm <- is.multitype.slrm <- function(x, ...) { FALSE }
 
+reach.slrm <- function(x, ...) { 0 }
+
+## pseudoR2.slrm is defined in ppmclass.R
+
+Kmodel.slrm <- function(model, ...) { function(r) { pi * r^2 } }
+
+pcfmodel.slrm <- function(model, ...) { function(r) { rep.int(1, length(r)) } }
+
+parameters.slrm <- function(model, ...) { list(trend=coef(model)) }  
+
+## ............ SIMULATION ..............................
+  
 simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
                           window=NULL, covariates=NULL, 
                           verbose=TRUE, drop=FALSE) {

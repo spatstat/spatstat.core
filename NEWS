@@ -1,30 +1,56 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.006
+        CHANGES IN spatstat.core VERSION 2.2-0.007
 
 OVERVIEW
 
+    o more support for spatial logistic regression models.
+
     o curved transects of images.
 
+    o image cross-correlation
+    
     o summary method for 'objsurf'
-
-    o more support for spatial logistic regression models.
 
     o Minor bug fixes.
 
 NEW FUNCTIONS
-
-    o summary.objsurf, print.summary.objsurf
-    Summary method for 'objsurf'
-
-    o rhohat.slrm
-    Method for 'rhohat' for spatial logistic regression models.
 
     o response
     Generic function which extracts the values of the response
     in a fitted model. There are methods for lm, glm (which extract the
     numeric vector of responses), and ppm, kppm, slrm, lppm and mppm
     (which extract the original data point pattern).
+
+    o cov.im, cor.im
+    Correlation or covariance between several pixel images.
     
+    o summary.objsurf, print.summary.objsurf
+    Summary method for 'objsurf'
+
+    o rhohat.slrm
+    Method for 'rhohat' for spatial logistic regression models.
+
+    o envelope.slrm
+    Method for 'envelope' for spatial logistic regression models.
+
+    o intensity.slrm
+    Method for 'intensity' for spatial logistic regression models.
+
+    o deviance.slrm
+    Method for 'deviance' for spatial logistic regression models.
+
+    o pseudoR2.slrm
+    Method for 'pseudoR2' for spatial logistic regression models.
+
+    o quadrat.test.slrm
+    Method for 'quadrat.test' for spatial logistic regression models.
+
+    o parameters.slrm
+    Method for 'parameters' for spatial logistic regression models.
+
+    o Window.slrm, as.owin.slrm
+    Methods for 'Window' and 'as.owin' for spatial logistic regression models.
+
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o transect.im
