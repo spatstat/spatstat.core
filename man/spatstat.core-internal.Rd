@@ -348,6 +348,7 @@
 \alias{simulrecipe}              
 \alias{slr.prepare}
 \alias{slrAssemblePixelData}
+\alias{slrmInfluence}
 \alias{Smooth.solist}
 \alias{smoothcrossEngine}              
 \alias{smoothpointsEngine}
@@ -875,6 +876,7 @@ signalStatus(x, errors.only)
 simulrecipe(type, expr, envir, csr, pois, constraints)
 slr.prepare(CallInfo, envir, data, dataAtPoints, splitby, clip)
 slrAssemblePixelData(Y, Yname, W, covimages, dataAtPoints, pixelarea)
+slrmInfluence(model, what, \dots)
 \method{Smooth}{solist}(X, \dots)
 smoothcrossEngine(Xdata, Xquery, values, sigma, \dots,
                     weights, varcov,

@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.46 $   $Date: 2021/06/29 04:13:33 $
+#  $Revision: 1.47 $   $Date: 2021/06/30 04:16:53 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -756,3 +756,75 @@ simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
   return(out)
 }
 
+## ------------------ leverage and influence -------------------
+
+
+leverage.slrm <- function(model, ...) {
+  slrmInfluence(model, "leverage", ...)[["leverage"]]
+}
+
+influence.slrm <- function(model, ...) {
+  slrmInfluence(model, "influence", ...)[["influence"]]
+}
+
+dfbetas.slrm <- function(model, ...) {
+  slrmInfluence(model, "dfbetas", ...)[["dfbetas"]]
+}
+
+dffit.slrm <- function(model, ...) {
+  slrmInfluence(model, "dffit", ...)[["dffit"]]
+}
+
+
+
+slrmInfluence <- function(model,
+                          what=c("all", "leverage", "influence",
+                                 "dfbetas", "dffit"),
+                          ...) {
+  stopifnot(is.slrm(model))
+  what <- match.arg(what, several.ok=TRUE)
+  if("all" %in% what)
+    what <- c("leverage", "influence", "dfbetas", "dffit")
+  FIT <- model$Fit$FIT
+  W <- model$Data$W
+  nr <- nrow(W)
+  nc <- ncol(W)
+  result <- list()
+  if("leverage" %in% what) {
+    h <- hatvalues(FIT, ...)
+    Z <- as.im(matrix(h, nrow=nr, ncol=nc), W=W)
+    result$leverage <- Z[W, drop=FALSE]
+  }
+  if("influence" %in% what) {
+    h <- hatvalues(FIT, ...)
+    rP <- rstandard(FIT, type="pearson", ...)
+    p <- length(coef(fit))
+    s <- (1/p) * rP^2 * h/(1-h)
+    Z <- as.im(matrix(s, nrow=nr, ncol=nc), W=W)
+    result$influence <- Z[W, drop=FALSE]
+  }
+  if("dfbetas" %in% what) {
+    dfb <- dfbetas(FIT, ...)
+    cn <- colnames(dfb)
+    k <- length(cn)
+    Z <- vector(mode="list", length=k)
+    names(Z) <- cn
+    for(i in 1:k)
+      Z[[i]] <- as.im(matrix(dfb[,i], nrow=nr, ncol=nc), W=W)[W, drop=FALSE]
+    result$dfbetas <- as.solist(Z)
+  }
+  if("dffit" %in% what) {
+    dfb <- dfbeta(FIT, ...)
+    X <- model.matrix(fit) # sic
+    if(is.null(dim(X)) || is.null(dim(dfb)) || !all(dim(X) == dim(dfb)))
+      stop("Internal error: model.matrix dimensions incompatible with dfbeta")
+    dff <- rowSums(X * dfb)
+    Z <- as.im(matrix(dff, nrow=nr, ncol=nc), W=W)
+    result$dffit <- Z[W, drop=FALSE]
+  }
+
+  return(result)
+}
+
+
+  
