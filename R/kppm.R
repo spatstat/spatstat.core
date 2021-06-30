@@ -2108,8 +2108,11 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   # create local function to evaluate  weight(epsilon*M/(pcf(d)-1))
   weight <- function(d, par) {
     y <- paco(d=d, par=par)
-    # calculate M
-    M <- abs(paco(d=0, par=par)-1)
+    # calculate M (only needs to be calculated for cluster models)
+    M <- 1
+    if(!isDPP){
+      M <- abs(paco(d=0, par=par)-1)
+    }
     return(weightfun(epsilon*M/(y-1)))
   }
 
