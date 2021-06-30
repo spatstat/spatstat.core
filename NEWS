@@ -1,9 +1,9 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.008
+        CHANGES IN spatstat.core VERSION 2.2-0.009
 
 OVERVIEW
 
-    o more support for spatial logistic regression models.
+    o Substantially more support for spatial logistic regression models.
 
     o curved transects of images.
 
@@ -27,6 +27,9 @@ NEW FUNCTIONS
     o summary.objsurf, print.summary.objsurf
     Summary method for 'objsurf'
 
+    o residuals.slrm
+    Residuals for spatial logistic regression models.
+    
     o leverage.slrm, influence.slrm, dfbetas.slrm, dffit.slrm
     Leverage and influence diagnostics for spatial logistic regression models.
     
@@ -62,7 +65,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 BUG FIXES
 
     o rhohat
-    Rug plot (produced by plot.rhohat) was incorrect
+    The rug plot (produced by plot.rhohat) was incorrect
     when rhohat was called with method="piecewise".
     Fixed.
 

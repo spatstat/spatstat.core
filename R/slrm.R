@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.47 $   $Date: 2021/06/30 04:16:53 $
+#  $Revision: 1.53 $   $Date: 2021/06/30 09:55:06 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -593,6 +593,7 @@ model.matrix.slrm <- function(object,..., keepNA=TRUE) {
       stop("Internal error in patching NA's")
   mmplus <- matrix(NA, nrow(df), ncol(mm))
   mmplus[comp, ] <- mm
+  colnames(mmplus) <- colnames(mm)
   return(mmplus)
 }
 
@@ -699,7 +700,7 @@ is.stationary.slrm <- function(x) {
 
 is.poisson.slrm <- function(x) { TRUE }
 
-is.marked.slrm <- is.multitype.slrm <- function(x, ...) { FALSE }
+is.marked.slrm <- is.multitype.slrm <- function(X, ...) { FALSE }
 
 reach.slrm <- function(x, ...) { 0 }
 
@@ -756,6 +757,27 @@ simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
   return(out)
 }
 
+## ------------------ residuals --------------------------------
+
+residuals.slrm <- function(object,
+                           type=c("raw", "deviance", "pearson", "working", 
+                                  "response", "partial", "score"),
+                           ...) {
+  type <- match.arg(type)
+  otype <- if(type %in% c("raw", "score")) "response" else type
+  FIT <- object$Fit$FIT  
+  W <- object$Data$W
+  res <- residuals(FIT, type=otype, ...)
+  if(type == "score") {
+    M <- model.matrix(object)
+    res <- res * M
+    colnames(res) <- colnames(M)
+  }
+  R <- wrangle2image(res, W)
+  return(R)
+}
+
+
 ## ------------------ leverage and influence -------------------
 
 
@@ -771,10 +793,9 @@ dfbetas.slrm <- function(model, ...) {
   slrmInfluence(model, "dfbetas", ...)[["dfbetas"]]
 }
 
-dffit.slrm <- function(model, ...) {
-  slrmInfluence(model, "dffit", ...)[["dffit"]]
+dffit.slrm <- function(object, ...) {
+  slrmInfluence(object, "dffit", ...)[["dffit"]]
 }
-
 
 
 slrmInfluence <- function(model,
@@ -792,35 +813,26 @@ slrmInfluence <- function(model,
   result <- list()
   if("leverage" %in% what) {
     h <- hatvalues(FIT, ...)
-    Z <- as.im(matrix(h, nrow=nr, ncol=nc), W=W)
-    result$leverage <- Z[W, drop=FALSE]
+    result$leverage <- wrangle2image(h, W)
   }
   if("influence" %in% what) {
     h <- hatvalues(FIT, ...)
     rP <- rstandard(FIT, type="pearson", ...)
-    p <- length(coef(fit))
+    p <- length(coef(model))
     s <- (1/p) * rP^2 * h/(1-h)
-    Z <- as.im(matrix(s, nrow=nr, ncol=nc), W=W)
-    result$influence <- Z[W, drop=FALSE]
+    result$influence <- wrangle2image(s, W)
   }
   if("dfbetas" %in% what) {
     dfb <- dfbetas(FIT, ...)
-    cn <- colnames(dfb)
-    k <- length(cn)
-    Z <- vector(mode="list", length=k)
-    names(Z) <- cn
-    for(i in 1:k)
-      Z[[i]] <- as.im(matrix(dfb[,i], nrow=nr, ncol=nc), W=W)[W, drop=FALSE]
-    result$dfbetas <- as.solist(Z)
+    result$dfbetas <- wrangle2image(dfb, W)
   }
   if("dffit" %in% what) {
-    dfb <- dfbeta(FIT, ...)
-    X <- model.matrix(fit) # sic
+    dfb <- dfbeta(FIT, ...)  #sic
+    X <- model.matrix(model) # sic
     if(is.null(dim(X)) || is.null(dim(dfb)) || !all(dim(X) == dim(dfb)))
       stop("Internal error: model.matrix dimensions incompatible with dfbeta")
     dff <- rowSums(X * dfb)
-    Z <- as.im(matrix(dff, nrow=nr, ncol=nc), W=W)
-    result$dffit <- Z[W, drop=FALSE]
+    result$dffit <- wrangle2image(dff, W)
   }
 
   return(result)

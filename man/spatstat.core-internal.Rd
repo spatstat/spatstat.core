@@ -147,9 +147,11 @@
 \alias{is.interact}
 \alias{is.marked.mppm}    
 \alias{is.marked.msr}    
+\alias{is.marked.slrm}
 \alias{is.mppm}
 \alias{is.multitype.mppm}    
 \alias{is.multitype.msr}    
+\alias{is.multitype.slrm}    
 \alias{is.poisson.mppm}
 \alias{is.scov}
 \alias{k3engine}
@@ -283,6 +285,7 @@
 \alias{quadrat.testEngine}
 \alias{ratfv}
 \alias{RandomFieldsSafe}
+\alias{reach.slrm}
 \alias{rebadge.as.crossfun}
 \alias{rebadge.as.dotfun}
 \alias{rebadge.fv}
@@ -599,9 +602,11 @@ is.expandable(x)
 is.interact(x)
 \method{is.marked}{mppm}(X, \dots)
 \method{is.marked}{msr}(X, \dots)
+\method{is.marked}{slrm}(X, \dots)
 is.mppm(x)
 \method{is.multitype}{mppm}(X, \dots)
 \method{is.multitype}{msr}(X, \dots)
+\method{is.multitype}{slrm}(X, \dots)
 \method{is.poisson}{mppm}(x)
 is.scov(x)
 k3engine(x, y, z, box, rmax, nrval, correction)
@@ -781,6 +786,7 @@ quad.mppm(x)
 quadBlockSizes(nX, nD, p, nMAX, announce)
 RandomFieldsSafe()
 ratfv(df, numer, denom, \dots, ratio)
+\method{reach}{slrm}(x, \dots)
 rebadge.as.crossfun(x, main, sub, i, j)
 rebadge.as.dotfun(x, main, sub, i)
 rebadge.fv(x, new.ylab, new.fname, tags, new.desc, new.labl, new.yexp,

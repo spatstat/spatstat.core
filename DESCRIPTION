@@ -1,5 +1,5 @@
 Package: spatstat.core
-Version: 2.2-0.008
+Version: 2.2-0.009
 Date: 2021-06-30
 Title: Core Functionality of the 'spatstat' Family
 Authors@R: c(person("Adrian", "Baddeley", 
@@ -46,7 +46,7 @@ Authors@R: c(person("Adrian", "Baddeley",
 	     person("Hangsheng", "Wang",
 	            role = "ctb"))
 Maintainer: Adrian Baddeley <Adrian.Baddeley@curtin.edu.au>
-Depends: R (>= 3.5.0), spatstat.data (>= 2.1-0), spatstat.geom (>= 2.2-0), stats, graphics, grDevices, utils, methods, nlme, rpart
+Depends: R (>= 3.5.0), spatstat.data (>= 2.1-0), spatstat.geom (>= 2.2-0.003), stats, graphics, grDevices, utils, methods, nlme, rpart
 Imports: spatstat.utils (>= 2.2-0), spatstat.sparse (>= 2.0-0), mgcv, Matrix, abind, tensor, goftest (>= 1.2-2)
 Suggests: sm, maptools (>= 0.9-9), gsl, locfit, spatial, RandomFields (>= 3.1.24.1), RandomFieldsUtils(>= 0.3.3.1), fftwtools (>= 0.9-8), spatstat.linnet (>= 2.0-0), spatstat (>= 2.0-0)
 Remotes: spatstat/spatstat.utils, spatstat/spatstat.data, spatstat/spatstat.sparse, spatstat/spatstat.geom, baddstats/spatstat.linnet, baddstats/polyclip

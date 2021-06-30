@@ -14,10 +14,10 @@
 \method{leverage}{slrm}(model, \dots)
 \method{influence}{slrm}(model, \dots)
 \method{dfbetas}{slrm}(model, \dots)
-\method{dffit}{slrm}(model, \dots)
+\method{dffit}{slrm}(object, \dots)
 }
 \arguments{
-  \item{model}{
+  \item{model,object}{
     A fitted spatial logistic regression model
     (object of class \code{"slrm"}).
   }
