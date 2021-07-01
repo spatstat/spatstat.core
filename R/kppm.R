@@ -118,7 +118,7 @@ kppm.ppp <- kppm.quad <-
             forcefit=TRUE, rename.intercept=FALSE,
             covfunargs=covfunargs, use.gam=use.gam, nd=nd, eps=eps)
   XX <- if(isquad) X$data else X
-  # set default weight function
+  # set default weight functions
   if(is.null(weightfun) && method == "cladap"){
     weightfun <- function(d) { as.integer(abs(d) <= 1)*exp(1/(d^2-1)) }
     attr(weightfun, "selfprint") <- paste0("Indicator(-1 <= distance <= 1)",
@@ -129,6 +129,9 @@ kppm.ppp <- kppm.quad <-
     weightfun <- function(d, rr=RmaxW) { as.integer(d <= rr) }
     formals(weightfun)[[2]] <- RmaxW
     attr(weightfun, "selfprint") <- paste0("Indicator(distance <= ", RmaxW, ")")
+  }
+  if(algorithm == "Nelder-Mead" && method == "cladap"){
+    algorithm <- "Broyden"
   }
   # fit
   out <- switch(method,
@@ -145,6 +148,7 @@ kppm.ppp <- kppm.quad <-
          cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, epsilon=epsilon, 
                              weightfun=weightfun, rmax=rmax,
+                             algorithm=algorithm,
                              ...))
   ##
   h <- attr(out, "h")
