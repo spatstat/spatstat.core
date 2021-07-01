@@ -74,6 +74,9 @@ objsurf(x, \dots)
   printed and plotted.
   Essentially a list containing entries \code{x}, \code{y}, \code{z}
   giving the parameter values and objective function values.
+
+  There are methods for \code{plot}, \code{print}, \code{summary},
+  \code{image}, \code{contour} and \code{persp}.
 }
 \author{
   \adrian and \ege.

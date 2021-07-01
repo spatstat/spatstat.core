@@ -1,6 +1,7 @@
 \name{pseudoR2}
 \alias{pseudoR2}
 \alias{pseudoR2.ppm}
+\alias{pseudoR2.slrm}
 \title{
   Calculate Pseudo-R-Squared for Point Process Model
 }
@@ -15,11 +16,13 @@
 
   \method{pseudoR2}{ppm}(object, \dots, keepoffset=TRUE)
 
+  \method{pseudoR2}{slrm}(object, \dots, keepoffset=TRUE)
+
 }
 \arguments{
   \item{object}{
     Fitted point process model.
-    An object of class \code{"ppm"}.
+    An object of class \code{"ppm"} or \code{"slrm"}.
   }
   \item{keepoffset}{
     Logical value indicating whether to retain offset terms in the model
@@ -27,13 +30,13 @@
   }
   \item{\dots}{
     Additional arguments passed to 
-    \code{\link{deviance.ppm}}.
+    \code{\link{deviance.ppm}} or \code{\link{deviance.slrm}}.
   }
 }
 \details{
   The function \code{pseudoR2} is generic, with methods
   for fitted point process models
-  of class \code{"ppm"}.
+  of class \code{"ppm"} and \code{"slrm"}.
 
   This function computes McFadden's pseudo-Rsquared
   \deqn{
@@ -60,7 +63,8 @@
   \spatstatAuthors.
 }
 \seealso{
-  \code{\link{deviance.ppm}}.
+  \code{\link{deviance.ppm}}, 
+  \code{\link{deviance.slrm}}.
 }
 \examples{
   fit <- ppm(swedishpines ~ x+y)

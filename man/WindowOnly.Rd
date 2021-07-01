@@ -2,6 +2,7 @@
 \alias{Window.ppm}
 \alias{Window.kppm}
 \alias{Window.dppm}
+\alias{Window.slrm}
 \alias{Window.msr}
 \alias{Window.quadrattest}
 \alias{Window.rmhmodel}
@@ -17,6 +18,8 @@
  \method{Window}{kppm}(X, \dots, from=c("points", "covariates"))
 
  \method{Window}{dppm}(X, \dots, from=c("points", "covariates"))
+
+ \method{Window}{slrm}(X, \dots, from=c("points", "covariates"))
 
  \method{Window}{msr}(X, \dots)
 
@@ -41,7 +44,7 @@
   is defined. 
   The argument \code{from} applies when \code{X} is a fitted 
   two-dimensional point process model
-  (object of class \code{"ppm"}, \code{"kppm"} or \code{"dppm"}).
+  (object of class \code{"ppm"}, \code{"kppm"}, \code{"slrm"} or \code{"dppm"}).
   If \code{from="data"} (the default),
   \code{Window} extracts the window of the original point
   pattern data to which the model was fitted.

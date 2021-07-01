@@ -70,6 +70,44 @@ mincontrast <- local({
     })
   }
 
+  optionalGridSearch <- function(startpar, fn, objargs, pint, verbose=TRUE) {
+    nhalfgrid <- as.integer(pint$nhalfgrid %orifnull% 0)
+    check.1.integer(nhalfgrid)
+    if(nhalfgrid <= 0) return(startpar)
+    searchratio <- pint$searchratio %orifnull% 2
+    check.1.real(searchratio)
+    stopifnot(searchratio > 1)
+    ra <- searchratio^((1:nhalfgrid)/nhalfgrid)
+    ra <- c(rev(1/ra), 1, ra)
+    nra <- length(ra)
+    if(length(startpar) != 2)
+      stop(paste("startpar has length",
+                 paste0(length(startpar), ";"),
+                 "expecting 2"))
+    values <- matrix(-Inf, nra, nra)
+    stapa <- startpar
+    for(i in seq_along(ra)) {
+      stapa[[1L]] <- startpar[[1L]] * ra[i]
+      for(j in seq_along(ra)) {
+        stapa[[2L]] <- startpar[[1L]] * ra[j]
+        values[i,j] <- as.numeric(do.call(fn, list(par=stapa, objargs=objargs)))
+      }
+    }
+    bestpos <- which.min(values)
+    ibest <- row(values)[bestpos]
+    jbest <- col(values)[bestpos]
+    bestpar <- stapa
+    bestpar[[1L]] <- startpar[[1L]] * ra[ibest]
+    bestpar[[2L]] <- startpar[[2L]] * ra[jbest]
+    if(verbose) {
+      splat("Initial starting parameters:")
+      print(startpar)
+      splat("Modified starting parameters after search:")
+      print(bestpar)
+    }
+    return(bestpar)
+  } 
+  
   mincontrast <- function(observed, theoretical, startpar,
                           ...,
                           ctrl=list(q = 1/4, p = 2, rmin=NULL, rmax=NULL),
@@ -191,7 +229,11 @@ mincontrast <- local({
     objargs$BIGVALUE <- bigvaluerule(contrast.objective,
                                      objargs,
                                      startpar, ...)
-    ## go
+    ## experimental code to improve starting value
+    startpar <- optionalGridSearch(startpar,
+                                   fn=contrast.objective, objargs=objargs,
+                                   pint=pint)
+    ## .  .  .  .  O  P  T  I  M  I  Z  E  .  .  .  .
     minimum <- optim(startpar, fn=contrast.objective, objargs=objargs, ...)
     ## if convergence failed, issue a warning 
     signalStatus(optimStatus(minimum), errors.only=TRUE)

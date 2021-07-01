@@ -126,8 +126,7 @@
   adapted for \pkg{spatstat} by \adrian
 }
 \examples{
-   X <- rStrauss(0.05,0.2,1.5,square(141.4))
-   Z <- rStrauss(100,0.7,0.05, nsim=2)
+  X <- rStrauss(0.05,0.2,1.5,square(50))
 }
 \seealso{
   \code{\link{rmh}},

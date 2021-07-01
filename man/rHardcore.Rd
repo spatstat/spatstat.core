@@ -82,15 +82,12 @@
   Chapman and Hall/CRC.
 }
 \author{
-  \adrian
-  
-  
+  \adrian,
   based on original code for the Strauss process by 
   Kasper Klitgaard Berthelsen.
 }
 \examples{
-   X <- rHardcore(0.05,1.5,square(141.4))
-   Z <- rHardcore(100,0.05, nsim=2)
+   X <- rHardcore(0.05,1.5,square(50))
 }
 \seealso{
   \code{\link{rmh}},

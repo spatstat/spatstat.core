@@ -3,7 +3,7 @@
 #
 #   computes simulation envelopes 
 #
-#   $Revision: 2.108 $  $Date: 2020/12/19 05:25:06 $
+#   $Revision: 2.109 $  $Date: 2021/06/29 03:23:49 $
 #
 
 envelope <- function(Y, fun, ...) {
@@ -17,6 +17,7 @@ envelope <- function(Y, fun, ...) {
   #           "csr": uniform Poisson process
   #           "rmh": simulated realisation of fitted Gibbs or Poisson model 
   #          "kppm": simulated realisation of fitted cluster model 
+  #          "slrm": simulated realisation of spatial logistic regression
   #          "expr": result of evaluating a user-supplied expression
   #          "list": user-supplied list of point patterns
   #
@@ -327,6 +328,61 @@ envelope.kppm <-
 
 }
 
+envelope.slrm <-
+  function(Y, fun=Kest, nsim=99, nrank=1, ..., 
+           funargs=list(), funYargs=funargs,
+           simulate=NULL, verbose=TRUE, clipdata=TRUE, 
+           transform=NULL, global=FALSE, ginterval=NULL, use.theory=NULL,
+           alternative=c("two.sided", "less", "greater"),
+           scale=NULL, clamp=FALSE,
+           savefuns=FALSE, savepatterns=FALSE, nsim2=nsim,
+           VARIANCE=FALSE, nSD=2, Yname=NULL, 
+           maxnerr=nsim, rejectNA=FALSE, silent=FALSE,
+           do.pwrong=FALSE, envir.simul=NULL)
+{
+  cl <- short.deparse(sys.call())
+  if(is.null(Yname)) Yname <- short.deparse(substitute(Y))
+  if(is.null(fun)) fun <- Kest
+  envir.user <- if(!is.null(envir.simul)) envir.simul else parent.frame()
+  envir.here <- sys.frame(sys.nframe())
+  
+  # Extract data pattern X from fitted model Y
+  X <- response(Y)
+  
+  if(is.null(simulate)) {
+    # Simulated realisations of the fitted model Y
+    # will be generated using simulate.slrm
+    smodel <- Y
+    # expression that will be evaluated
+    simexpr <- expression(simulate(smodel)[[1L]])
+    dont.complain.about(smodel)
+    # evaluate in THIS environment
+    simrecipe <- simulrecipe(type = "slrm",
+                             expr = simexpr,
+                             envir = envir.here,
+                             csr   = FALSE,
+                             pois  = FALSE)
+  } else {
+    # ...................................................
+    # Simulations are determined by 'simulate' argument
+    # Processing is deferred to envelopeEngine
+    simrecipe <- simulate
+  }
+  envelopeEngine(X=X, fun=fun, simul=simrecipe, 
+                 nsim=nsim, nrank=nrank, ...,
+                 funargs=funargs, funYargs=funYargs,
+                 verbose=verbose, clipdata=clipdata,
+                 transform=transform,
+                 global=global, ginterval=ginterval, use.theory=use.theory,
+                 alternative=alternative, scale=scale, clamp=clamp,
+                 savefuns=savefuns, savepatterns=savepatterns, nsim2=nsim2,
+                 VARIANCE=VARIANCE, nSD=nSD,
+                 Yname=Yname, 
+                 maxnerr=maxnerr, rejectNA=rejectNA, silent=silent,
+                 cl=cl, envir.user=envir.user, do.pwrong=do.pwrong)
+
+}
+
 ## .................................................................
 ##   Engine for simulating and computing envelopes
 ## .................................................................
@@ -485,6 +541,8 @@ envelopeEngine <-
                Xobjectname)),
              kppm=stop(paste("Internal error: simulate.kppm did not return an",
                Xobjectname)),
+             slrm=stop(paste("Internal error: simulate.slrm did not return an",
+               Xobjectname)),
              expr=stop(paste("Evaluating the expression", sQuote("simulate"),
                "did not yield an", Xobjectname)),
              func=stop(paste("Evaluating the function", sQuote("simulate"),
@@ -640,6 +698,7 @@ envelopeEngine <-
                           if(pois) "Poisson" else "Gibbs",
                           "model"),
                         kppm = "simulated realisations of fitted cluster model",
+                        slrm = "simulated realisations of spatial logistic regression model",
                         expr = "simulations by evaluating expression",
                         func = "simulations by evaluating function",
                         list = "point patterns from list",
@@ -667,6 +726,10 @@ envelopeEngine <-
                },
                kppm={
                  stop(paste("Internal error: simulate.kppm did not return an",
+                            Xobjectname))
+               },
+               slrm={
+                 stop(paste("Internal error: simulate.slrm did not return an",
                             Xobjectname))
                },
                expr={
@@ -730,6 +793,7 @@ envelopeEngine <-
                         if(pois) "Poisson" else "Gibbs",
                         "model"),
                       kppm = "simulated realisations of fitted cluster model",
+                      slrm = "simulated realisations of fitted spatial logistic regression model",
                       expr = "simulations by evaluating expression",
                       func = "simulations by evaluating function",
                       list = "point patterns from list",
@@ -788,6 +852,9 @@ envelopeEngine <-
                  Xobjectname)),
                kppm=stop(paste("Internal error:",
                  "simulate.kppm did not return an",
+                 Xobjectname)),
+               slrm=stop(paste("Internal error:",
+                 "simulate.slrm did not return an",
                  Xobjectname)),
                expr=stop(paste("Evaluating the expression", sQuote("simulate"),
                  "did not yield an", Xobjectname)),
@@ -1025,6 +1092,7 @@ print.envelope <- function(x, ...) {
                if(pois) "Poisson" else "Gibbs",
                "model"),
              kppm="simulations of fitted cluster model",
+             slrm="simulations of fitted spatial logistic regression model",
              expr="evaluations of user-supplied expression",
              func="evaluations of user-supplied function",
              list="point pattern datasets in user-supplied list",
@@ -1105,6 +1173,7 @@ summary.envelope <- function(object, ...) {
                if(pois) "Poisson" else "Gibbs",
                "model"),
              kppm="simulations of fitted cluster model",
+             slrm="simulations of fitted spatial logistic regression model",
              expr="evaluations of user-supplied expression",
              func="evaluations of user-supplied function",
              list="point pattern datasets in user-supplied list",

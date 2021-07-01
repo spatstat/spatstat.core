@@ -140,9 +140,17 @@ psstG(object, r = NULL, breaks = NULL, \dots,
   \code{\link{Gres}}.
 }
 \examples{
-   X <- rStrauss(200,0.1,0.05)
+   if(live <- interactive()) {
+     X <- rStrauss(200,0.1,0.05)
+   } else {
+     pso <- spatstat.options(ndummy.min=16,npixel=32)
+     X <- cells
+   }
+
    plot(psstG(X))
    plot(psstG(X, interaction=Strauss(0.05)))
+
+   if(!live) spatstat.options(pso)
 }
 \keyword{spatial}
 \keyword{models}

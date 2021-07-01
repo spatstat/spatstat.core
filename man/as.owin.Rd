@@ -2,6 +2,7 @@
 \alias{as.owin.ppm}
 \alias{as.owin.kppm}
 \alias{as.owin.dppm}
+\alias{as.owin.slrm}
 \alias{as.owin.msr}
 \alias{as.owin.quadrattest}
 \alias{as.owin.rmhmodel}
@@ -18,6 +19,8 @@ in any of several formats, into an object of class \code{"owin"}.
  \method{as.owin}{kppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
 
  \method{as.owin}{dppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
+
+ \method{as.owin}{slrm}(W, \dots, from=c("points", "covariates"))
 
  \method{as.owin}{msr}(W, \dots, fatal=TRUE)
 
@@ -102,7 +105,8 @@ in any of several formats, into an object of class \code{"owin"}.
     lies outside the window, is transformed into the logical value
     \code{FALSE}, which is the corresponding convention for window masks.
     \item
-    an object of class \code{"ppm"}, \code{"kppm"} or \code{"dppm"}
+    an object of class \code{"ppm"}, \code{"kppm"}, \code{"slrm"}
+    or \code{"dppm"}
     representing a fitted point process
     model. In this case, if \code{from="data"} (the default),
     \code{as.owin} extracts the  original point

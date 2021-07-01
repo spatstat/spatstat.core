@@ -1,12 +1,14 @@
-#
-#   rLGCP.R
-#
-#   simulation of log-Gaussian Cox process
-#
-#   original code by Abdollah Jalilian
-#
-#  $Revision: 1.22 $    $Date: 2020/12/16 03:46:49 $
-#
+#'
+#'   rLGCP.R
+#'
+#'   simulation of log-Gaussian Cox process
+#'
+#'  original code by Abdollah Jalilian
+#'
+#'  modifications by Adrian Baddeley, Ege Rubak and Tilman Davies
+#' 
+#'  $Revision: 1.23 $    $Date: 2021/04/07 01:17:38 $
+#'
 
 rLGCP <- local({
 
@@ -30,7 +32,8 @@ rLGCP <- local({
   do.rLGCP <- function(model="exp", mu = 0, param = NULL, ...,
                        win=NULL, saveLambda=TRUE,
                        eps = NULL, dimyx = NULL, xy = NULL,
-                       modelonly=FALSE, nsim=1, drop=TRUE) {
+                       modelonly=FALSE, Lambdaonly=FALSE,
+                       nsim=1, drop=TRUE) {
     ## make RF model object from RandomFields package
     ## get the 'model generator'
     modgen <- getRandomFieldsModelGen(model)
@@ -39,7 +42,7 @@ rLGCP <- local({
     if(!inherits(rfmodel, "RMmodel"))
       stop("Unable to create RandomFields model object", call.=FALSE)
 
-    ## secret exit
+    ## undocumented exit - return the RandomFields model object only
     if(modelonly)
       return(rfmodel)
 
@@ -87,6 +90,18 @@ rLGCP <- local({
     if(!all(dim(z)[1:2] == dim(Lambda))) 
       stop("Internal error: wrong matrix dimensions in rLGCP", call.=FALSE)
 
+    if(Lambdaonly) {
+      ## undocumented exit - return Lambda only
+      Lambdalist <- vector(mode="list", length=nsim)
+      for(i in 1:nsim) {
+        ## Extract i-th realisation of Z; convert to log-Gaussian image
+        Lambda$v[] <- exp(muxy + z[,,i])
+        ## save as i-th realisation of Lambda
+        Lambdalist[[i]] <- Lambda
+      }
+      return(simulationresult(Lambdalist, nsim, drop))
+    }
+    
     ## generate realisations of LGCP
     result <- vector(mode="list", length=nsim)
     for(i in 1:nsim) {

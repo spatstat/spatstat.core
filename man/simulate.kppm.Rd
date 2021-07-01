@@ -6,7 +6,9 @@
 }
 \usage{
   \method{simulate}{kppm}(object, nsim = 1, seed=NULL, ...,
-         window=NULL, covariates=NULL, verbose=TRUE, retry=10,
+         window=NULL, covariates=NULL,
+         n.cond = NULL, w.cond = NULL,
+         verbose=TRUE, retry=10,
          drop=FALSE)
 }
 \arguments{
@@ -33,6 +35,15 @@
   \item{covariates}{
     Optional. A named list containing new values for the covariates in the
     model. 
+  }
+  \item{n.cond}{
+    Optional. Integer specifying a fixed number of points.
+    See the section on \emph{Conditional Simulation}.
+  }
+  \item{w.cond}{
+    Optional. Conditioning region. A window (object of class \code{"owin"})
+    specifying the region which must contain exactly \code{n.cond} points.
+    See the section on \emph{Conditional Simulation}.
   }
   \item{verbose}{
     Logical. Whether to print progress reports (when \code{nsim > 1}).
@@ -73,19 +84,48 @@
   It can be used to force a sequence of simulations to be
   repeated exactly, as shown in the examples for \code{\link[stats]{simulate}}.
 }
+\section{Conditional Simulation}{
+  If \code{n.cond} is specified, it should be a single integer.
+  Simulation will be conditional on the event 
+  that the pattern contains exactly \code{n.cond} points
+  (or contains exactly \code{n.cond} points inside
+  the region \code{w.cond} if it is given).
+
+  Conditional simulation uses the rejection algorithm described
+  in Section 6.2 of Moller, Syversveen and Waagepetersen (1998).
+  There is a maximum number of proposals which will be attempted.
+  Consequently the return value may contain fewer
+  than \code{nsim} point patterns.
+}
 \value{
   A list of length \code{nsim} containing simulated point patterns
-  (objects of class \code{"ppp"}).
+  (objects of class \code{"ppp"}). (For conditional simulation,
+  the length of the result may be shorter than \code{nsim}).
 
   The return value also carries an attribute \code{"seed"} that
   captures the initial state of the random number generator.
   See Details.
 }
 \examples{
-  fit <- kppm(redwood ~1, "Thomas")
+  if(offline <- !interactive()) {
+    spatstat.options(npixel=32, ndummy.min=16)
+  }
+
+  fit <- kppm(redwood ~x, "Thomas")
   simulate(fit, 2)
-  fitx <- kppm(redwood ~x, "Thomas")
-  simulate(fitx, 2)
+
+  simulate(fit, n.cond=60)
+
+  if(offline) reset.spatstat.options()
+}
+\references{
+  Baddeley, A., Rubak, E. and Turner, R. (2015)
+  \emph{Spatial Point Patterns: Methodology and Applications with R}.
+  Chapman and Hall/CRC Press.
+  
+  \Moller, J., Syversveen, A. and Waagepetersen, R. (1998)
+  Log Gaussian Cox Processes.
+  \emph{Scandinavian Journal of Statistics} \bold{25}, 451--482.
 }
 \seealso{
   \code{\link{kppm}},

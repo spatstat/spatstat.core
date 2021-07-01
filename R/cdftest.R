@@ -1,7 +1,7 @@
 #
 #  cdftest.R
 #
-#  $Revision: 2.24 $  $Date: 2020/12/19 05:25:06 $
+#  $Revision: 2.26 $  $Date: 2021/04/08 03:45:49 $
 #
 #
 
@@ -107,8 +107,11 @@ cdf.test.slrm <- function(model, covariate,
     xxx <- c(xxx, max(ZX))
     yyy <- c(yyy, 1)
   }
-  # make piecewise linear approximation of cdf
-  FZ <- approxfun(xxx, yyy, rule=2)
+  if(length(xxx) > 1) {
+    #' non-degenerate cdf
+    ## replace by piecewise linear approximation
+    FZ <- approxfun(xxx, yyy, rule=2)
+  }
   # now apply cdf
   U <- FZ(ZX)
   # Test uniformity of transformed values
@@ -278,8 +281,11 @@ spatialCDFframe <- function(model, covariate, ..., jitter=TRUE) {
     xxx <- c(xxx, maxZX)
     yyy <- c(yyy, 1)
   }
-  # make piecewise linear approximation of cdf
-  FZ <- approxfun(xxx, yyy, rule=2)
+  if(length(xxx) > 1) {
+    #' non-degenerate cdf
+    ## replace by piecewise linear approximation
+    FZ <- approxfun(xxx, yyy, rule=2)
+  }
   # now apply cdf
   U <- FZ(ZX)
 

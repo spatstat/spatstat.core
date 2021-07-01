@@ -1,7 +1,7 @@
 #
 # summary.mppm.R
 #
-# $Revision: 1.17 $  $Date: 2020/10/31 13:50:19 $
+# $Revision: 1.18 $  $Date: 2021/03/29 07:26:25 $
 #
 
 
@@ -37,32 +37,38 @@ summary.mppm <- function(object, ..., brief=FALSE) {
   allVnames <- unlist(Vnamelist)
   Isoffsetlist <- y$Fit$Isoffsetlist
   poistags  <- itags[trivial]
+  intertags <- c(allVnames, poistags)
+
+  ## does the model depend on covariates?
+  y$depends.covar <- Info$has.covar && (length(Info$used.cov.names) > 0)
 
 #  rownames  <- y$Info$rownames
   
   switch(y$Fit$fitter,
          glmmPQL={
            y$coef <- co <- fixed.effects(FIT)
-           systematic <- !(names(co) %in% c(allVnames, poistags))
-           y$coef.syst <- co[systematic]
            y$coef.rand <- random.effects(FIT)
          },
          gam=,
          glm={
            y$coef <- co <- coef(FIT)
-           systematic <- !(names(co) %in% c(allVnames, poistags))
-           y$coef.syst <- co[systematic]
          })
 
-  # model depends on covariates
-  y$depends.covar <- Info$has.covar && (length(Info$used.cov.names) > 0)
+  ## identify model terms which involve interpoint interaction
+  md <- model.depends(FIT)
+  is.interpoint <- colnames(md) %in% intertags
+  involves.interpoint <- apply(md[ , is.interpoint, drop=FALSE], 1, any)
+  y$coef.inter <- co[involves.interpoint]
+  ## identify trend and design coefficients 
+  systematic <- !involves.interpoint
+  y$coef.syst <- co[systematic]
 
   # random effects
   y$ranef <- if(Info$has.random) summary(FIT$modelStruct) else NULL
 
-  ### Interactions 
-  # model is Poisson 
-  y$poisson <- all(trivial[iused])
+  ### Interpoint interactions 
+  # model is Poisson ?
+  y$poisson <- ispois <- all(trivial[iused])
   # Determine how complicated the interactions are:
   # (0) are there random effects involving the interactions
   randominteractions <-
@@ -81,7 +87,7 @@ summary.mppm <- function(object, ..., brief=FALSE) {
     toohard <- TRUE
     printeachrow <- FALSE
   } else 
-  if(fixedinteraction) {    
+  if(fixedinteraction || ispois) {    
     # exactly the same interaction for all patterns
     interaction <- interaction[1L,1L,drop=TRUE]
     fi.all <- fii(interaction, co, Vnamelist[[1L]], Isoffsetlist[[1L]]) 
@@ -89,11 +95,32 @@ summary.mppm <- function(object, ..., brief=FALSE) {
     printeachrow <- FALSE
     toohard      <- FALSE
   } else if(trivialformula) {
-    # same type of process for all patterns
+    ## same interaction structure for all patterns;
+    ## irregular parameters may be different on each row;
+    ## regular parameters of interaction do not depend on design
     pname <-  unlist(processnames)[iused]
     iprint <- list("Interaction for each pattern" = pname)
     printeachrow <- TRUE
     toohard      <- FALSE
+  } else if(sum(iused) == 1) {
+    ## same interaction structure for all patterns;
+    ## irregular parameters may be different on each row;
+    ## regular parameters of interaction may depend on design
+    pname <-  unlist(processnames)[iused]
+    iprint <- list("Interaction for each pattern" = pname)
+    printeachrow <- TRUE
+    toohard      <- FALSE
+    ## look for design : interaction terms
+    mm <- md[involves.interpoint, !is.interpoint, drop=FALSE]
+    tangled <- apply(mm, 2, any)
+    if(any(tangled)) {
+      tanglednames <- colnames(mm)[tangled]
+      textra <- list(commasep(sQuote(tanglednames)))
+      names(textra) <- paste("Interaction depends on design",
+                             ngettext(length(tanglednames),
+                                      "covariate", "covariates"))
+      iprint <- append(iprint, textra)
+    }
   } else if(isimple && all(constant)) {
     # several interactions involved, each of which is the same for all patterns
     iprint <- list("Interaction formula"=iformula,
@@ -136,7 +163,20 @@ summary.mppm <- function(object, ..., brief=FALSE) {
                      list("(Sorry, cannot interpret fitted interactions)"))
   else if(printeachrow) {
     subs <- subfits(object, what="interactions")
-    names(subs) <- paste("Interaction", 1:npat)
+    um <- uniquemap(subs)
+    uniq <- (um == seq_along(um))
+    if(mean(uniq) <= 0.5) {
+      icode <- cumsum(uniq)[um]
+      inames <- if(max(icode) <= 26) LETTERS[icode] else as.character(icode)
+      itable <- data.frame(row=seq_along(um), interaction=inames)
+      usubs <- subs[um[uniq]]
+      names(usubs) <- inames[uniq]
+      iprint <- append(iprint,
+                       list("Summary table of interactions"=itable,
+                            "key to interaction table"=usubs,
+                            "=== Interactions on each row ===="=NULL))
+    }
+    names(subs) <- paste("Interaction on row", 1:npat)
     iprint <- append(iprint, subs)
   }
 
@@ -176,7 +216,7 @@ print.summary.mppm <- function(x, ..., brief=x$brief) {
   splat("Log trend formula:", pasteFormula(x$trend))
   switch(x$Fit$fitter,
          glmmPQL={
-           cat("Fixed effects:\n")
+           cat("\nFixed effects:\n")
            print(x$coef.syst)
            cat("Random effects:\n")
            print(x$coef.rand)
@@ -184,11 +224,16 @@ print.summary.mppm <- function(x, ..., brief=x$brief) {
          },
          gam=,
          glm={
-           cat("Fitted trend coefficients:\n")
+           cat("\nFitted trend coefficients:\n")
            print(x$coef.syst)
            co <- coef(FIT)
          })
 
+  if(length(x$coef.inter)) {
+    cat("\nFitted coefficients of interpoint interaction:\n")
+    print(x$coef.inter)
+  }
+  
   if(!brief && waxlyrical('extras', terselevel)) {
     cat("All fitted coefficients:\n")
     print(co)

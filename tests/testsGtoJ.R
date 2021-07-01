@@ -97,7 +97,7 @@ local({
 #
 #  tests/imageops.R
 #
-#   $Revision: 1.31 $   $Date: 2020/11/02 07:03:26 $
+#   $Revision: 1.33 $   $Date: 2021/04/15 06:13:47 $
 #
 
 
@@ -169,6 +169,15 @@ local({
   Z <- split(X, as.im(Y))
   
   ## ...........  cases of "[.im" ........................
+  ## index window has zero overlap area with image window
+  Out <- owin(c(-0.5, 0), c(0,1))
+  oo <- X[Out]
+  oo <- X[Out, drop=FALSE]
+  if(!is.im(oo)) stop("Wrong format in [.im with disjoint index window")
+  oon <- X[Out, drop=TRUE, rescue=FALSE]
+  if(is.im(oon)) stop("Expected a vector of values, not an image, from [.im")
+  if(!all(is.na(oon))) stop("Expected a vector of NA values in [.im")
+  ## 
   Empty <- cells[FALSE]
   EmptyFun <- ssf(Empty, numeric(0))
   ff <- d[Empty]

@@ -3,7 +3,7 @@
 #
 # Line transects of pixel images
 #
-#  $Revision: 1.7 $  $Date: 2020/04/22 05:18:40 $
+#  $Revision: 1.8 $  $Date: 2021/06/22 05:33:50 $
 #
 
 transect.im <- local({
@@ -37,47 +37,73 @@ transect.im <- local({
 
   transect.im <- 
     function(X, ..., from="bottomleft", to="topright",
-             nsample=512, click=FALSE, add=FALSE) {
+             nsample=512, click=FALSE, add=FALSE, curve=NULL) {
       Xname <- short.deparse(substitute(X))
       Xname <- sensiblevarname(Xname, "X")
       stopifnot(is.im(X))
       check.1.integer(nsample)
-      # determine transect position
-      if(click) {
-        # interactive
-        if(!add) plot(X)
-        from <- spatstatLocator(1)
-        points(from)
-        to <- spatstatLocator(1)
-        points(to)
-        segments(from$x, from$y, to$x, to$y)
+      if(length(curve)) {
+        ## parametric curve
+        ## validate specification of curve
+        check.named.list(curve, c("f", "tlim"), namopt=c("tname", "tdescrip"))
+        stopifnot(is.function(curve$f))
+        check.range(curve$tlim)
+        ## extract info
+        tlim <- curve$tlim
+        tname <- curve$tname %orifnull% "t"
+        tdescrip <- curve$tdescrip %orifnull% "curve parameter"
+        tunits <- NULL
+        ## create sample points along curve
+        t <- seq(tlim[1L], tlim[2L], length.out=nsample)
+        xy <- (curve$f)(t)
+        if(is.null(dim(xy)))
+          stop("curve$f() should return a matrix or data frame")
+        if(ncol(xy) != 2L)
+          stop("curve$f() should return a matrix or data frame with 2 columns")
+        hasnames <- all(c("x", "y") %in% colnames(xy))
+        x <- xy[, if(hasnames) "x" else 1L]
+        y <- xy[, if(hasnames) "y" else 2L]
       } else {
-        # data defining a line segment
-        R <- as.rectangle(X)
-        from <- specify.location(from, R)
-        to   <- specify.location(to,   R)
+        ## straight line transect
+        if(click) {
+          ## interactive
+          if(!add) plot(X)
+          from <- spatstatLocator(1)
+          points(from)
+          to <- spatstatLocator(1)
+          points(to)
+          segments(from$x, from$y, to$x, to$y)
+        } else {
+          ## data defining a line segment
+          R <- as.rectangle(X)
+          from <- specify.location(from, R)
+          to   <- specify.location(to,   R)
+        }
+        ## create sample points along transect
+        if(identical(from,to))
+          stop(paste(sQuote("from"), "and", sQuote("to"),
+                     "must be distinct points"), call.=FALSE)
+        u <- seq(0,1,length.out=nsample)
+        x <- from$x + u * (to$x - from$x)
+        y <- from$y + u * (to$y - from$y)
+        leng <- sqrt( (to$x - from$x)^2 +  (to$y - from$y)^2)
+        t <- u * leng
+        tname <- "t"
+        tdescrip <- "distance along transect"
+        tunits <- unitname(X)
       }
-      # create sample points along transect
-      if(identical(from,to))
-        stop(paste(sQuote("from"), "and", sQuote("to"),
-                   "must be distinct points"), call.=FALSE)
-      u <- seq(0,1,length.out=nsample)
-      x <- from$x + u * (to$x - from$x)
-      y <- from$y + u * (to$y - from$y)
-      leng <- sqrt( (to$x - from$x)^2 +  (to$y - from$y)^2)
-      t <- u * leng
-      # look up pixel values (may be NA)
+      ## look up pixel values (may be NA)
       v <- X[list(x=x, y=y), drop=FALSE]
-      # package into fv object
+      ## package into fv object
       df <- data.frame(t=t, v=v)
-      colnames(df)[2] <- Xname
-      fv(df, argu = "t",
-         ylab = substitute(Xname(t), list(Xname=as.name(Xname))),
+      colnames(df) <- c(tname, Xname)
+      fv(df, argu = tname,
+         ylab = substitute(Xname(tname),
+                           list(Xname=as.name(Xname), tname=as.name(tname))),
          valu=Xname,
-         labl = c("t", "%s(t)"),
-         desc = c("distance along transect",
-           "pixel value of %s"),
-         unitname = unitname(X), fname = Xname)
+         labl = c(tname, paste0("%s", paren(tname))),
+         desc = c(tdescrip, "pixel value of %s"),
+         unitname = tunits, fname = Xname)
     }
 
   transect.im

@@ -3,7 +3,7 @@
 ##
 ## Exact 'funxy' counterpart of density.ppp
 ##
-##  $Revision: 1.11 $ $Date: 2020/11/14 04:09:51 $
+##  $Revision: 1.12 $ $Date: 2021/03/31 01:25:18 $
 
 
 densityfun <- function(X, ...) {
@@ -35,10 +35,20 @@ densityfun.ppp <- function(X, sigma=NULL, ...,
                            x=X, bwfun=bw.diggle, allow.zero=TRUE)
   stuff[c("sigma", "varcov")]  <- ker[c("sigma", "varcov")]
   ##
-  g <- function(x, y=NULL) {
+  g <- function(x, y=NULL, drop=TRUE) {
     Y <- xy.coords(x, y)[c("x", "y")]
-    Xquery <- as.ppp(Y, Window(stuff$Xdata))
-    do.call(densitycrossEngine, append(list(Xquery=Xquery), stuff))
+    W <- Window(stuff$Xdata)
+    ok <- inside.owin(Y, w=W)
+    allgood <- all(ok)
+    if(!allgood) Y <- lapply(Y, "[", i=ok)
+    Xquery <- as.ppp(Y, W)
+    vals <- do.call(densitycrossEngine, append(list(Xquery=Xquery), stuff))
+    if(allgood || drop) return(vals)
+    ans <- numeric(length(ok))
+    ans[ok] <- vals
+    ans[!ok] <- NA
+    attr(ans, "sigma") <- attr(vals, "sigma")
+    return(ans)
   }
   g <- funxy(g, as.rectangle(as.owin(X)))
   class(g) <- c("densityfun", class(g))
@@ -50,6 +60,7 @@ print.densityfun <- function(x, ...) {
       "kernel estimate of intensity for", fill=TRUE)
   X <- get("X", envir=environment(x))
   print(X, ...)
+  cat("Optional argument:", "drop=TRUE", fill=TRUE)
   return(invisible(NULL))
 }
 

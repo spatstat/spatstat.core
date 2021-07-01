@@ -57,7 +57,7 @@
   \code{\link{as.ppm.dppm}}.
 }
 \examples{
-  fit <- dppm(swedishpines ~ x + y, dppGauss())
+  fit <- dppm(swedishpines ~ x + y, dppGauss, method="c")
   coef(fit)
   formula(fit)
   tf <- terms(fit)

@@ -2,6 +2,7 @@
 \alias{quadrat.test}
 \alias{quadrat.test.ppp}
 \alias{quadrat.test.ppm}
+\alias{quadrat.test.slrm}
 \alias{quadrat.test.quadratcount}
 \title{Dispersion Test for Spatial Point Pattern Based on
        Quadrat Counts}
@@ -33,6 +34,14 @@ quadrat.test(X, ...)
                            xbreaks=NULL, ybreaks=NULL, tess=NULL,
                            nsim=1999)
 
+\method{quadrat.test}{slrm}(X, nx=5, ny=nx, 
+                           alternative=c("two.sided", "regular", "clustered"),
+                           method=c("Chisq", "MonteCarlo"),
+                           conditional=TRUE, CR=1, df.est=NULL,
+                           ..., 
+                           xbreaks=NULL, ybreaks=NULL, tess=NULL,
+                           nsim=1999)
+
 \method{quadrat.test}{quadratcount}(X,
                           alternative=c("two.sided", "regular", "clustered"),
                           method=c("Chisq", "MonteCarlo"),
@@ -46,7 +55,7 @@ quadrat.test(X, ...)
     A point pattern (object of class \code{"ppp"})
     to be subjected to the goodness-of-fit test.
     Alternatively a fitted point process model (object of class
-    \code{"ppm"}) to be tested.
+    \code{"ppm"} or \code{"slrm"}) to be tested.
     Alternatively \code{X} can be the result of applying
     \code{\link{quadratcount}} to a point pattern.
   }
@@ -109,7 +118,8 @@ quadrat.test(X, ...)
   The function \code{quadrat.test} is generic, with methods for
   point patterns (class \code{"ppp"}), split point patterns
   (class \code{"splitppp"}), point process models
-  (class \code{"ppm"}) and quadrat count tables (class \code{"quadratcount"}).
+  (class \code{"ppm"} or \code{"slrm"})
+  and quadrat count tables (class \code{"quadratcount"}).
 
   \itemize{
     \item

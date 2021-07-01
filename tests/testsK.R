@@ -17,14 +17,23 @@ cat(paste("--------- Executing",
 #'
 #'   Various K and L functions and pcf
 #'
-#'   $Revision: 1.39 $  $Date: 2020/04/28 08:18:41 $
+#'   $Revision: 1.40 $  $Date: 2021/03/23 05:54:20 $
 #'
 #'   Assumes 'EveryStart.R' was run
 
 myfun <- function(x,y){(x+1) * y } # must be outside
 
-if(!FULLTEST)
+if(FULLTEST) {
+  Cells <- cells
+  Amacrine <- amacrine
+  Redwood <- redwood
+} else {
+  ## reduce numbers of data + dummy points
   spatstat.options(npixel=32, ndummy.min=16)
+  Cells <- cells[c(FALSE, TRUE)]
+  Amacrine <- amacrine[c(FALSE, TRUE)]
+  Redwood <- redwood[c(FALSE, TRUE)]
+}
 
 local({
   if(FULLTEST) {
@@ -37,23 +46,23 @@ local({
     implemented.for.K(c("border", "isotropic"), "mask", TRUE)
     implemented.for.K(c("border", "isotropic"), "mask", FALSE)
     #' shortcuts
-    D <- density(cells)
-    K <- Kborder.engine(cells, rmax=0.4, weights=D, ratio=TRUE)
-    K <- Knone.engine(cells, rmax=0.4, weights=D, ratio=TRUE)
+    D <- density(Cells)
+    K <- Kborder.engine(Cells, rmax=0.4, weights=D, ratio=TRUE)
+    K <- Knone.engine(Cells, rmax=0.4, weights=D, ratio=TRUE)
     allcor <- c("none", "border", "bord.modif","isotropic", "translate")
-    K <- Krect.engine(cells, rmax=0.4, ratio=TRUE, correction=allcor)
-    K <- Krect.engine(cells, rmax=0.4, ratio=TRUE, correction=allcor,
+    K <- Krect.engine(Cells, rmax=0.4, ratio=TRUE, correction=allcor)
+    K <- Krect.engine(Cells, rmax=0.4, ratio=TRUE, correction=allcor,
                       weights=D)
-    K <- Krect.engine(cells, rmax=0.4, ratio=TRUE, correction=allcor,
+    K <- Krect.engine(Cells, rmax=0.4, ratio=TRUE, correction=allcor,
                       use.integers=FALSE)
     #' Kest special code blocks
-    K <- Kest(cells, var.approx=TRUE, ratio=FALSE)
-    Z <- distmap(cells) + 1
-    Kb <- Kest(cells, correction=c("border","bord.modif"),
+    K <- Kest(Cells, var.approx=TRUE, ratio=FALSE)
+    Z <- distmap(Cells) + 1
+    Kb <- Kest(Cells, correction=c("border","bord.modif"),
                weights=Z, ratio=TRUE)
-    Kn <- Kest(cells, correction="none",
+    Kn <- Kest(Cells, correction="none",
                weights=Z, ratio=TRUE)
-    Knb <- Kest(cells, correction=c("border","bord.modif","none"),
+    Knb <- Kest(Cells, correction=c("border","bord.modif","none"),
                 weights=Z, ratio=TRUE)
   }
   if(ALWAYS) {
@@ -70,15 +79,15 @@ local({
     Knb <- Kest(X, correction=c("border","bord.modif","none"),
                 rmax=0.02, weights=Z, ratio=TRUE)
     #' pcf.ppp special code blocks
-    pr  <- pcf(cells, ratio=TRUE, var.approx=TRUE)
-    pc  <- pcf(cells, domain=square(0.5))
-    pcr <- pcf(cells, domain=square(0.5), ratio=TRUE)
-    pw <- pcf(redwood, correction="none")
-    pwr <- pcf(redwood, correction="none", ratio=TRUE)
-    pv <- pcf(redwood, kernel="rectangular")
-    p1 <- pcf(redwood[1])
+    pr  <- pcf(Cells, ratio=TRUE, var.approx=TRUE)
+    pc  <- pcf(Cells, domain=square(0.5))
+    pcr <- pcf(Cells, domain=square(0.5), ratio=TRUE)
+    pw <- pcf(Redwood, correction="none")
+    pwr <- pcf(Redwood, correction="none", ratio=TRUE)
+    pv <- pcf(Redwood, kernel="rectangular")
+    p1 <- pcf(Redwood[1])
     #' pcf.fv
-    K <- Kest(redwood)
+    K <- Kest(Redwood)
     g <- pcf(K, method="a")
     g <- pcf(K, method="c")
     g <- pcf(K, method="d")
@@ -95,9 +104,9 @@ local({
   }
   if(ALWAYS) {
     #' edge corrections
-    rr <- rep(0.1, npoints(cells))
-    eC <- edge.Ripley(cells, rr)
-    eI <- edge.Ripley(cells, rr, method="interpreted")
+    rr <- rep(0.1, npoints(Cells))
+    eC <- edge.Ripley(Cells, rr)
+    eI <- edge.Ripley(Cells, rr, method="interpreted")
     if(max(abs(eC-eI)) > 0.1)
       stop("Ripley edge correction results do not match")
   }
@@ -112,7 +121,7 @@ local({
   if(ALWAYS) {
     #' run slow code for edge correction and compare results
     op <- spatstat.options(npixel=128)
-    X <- redwood[c(TRUE, FALSE, FALSE, FALSE)]
+    X <- Redwood[c(TRUE, FALSE, FALSE, FALSE)]
     Window(X) <- as.polygonal(Window(X))
     Eapprox <- edge.Trans(X)
     Eexact <- edge.Trans(X, exact=TRUE)
@@ -128,18 +137,18 @@ local({
 local({
   if(FULLTEST) {
     #' ----  multitype ------
-    K <- Kcross(amacrine, correction=c("none", "bord.modif"))
+    K <- Kcross(Amacrine, correction=c("none", "bord.modif"))
     #' inhomogeneous multitype
-    fit <- ppm(amacrine ~ marks)
-    K1 <- Kcross.inhom(amacrine, lambdaX=fit)
-    K2 <- Kcross.inhom(amacrine, lambdaX=densityfun(amacrine))
-    K3 <- Kcross.inhom(amacrine, lambdaX=density(amacrine, at="points"))
-    On <- split(amacrine)$on
-    Off <- split(amacrine)$off
-    K4 <- Kcross.inhom(amacrine, lambdaI=ppm(On), lambdaJ=ppm(Off))
-    K5 <- Kcross.inhom(amacrine, correction="bord.modif")
+    fit <- ppm(Amacrine ~ marks)
+    K1 <- Kcross.inhom(Amacrine, lambdaX=fit)
+    K2 <- Kcross.inhom(Amacrine, lambdaX=densityfun(Amacrine))
+    K3 <- Kcross.inhom(Amacrine, lambdaX=density(Amacrine, at="points"))
+    On <- split(Amacrine)$on
+    Off <- split(Amacrine)$off
+    K4 <- Kcross.inhom(Amacrine, lambdaI=ppm(On), lambdaJ=ppm(Off))
+    K5 <- Kcross.inhom(Amacrine, correction="bord.modif")
     #' markconnect, markcorr
-    M <- markconnect(amacrine, "on", "off", normalise=TRUE)
+    M <- markconnect(Amacrine, "on", "off", normalise=TRUE)
     M <- markcorr(longleaf, normalise=TRUE,
                   correction=c("isotropic", "translate", "border", "none"))
     M <- markcorr(longleaf, normalise=TRUE, fargs=list())
@@ -178,92 +187,92 @@ local({
     a <- localLinhom(swedishpines, lambda=Lam)
     a <- localLinhom(swedishpines, lambda=Z, correction="none")
     a <- localLinhom(swedishpines, lambda=Z, correction="translate")
-    a <- localLcross(amacrine)
-    a <- localLcross(amacrine, from="off", to="off")
-    a <- localKdot(amacrine)
-    a <- localLdot(amacrine)
-    a <- localKcross.inhom(amacrine)
-    a <- localLcross.inhom(amacrine)
-    fat <- ppm(amacrine ~ x * marks)
+    a <- localLcross(Amacrine)
+    a <- localLcross(Amacrine, from="off", to="off")
+    a <- localKdot(Amacrine)
+    a <- localLdot(Amacrine)
+    a <- localKcross.inhom(Amacrine)
+    a <- localLcross.inhom(Amacrine)
+    fat <- ppm(Amacrine ~ x * marks)
     Zed <- predict(fat)
     Lum <- fitted(fat, dataonly=TRUE)
-    moff <- (marks(amacrine) == "off")
-    a <- localLcross.inhom(amacrine, from="off", to="on", lambdaX=Zed)
-    a <- localLcross.inhom(amacrine, from="off", to="on", lambdaX=Lum)
-    a <- localLcross.inhom(amacrine, from="off", to="on", lambdaX=fat)
-    a <- localLcross.inhom(amacrine, from="off", to="on",
+    moff <- (marks(Amacrine) == "off")
+    a <- localLcross.inhom(Amacrine, from="off", to="on", lambdaX=Zed)
+    a <- localLcross.inhom(Amacrine, from="off", to="on", lambdaX=Lum)
+    a <- localLcross.inhom(Amacrine, from="off", to="on", lambdaX=fat)
+    a <- localLcross.inhom(Amacrine, from="off", to="on",
                            lambdaFrom=Lum[moff], lambdaTo=Lum[!moff])
-    a <- localLcross.inhom(amacrine, from="off", to="on", lambdaX=Zed,
+    a <- localLcross.inhom(Amacrine, from="off", to="on", lambdaX=Zed,
                            correction="none")
-    a <- localLcross.inhom(amacrine, from="off", to="on", lambdaX=Zed,
+    a <- localLcross.inhom(Amacrine, from="off", to="on", lambdaX=Zed,
                            correction="translate")
     #'
     #' cases of resolve.lambda.cross
     #'
-    h <- resolve.lambda.cross(amacrine, moff, !moff)
-    h <- resolve.lambda.cross(amacrine, moff, !moff, lambdaX=Zed)
-    h <- resolve.lambda.cross(amacrine, moff, !moff, lambdaX=Lum)
-    h <- resolve.lambda.cross(amacrine, moff, !moff, lambdaX=fat)
-    h <- resolve.lambda.cross(amacrine, moff, !moff, lambdaX=fat, update=FALSE)
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    h <- resolve.lambda.cross(Amacrine, moff, !moff)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff, lambdaX=Zed)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff, lambdaX=Lum)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff, lambdaX=fat)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff, lambdaX=fat, update=FALSE)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaI=Zed[["off"]], lambdaJ=Zed[["on"]])
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaI=Lum[moff], lambdaJ=Lum[!moff])
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaI=fat, lambdaJ=fat)
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaI=fat, lambdaJ=fat,
                               update=FALSE)
-    d <- densityfun(unmark(amacrine), sigma=0.1)
-    dm <- lapply(split(amacrine), densityfun, sigma=0.1)
-    h <- resolve.lambda.cross(amacrine, moff, !moff, lambdaX=d)
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    d <- densityfun(unmark(Amacrine), sigma=0.1)
+    dm <- lapply(split(Amacrine), densityfun, sigma=0.1)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff, lambdaX=d)
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaI=dm[["off"]], lambdaJ=dm[["on"]])
-    h <- resolve.lambda.cross(amacrine, moff, !moff,
+    h <- resolve.lambda.cross(Amacrine, moff, !moff,
                               lambdaX=function(x,y,m){ d(x,y) })
     #'
     #' multitype inhomogeneous pcf
     #'
-    g <- pcfcross.inhom(amacrine, 
+    g <- pcfcross.inhom(Amacrine, 
                         lambdaI=dm[["off"]], lambdaJ=dm[["on"]])
 
     #'
     #'   lohboot code blocks
     #'
-    Ared <- lohboot(redwood, fun="Kest", block=TRUE,
+    Ared <- lohboot(Redwood, fun="Kest", block=TRUE,
                     Vcorrection=TRUE, global=FALSE, correction="none")
-    Bred <- lohboot(redwood, block=TRUE, basicboot=TRUE, global=FALSE)
-    Cred <- lohboot(redwood, fun=Kest, block=TRUE, global=TRUE,
+    Bred <- lohboot(Redwood, block=TRUE, basicboot=TRUE, global=FALSE)
+    Cred <- lohboot(Redwood, fun=Kest, block=TRUE, global=TRUE,
                     correction="translate")
-    Dred <- lohboot(redwood, Lest)
-    Kred <- lohboot(redwood, Kinhom)
-    Lred <- lohboot(redwood, Linhom)
-    gred <- lohboot(redwood, pcfinhom, sigma=0.1)
-    Zred <- predict(ppm(redwood ~ x+y))
-    Lred <- lohboot(redwood, Linhom, lambda=Zred)
+    Dred <- lohboot(Redwood, Lest)
+    Kred <- lohboot(Redwood, Kinhom)
+    Lred <- lohboot(Redwood, Linhom)
+    gred <- lohboot(Redwood, pcfinhom, sigma=0.1)
+    Zred <- predict(ppm(Redwood ~ x+y))
+    Lred <- lohboot(Redwood, Linhom, lambda=Zred)
     #'
     X <- runifpoint(100, letterR)
     AX <- lohboot(X, block=TRUE, nx=7, ny=10)
     #'    multitype
-    b <- lohboot(amacrine, Kcross)
-    b <- lohboot(amacrine, Lcross)
-    b <- lohboot(amacrine, Kdot)
-    b <- lohboot(amacrine, Ldot)
-    b <- lohboot(amacrine, Kcross.inhom)
-    b <- lohboot(amacrine, Lcross.inhom)
-    b <- lohboot(amacrine, Lcross.inhom, from="off", to="on", lambdaX=Zed)
-    b <- lohboot(amacrine, Lcross.inhom, from="off", to="on", lambdaX=Lum)
-    b <- lohboot(amacrine, Lcross.inhom, from="off", to="on", lambdaX=fat)
-    b <- lohboot(amacrine, Lcross.inhom, from="off", to="on", 
+    b <- lohboot(Amacrine, Kcross)
+    b <- lohboot(Amacrine, Lcross)
+    b <- lohboot(Amacrine, Kdot)
+    b <- lohboot(Amacrine, Ldot)
+    b <- lohboot(Amacrine, Kcross.inhom)
+    b <- lohboot(Amacrine, Lcross.inhom)
+    b <- lohboot(Amacrine, Lcross.inhom, from="off", to="on", lambdaX=Zed)
+    b <- lohboot(Amacrine, Lcross.inhom, from="off", to="on", lambdaX=Lum)
+    b <- lohboot(Amacrine, Lcross.inhom, from="off", to="on", lambdaX=fat)
+    b <- lohboot(Amacrine, Lcross.inhom, from="off", to="on", 
                  lambdaFrom=Lum[moff], lambdaTo=Lum[!moff])
     #'
     #'  residual K functions etc
     #'
-    rco <- compareFit(cells, Kcom,
+    rco <- compareFit(Cells, Kcom,
                       interaction=anylist(P=Poisson(), S=Strauss(0.08)),
                       same="trans", different="tcom")
-    fit <- ppm(cells ~ x, Strauss(0.07))
-    K <- Kcom(cells, model=fit, restrict=TRUE)
+    fit <- ppm(Cells ~ x, Strauss(0.07))
+    K <- Kcom(Cells, model=fit, restrict=TRUE)
     
     ##  Kscaled
     A <- Lscaled(japanesepines, renormalise=TRUE, correction="all")

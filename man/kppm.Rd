@@ -391,6 +391,9 @@
   \code{\link{Kmodel.kppm}},
   \code{\link{pcfmodel.kppm}}.
 
+  See also \code{\link{improve.kppm}} for improving the fit of a
+  \code{kppm} object.
+
   Minimum contrast fitting algorithm:
   higher level interface \code{\link{clusterfit}};
   low-level algorithm \code{\link{mincontrast}}.
@@ -405,7 +408,7 @@
   \code{\link{matclust.estpcf}},
   \code{\link{lgcp.estpcf}},
   \code{\link{cauchy.estpcf}},
-  \code{\link{vargamma.estpcf}},
+  \code{\link{vargamma.estpcf}}.
 
   Summary statistics:
   \code{\link{Kest}},
@@ -413,14 +416,18 @@
   \code{\link{pcf}},
   \code{\link{pcfinhom}}.
 
-  See also \code{\link{ppm}}
+  For fitting Poisson or Gibbs point process models, see \code{\link{ppm}}.
 }
 \references{
   Guan, Y. (2006) 
-  A composite likelihood approach in fitting spatial point process
-  models.
+  A composite likelihood approach in fitting spatial point process models.
   \emph{Journal of the American Statistical Association}
   \bold{101}, 1502--1512.
+
+  Guan, Y., Jalilian, A. and Waagepetersen, R. (2015)
+  Quasi-likelihood for spatial point processes.
+  \emph{Journal of the Royal Statistical Society, Series B}
+  \bold{77}, 677-697.
 
   Jalilian, A., Guan, Y. and Waagepetersen, R. (2012)
   Decomposition of variance for spatial Cox processes.
@@ -441,8 +448,8 @@
   \emph{Biometrics} \bold{63}, 252--258.
 }
 \examples{
-  offline <- !interactive()
-  if(offline) op <- spatstat.options(npixel=32, ndummy.min=16)
+  online <- interactive()
+  if(!online) op <- spatstat.options(npixel=32, ndummy.min=16)
 
   # method for point patterns
   kppm(redwood, ~1, "Thomas")
@@ -450,7 +457,7 @@
   kppm(redwood ~ 1, "Thomas")
 
   # different models for clustering
-  kppm(redwood ~ x, "MatClust") 
+  if(online) kppm(redwood ~ x, "MatClust") 
   kppm(redwood ~ x, "MatClust", statistic="pcf", statargs=list(stoyan=0.2)) 
   kppm(redwood ~ x, cluster="Cauchy", statistic="K")
   kppm(redwood, cluster="VarGamma", nu = 0.5, statistic="pcf")
@@ -470,7 +477,7 @@
   # quasi-likelihood improvement 
   kppm(redwood ~ x, "Thomas", improve.type = "quasi")
 
-  if(offline) spatstat.options(op)
+  if(!online) spatstat.options(op)
 }
 \author{
   \spatstatAuthors,

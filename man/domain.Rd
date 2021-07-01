@@ -2,6 +2,7 @@
 \alias{domain.ppm}
 \alias{domain.kppm}
 \alias{domain.dppm}
+\alias{domain.slrm}
 \alias{domain.msr}
 \alias{domain.quadrattest}
 \alias{domain.rmhmodel}
@@ -19,6 +20,8 @@
  \method{domain}{kppm}(X, \dots, from=c("points", "covariates"))
 
  \method{domain}{dppm}(X, \dots, from=c("points", "covariates"))
+
+ \method{domain}{slrm}(X, \dots, from=c("points", "covariates"))
 
  \method{domain}{msr}(X, \dots)
 

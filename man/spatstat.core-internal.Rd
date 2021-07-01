@@ -37,9 +37,11 @@
 \alias{clarkevansCalc}
 \alias{coef.summary.kppm}
 \alias{coef.summary.ppm}
+\alias{coef.summary.slrm}
 \alias{coef.vblogit} 
 \alias{compatible.rat}
 \alias{compileCDF}
+\alias{condSimCox}
 \alias{conform.ratfv}
 \alias{CressieReadStatistic}
 \alias{CressieReadSymbol}
@@ -77,6 +79,7 @@
 \alias{equalpairs}          
 \alias{evalCovar}
 \alias{evalCovar.ppm}
+\alias{evalCovar.slrm}
 \alias{evalCovariate}
 \alias{evalInteraction}
 \alias{evalInterEngine}
@@ -144,9 +147,11 @@
 \alias{is.interact}
 \alias{is.marked.mppm}    
 \alias{is.marked.msr}    
+\alias{is.marked.slrm}
 \alias{is.mppm}
 \alias{is.multitype.mppm}    
 \alias{is.multitype.msr}    
+\alias{is.multitype.slrm}    
 \alias{is.poisson.mppm}
 \alias{is.scov}
 \alias{k3engine}
@@ -155,7 +160,8 @@
 \alias{Krect.engine}
 \alias{Kount}
 \alias{Kwtsum}               
-\alias{Kpcf.kppm}               
+\alias{Kpcf.kppm}
+\alias{Kmodel.slrm}
 \alias{killinteraction}
 \alias{km.rs.opt}
 \alias{kppmComLik}
@@ -203,6 +209,7 @@
 \alias{partialModelMatrix}
 \alias{pcf3engine}
 \alias{pcfmulti.inhom}
+\alias{pcfmodel.slrm}
 \alias{ploterodewin}
 \alias{ploterodeimage}
 \alias{plot.addvar}
@@ -272,12 +279,14 @@
 \alias{print.summary.mppm}
 \alias{print.summary.rmhexpand}
 \alias{print.summary.ssf}
+\alias{print.summary.slrm}
 \alias{print.vblogit}
 \alias{quad.mppm}
 \alias{quadBlockSizes}
 \alias{quadrat.testEngine}
 \alias{ratfv}
 \alias{RandomFieldsSafe}
+\alias{reach.slrm}
 \alias{rebadge.as.crossfun}
 \alias{rebadge.as.dotfun}
 \alias{rebadge.fv}
@@ -343,6 +352,7 @@
 \alias{simulrecipe}              
 \alias{slr.prepare}
 \alias{slrAssemblePixelData}
+\alias{slrmInfluence}
 \alias{Smooth.solist}
 \alias{smoothcrossEngine}              
 \alias{smoothpointsEngine}
@@ -440,9 +450,12 @@ circticks(R, at, unit, start, clockwise, labels)
 clarkevansCalc(X, correction, clipregion, working)
 \method{coef}{summary.kppm}(object, \dots)
 \method{coef}{summary.ppm}(object, \dots)
+\method{coef}{summary.slrm}(object, \dots)
 \method{coef}{vblogit}(object, \dots) 
 \method{compatible}{rat}(A, B, \dots) 
 compileCDF(D, B, r, \dots, han.denom, check)
+condSimCox(object, nsim, \dots, window, n.cond, w.cond,
+           giveup, maxchunk, verbose, drop)
 conform.ratfv(x)
 CressieReadStatistic(OBS,EXP,lambda,normalise,named)
 CressieReadSymbol(lambda)
@@ -514,8 +527,11 @@ envelopeTest(X, \dots, exponent, alternative,
 equalpairs(U, X, marked=FALSE)
 evalCovar(model, covariate, \dots)
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
-          dimyx, eps, interpolate, jitter, modelname, covname, dataname,
-          subset) 
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
+\method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
+          jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
 evalCovariate(covariate, locations)
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
                 precomputed,savecomputed)
@@ -587,9 +603,11 @@ is.expandable(x)
 is.interact(x)
 \method{is.marked}{mppm}(X, \dots)
 \method{is.marked}{msr}(X, \dots)
+\method{is.marked}{slrm}(X, \dots)
 is.mppm(x)
 \method{is.multitype}{mppm}(X, \dots)
 \method{is.multitype}{msr}(X, \dots)
+\method{is.multitype}{slrm}(X, \dots)
 \method{is.poisson}{mppm}(x)
 is.scov(x)
 k3engine(x, y, z, box, rmax, nrval, correction)
@@ -600,6 +618,7 @@ Krect.engine(X, rmax, nr, correction, weights,
 Kount(dIJ, bI, b, breaks)
 Kwtsum(dIJ, bI, wIJ, b, w, breaks, fatal)
 Kpcf.kppm(model, what)
+\method{Kmodel}{slrm}(model, \dots)
 killinteraction(model)
 km.rs.opt(o, cc, d, breaks, KM, RS)
 kppmComLik(X, Xname, po, clusters, control, weightfun, rmax,
@@ -691,6 +710,7 @@ pcfmulti.inhom(X, I, J, lambdaI = NULL, lambdaJ = NULL, \dots,
                sigma = NULL, varcov = NULL,
                Iname = "points satisfying condition I",
                Jname = "points satisfying condition J")
+\method{pcfmodel}{slrm}(model, \dots)
 ploterodewin(W1, W2, col.edge, col.inside, do.plot, \dots)
 ploterodeimage(W, Z, \dots, Wcol, rangeZ, colsZ, do.plot)
 \method{plot}{addvar}(x, \dots, do.points=FALSE)
@@ -762,12 +782,14 @@ prefixfv(x, tagprefix, descprefix, lablprefix, whichtags)
 \method{print}{Smoothfun}(x, \dots)
 \method{print}{summary.mppm}(x, \dots, brief)
 \method{print}{summary.rmhexpand}(x, \dots)
+\method{print}{summary.slrm}(x, \dots)
 \method{print}{summary.ssf}(x, \dots)
 \method{print}{vblogit}(x, \dots)
 quad.mppm(x)
 quadBlockSizes(nX, nD, p, nMAX, announce)
 RandomFieldsSafe()
 ratfv(df, numer, denom, \dots, ratio)
+\method{reach}{slrm}(x, \dots)
 rebadge.as.crossfun(x, main, sub, i, j)
 rebadge.as.dotfun(x, main, sub, i)
 rebadge.fv(x, new.ylab, new.fname, tags, new.desc, new.labl, new.yexp,
@@ -805,14 +827,17 @@ resid1panel(observedX, observedV,
 resolve.2D.kernel(\dots,
             sigma, varcov, x, mindist, adjust, bwfun, allow.zero)
 rhohatEngine(model, covariate, reference, volume, \dots,
-               subset, weights, method, horvitz, smoother, resolution, 
+               subset, weights, method, horvitz, smoother,
+               resolution, evalCovarArgs,
                n, bw, adjust, from, to, 
-               bwref, covname, covunits, confidence, modelcall, callstring)
+               bwref, covname, covunits, confidence,
+               breaks,
+               modelcall, callstring)
 rhohatCalc(ZX, Zvalues, lambda, denom, \dots,
            weights, lambdaX,
            method, horvitz, smoother,
            n, bw, adjust, from, to, 
-           bwref, covname, confidence, positiveCI, markovCI,
+           bwref, covname, confidence, breaks, positiveCI, markovCI,
            covunits, modelcall, callstring, savestuff)
 rMaternInhibition(type, kappa, r, win, stationary, \dots, nsim, drop)
 rmax.Rigid(X, g)
@@ -860,6 +885,7 @@ signalStatus(x, errors.only)
 simulrecipe(type, expr, envir, csr, pois, constraints)
 slr.prepare(CallInfo, envir, data, dataAtPoints, splitby, clip)
 slrAssemblePixelData(Y, Yname, W, covimages, dataAtPoints, pixelarea)
+slrmInfluence(model, what, \dots)
 \method{Smooth}{solist}(X, \dots)
 smoothcrossEngine(Xdata, Xquery, values, sigma, \dots,
                     weights, varcov,

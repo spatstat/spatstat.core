@@ -189,7 +189,7 @@
 }
 \examples{
    # three i.i.d. realisations of nonuniform Poisson process
-   lambda <- as.im(function(x,y) { 300 * exp(x) }, square(1))
+   lambda <- as.im(function(x,y) { 200 * exp(x) }, square(1))
    dat <- hyperframe(X=list(rpoispp(lambda), rpoispp(lambda), rpoispp(lambda)))
 
    # fit uniform Poisson process
@@ -203,8 +203,8 @@
    cdf.test(fit1, "x")
 
    # Gibbs model
-   fitGibbs <- update(fit0, interaction=Strauss(0.07))
-   ns <- if(interactive()) 19 else 3
+   fitGibbs <- update(fit0, interaction=Strauss(0.05))
+   ns <- if(interactive()) 19 else 2
    cdf.test(fitGibbs, "x", nsim=ns)
 }
 \keyword{htest}

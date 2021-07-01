@@ -8,16 +8,22 @@
   in two or more pixel images.
 }
 \usage{
-\method{pairs}{im}(..., plot=TRUE)
+\method{pairs}{im}(..., plot=TRUE, drop=TRUE)
 }
 \arguments{
   \item{\dots}{
     Any number of arguments, each of which is either
     a pixel image (object of class \code{"im"})
     or a named argument to be passed to \code{\link{pairs.default}}.
+    Alternatively, a single argument which is a list of pixel images.
   }
   \item{plot}{
     Logical. If \code{TRUE}, the scatterplot matrix is plotted.
+  }
+  \item{drop}{
+    Logical value specifying whether pixel values that are \code{NA} 
+    should be removed from the data frame that is returned by the function.
+    This does not affect the plot.
   }
 }
 \details{
@@ -40,6 +46,13 @@
 
   Any arguments in \code{\dots} which are not pixel images will be
   passed to \code{\link{pairs.default}} to control the plot.
+
+  The return value of \code{pairs.im} is a data frame, returned
+  invisibly. The data frame has one column
+  for each image. Each row contains the pixel values of
+  the different images for one pixel in the raster.
+  If \code{drop=TRUE} (the default), any row which contains \code{NA}
+  is deleted. The plot is not affected by the value of \code{drop}.
 }
 \section{Image or Contour Plots}{
   Since the scatterplots may show very dense concentrations of points,
@@ -73,6 +86,7 @@
   \code{\link{panel.contour}},
   \code{\link{panel.image}},
   \code{\link{plot.im}},
+  \code{\link{cov.im}},
   \code{\link{im}},
   \code{\link{par}}
 }

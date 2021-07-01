@@ -117,7 +117,7 @@ local({
 #' check 'closepairs/crosspairs' code
 #' invoked in core package
 #'
-#' $Revision: 1.1 $ $Date: 2020/12/03 02:04:00 $
+#' $Revision: 1.4 $ $Date: 2021/04/17 04:16:43 $
 #' 
 #' ------- All this code must be run on every hardware -------
 #'
@@ -125,13 +125,17 @@ local({
 local({
   #' weightedclosepairs is currently in strauss.R
   wi <- weightedclosepairs(redwood, 0.05, "isotropic")
-  wt <- weightedclosepairs(redwood, 0.05, "translate")
-  wp <- weightedclosepairs(redwood, 0.05, "periodic")
+  if(FULLTEST) {
+    wt <- weightedclosepairs(redwood, 0.05, "translate")
+    wp <- weightedclosepairs(redwood, 0.05, "periodic")
+  }
   #' markmarkscatter uses closepairs.pp3
   X <- runifpoint3(100)
   marks(X) <- runif(100)
   markmarkscatter(X, 0.2)
-  markmarkscatter(X[FALSE], 0.2)
+  if(FULLTEST) {
+    markmarkscatter(X[FALSE], 0.2)
+  }
 })
 
 #'
@@ -139,20 +143,20 @@ local({
 #'
 #'   Check machinery for first contact distributions
 #'
-#'   $Revision: 1.6 $  $Date: 2020/04/28 12:58:26 $
+#'   $Revision: 1.8 $  $Date: 2021/04/17 02:25:55 $
 
 local({
   if(ALWAYS) {
     #' reduce complexity
-    Y <- as.mask(heather$coarse, dimyx=c(100, 50))
+    Y <- as.mask(heather$coarse, dimyx=c(50, 25))
     
     X <- runifpoint(100, win = complement.owin(Y))
-    G <- Gfox(X, Y)
+    if(FULLTEST) G <- Gfox(X, Y)
     J <- Jfox(X, Y)
 
     Y <- as.polygonal(Y)
     X <- runifpoint(100, win = complement.owin(Y))
-    G <- Gfox(X, Y)
+    if(FULLTEST) G <- Gfox(X, Y)
     J <- Jfox(X, Y)
 
     op <- spatstat.options(exactdt.checks.data=TRUE)
@@ -167,13 +171,19 @@ reset.spatstat.options()
 #'
 #'   Tests for user-contributed code in spatstat
 #'
-#'   $Revision: 1.2 $  $Date: 2020/04/28 12:58:26 $
+#'   $Revision: 1.4 $  $Date: 2021/04/17 02:32:24 $
 
 local({
   #' Jinhom
   #' Marie-Colette van Lieshout and Ottmar Cronie
   X <- redwood3
-  fit <- ppm(X ~ polynom(x,y,2))
+  if(FULLTEST) {
+    fit <- ppm(X ~ polynom(x,y,2))
+  } else {
+    X <- X[c(TRUE,FALSE)]
+    spatstat.options(npixel=32, ndummy.min=16)
+    fit <- ppm(X ~ x)
+  }
   lam <- predict(fit)
   lamX <- fitted(fit, dataonly=TRUE)
   lmin <- 0.9 * min(lam)
@@ -190,6 +200,7 @@ local({
     f1 <- Finhom(X, lambda=fit, update=TRUE)
     f3 <- Finhom(X, lambda=lam,  lmin=lmin)
   }
+  if(!FULLTEST) reset.spatstat.options()
 })
 # tests/correctC.R
 # check for agreement between C and interpreted code

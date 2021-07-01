@@ -1,7 +1,7 @@
 #
 #   quadrattest.R
 #
-#   $Revision: 1.64 $  $Date: 2020/12/19 05:25:06 $
+#   $Revision: 1.65 $  $Date: 2021/06/29 02:21:01 $
 #
 
 quadrat.test <- function(X, ...) {
@@ -44,7 +44,7 @@ quadrat.test.splitppp <- function(X, ..., df=NULL, df.est=NULL, Xname=NULL)
                    df=df, df.est=df.est, Xname=Xname)
 }
 
-quadrat.test.ppm <-
+quadrat.test.slrm <- quadrat.test.ppm <-
   function(X, nx=5, ny=nx,
            alternative = c("two.sided", "regular", "clustered"),      
            method=c("Chisq", "MonteCarlo"),
@@ -56,11 +56,11 @@ quadrat.test.ppm <-
    dataname <- paste("data from", fitname)
    method <- match.arg(method)
    alternative <- match.arg(alternative)
-   if(!is.poisson.ppm(X))
+   if(!is.poisson(X))
     stop("Test is only defined for Poisson point process models")
    if(is.marked(X))
     stop("Sorry, not yet implemented for marked point process models")
-   Xdata <- data.ppm(X)
+   Xdata <- response(X)
    dont.complain.about(Xdata)
    do.call(quadrat.testEngine,
           resolve.defaults(list(quote(Xdata), nx=nx, ny=ny,
@@ -138,10 +138,8 @@ quadrat.testEngine <- function(X, nx, ny,
     df <- switch(method,
                  Chisq      = length(fitmeans) - df.est %orifnull% 1,
                  MonteCarlo = NULL)    
-  } else {
-    if(!is.ppm(fit))
-      stop("fit should be a ppm object")
-    if(!is.poisson.ppm(fit))
+  } else if(is.ppm(fit)) {
+    if(!is.poisson(fit))
       stop("Quadrat test only supported for Poisson point process models")
     if(is.marked(fit))
       stop("Sorry, not yet implemented for marked point process models")
@@ -172,8 +170,26 @@ quadrat.testEngine <- function(X, nx, ny,
            MonteCarlo = {
              df <- NA
            })
-  }
-
+  } else if(is.slrm(fit)) {
+    nullname <- paste("fitted spatial logistic regression", sQuote(fitname))
+    probs <- predict(fit, type="probabilities")
+    ## usual case
+    xy <- raster.xy(probs, drop=TRUE)
+    masses <- as.numeric(probs[])
+    V <- tileindex(xy, Z=tess)
+    fitmeans <- tapplysum(masses, list(tile=V))
+    switch(method,
+           Chisq = {
+             df <- length(fitmeans) - df.est %orifnull% length(coef(fit))
+             if(df < 1)
+               stop(paste("Not enough quadrats: degrees of freedom df =", df))
+           },
+           MonteCarlo = {
+             df <- NA
+           })
+  } else
+    stop("fit should be a point process model (ppm or slrm) or pixel image")
+    
   ## assemble data for test
   
   OBS <- as.vector(t(as.table(Xcount)))

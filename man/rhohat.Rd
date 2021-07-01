@@ -3,6 +3,7 @@
 \alias{rhohat.ppp}
 \alias{rhohat.quad}
 \alias{rhohat.ppm}
+\alias{rhohat.slrm}
 \concept{Resource Selection Function}
 \concept{Prospectivity}
 \title{
@@ -19,42 +20,52 @@ rhohat(object, covariate, ...)
        baseline=NULL, weights=NULL,
        method=c("ratio", "reweight", "transform"),
        horvitz=FALSE,
-       smoother=c("kernel", "local", "decreasing", "increasing"),
+       smoother=c("kernel", "local", "decreasing", "increasing", "piecewise"),
        subset=NULL, 
        dimyx=NULL, eps=NULL,
        n = 512, bw = "nrd0", adjust=1, from = NULL, to = NULL,
        bwref=bw,
-       covname, confidence=0.95, positiveCI)
+       covname, confidence=0.95, positiveCI, breaks=NULL)
 
 \method{rhohat}{quad}(object, covariate, ...,
        baseline=NULL, weights=NULL,
        method=c("ratio", "reweight", "transform"),
        horvitz=FALSE,
-       smoother=c("kernel", "local", "decreasing", "increasing"),
+       smoother=c("kernel", "local", "decreasing", "increasing", "piecewise"),
        subset=NULL, 
        dimyx=NULL, eps=NULL,
        n = 512, bw = "nrd0", adjust=1, from = NULL, to = NULL,
        bwref=bw,
-       covname, confidence=0.95, positiveCI)
+       covname, confidence=0.95, positiveCI, breaks=NULL)
 
 \method{rhohat}{ppm}(object, covariate, ...,
        weights=NULL,
        method=c("ratio", "reweight", "transform"),
        horvitz=FALSE,
-       smoother=c("kernel", "local", "decreasing", "increasing"),
+       smoother=c("kernel", "local", "decreasing", "increasing", "piecewise"),
        subset=NULL, 
        dimyx=NULL, eps=NULL,
        n = 512, bw = "nrd0", adjust=1, from = NULL, to = NULL,
        bwref=bw,
-       covname, confidence=0.95, positiveCI)
+       covname, confidence=0.95, positiveCI, breaks=NULL)
+
+\method{rhohat}{slrm}(object, covariate, ...,
+       weights=NULL,
+       method=c("ratio", "reweight", "transform"),
+       horvitz=FALSE,
+       smoother=c("kernel", "local", "decreasing", "increasing", "piecewise"),
+       subset=NULL, 
+       n = 512, bw = "nrd0", adjust=1, from = NULL, to = NULL,
+       bwref=bw,
+       covname, confidence=0.95, positiveCI, breaks=NULL)
 
 }
 \arguments{
   \item{object}{
     A point pattern (object of class \code{"ppp"} or \code{"lpp"}),
     a quadrature scheme (object of class \code{"quad"})
-    or a fitted point process model (object of class \code{"ppm"}
-    or \code{"lppm"}).
+    or a fitted point process model (object of class \code{"ppm"},
+    \code{"slrm"} or \code{"lppm"}).
   }
   \item{covariate}{
     Either a \code{function(x,y)} or a pixel image (object of
@@ -133,6 +144,13 @@ rhohat(object, covariate, ...)
     and \code{TRUE} if \code{smoother="local"}.
     See Details.
   }
+  \item{breaks}{
+    Breakpoints for the piecewise-constant function
+    computed when \code{smoother='piecewise'}.
+    Either a vector of numeric values specifying the breakpoints,
+    or a single integer specifying the number of equally-spaced
+    breakpoints. There is a sensible default.
+  }
 }
 \details{
   This command estimates the relationship between
@@ -200,6 +218,17 @@ rhohat(object, covariate, ...)
     The estimated function will be a step function,
     increasing or decreasing as a function of \eqn{z}.
     See the section on \emph{Monotone estimates}.
+    \item
+    If \code{smoother="piecewise"}, the estimate of
+    \eqn{\rho(z)}{rho(z)} is piecewise constant.
+    The range of covariate values is divided into several intervals
+    (ranges or bands). The endpoints of these intervals are the
+    breakpoints, which may be specified by the argument \code{breaks};
+    there is a sensible default. The estimate of 
+    \eqn{\rho(z)}{rho(z)} takes a constant value on each interval.
+    The estimate of \eqn{\rho(z)}{rho(z)} in each interval of covariate
+    values is simply the average intensity
+    (number of points per unit area) in the relevant sub-region.
   }
   See Baddeley (2018) for a comparison of these estimation techniques.
   
@@ -397,17 +426,20 @@ rhohat(object, covariate, ...)
   rho <- rhohat(X, "x")
   rho <- rhohat(X, function(x,y){x})
   plot(rho)
-  curve(exp(3+3*x), lty=3, col=2, add=TRUE)
+  curve(exp(3+3*x), lty=3, col=4, lwd=2, add=TRUE)
 
   rhoB <- rhohat(X, "x", method="reweight")
   rhoC <- rhohat(X, "x", method="transform")
 
   rhoM <- rhohat(X, "x", smoother="increasing")
-  plot(rhoM, add=TRUE, col=5)
+
+  plot(rhoM, add=TRUE, .y ~ .x, col=6)
+  legend("top", lty=c(3, 1), col=c(4, 6), lwd=c(2, 1),
+         legend=c("true", "increasing"))
 
   \testonly{rh <- rhohat(X, "x", dimyx=32)}
 
-  fit <- ppm(X, ~x)
+  fit <- ppm(X ~x)
   rr <- rhohat(fit, "y")
 
 }

@@ -141,9 +141,7 @@ vargamma.estK(X, startpar=c(kappa=1,scale=1), nu = -1/4, lambda=NULL,
   \emph{Biometrics} \bold{63}, 252--258.
 }
 \author{Abdollah Jalilian and Rasmus Waagepetersen.
-  Adapted for \pkg{spatstat} by \adrian
-  
-  
+  Adapted for \pkg{spatstat} by \adrian.
 }
 \seealso{
   \code{\link{kppm}},
@@ -162,8 +160,6 @@ vargamma.estK(X, startpar=c(kappa=1,scale=1), nu = -1/4, lambda=NULL,
       u <- vargamma.estK(redwood)
       print(u)
       plot(u)
-   } else {
-     u <- vargamma.estK(redwood, startpar=c(kappa=15, eta=0.07))
    }
 }
 \keyword{spatial}

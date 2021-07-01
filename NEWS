@@ -1,4 +1,269 @@
 
+        CHANGES IN spatstat.core VERSION 2.2-0.009
+
+OVERVIEW
+
+    o Substantially more support for spatial logistic regression models.
+
+    o curved transects of images.
+
+    o image cross-correlation
+    
+    o summary method for 'objsurf'
+
+    o Minor bug fixes.
+
+NEW FUNCTIONS
+
+    o response
+    Generic function which extracts the values of the response
+    in a fitted model. There are methods for lm, glm (which extract the
+    numeric vector of responses), and ppm, kppm, slrm, lppm and mppm
+    (which extract the original data point pattern).
+
+    o cov.im, cor.im
+    Correlation or covariance between several pixel images.
+    
+    o summary.objsurf, print.summary.objsurf
+    Summary method for 'objsurf'
+
+    o residuals.slrm
+    Residuals for spatial logistic regression models.
+    
+    o leverage.slrm, influence.slrm, dfbetas.slrm, dffit.slrm
+    Leverage and influence diagnostics for spatial logistic regression models.
+    
+    o rhohat.slrm
+    Method for 'rhohat' for spatial logistic regression models.
+
+    o envelope.slrm
+    Method for 'envelope' for spatial logistic regression models.
+
+    o intensity.slrm
+    Method for 'intensity' for spatial logistic regression models.
+
+    o deviance.slrm
+    Method for 'deviance' for spatial logistic regression models.
+
+    o pseudoR2.slrm
+    Method for 'pseudoR2' for spatial logistic regression models.
+
+    o quadrat.test.slrm
+    Method for 'quadrat.test' for spatial logistic regression models.
+
+    o parameters.slrm
+    Method for 'parameters' for spatial logistic regression models.
+
+    o Window.slrm, as.owin.slrm
+    Methods for 'Window' and 'as.owin' for spatial logistic regression models.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o transect.im
+    New argument 'curve' allows the user to specify a curved transect.
+
+BUG FIXES
+
+    o rhohat
+    The rug plot (produced by plot.rhohat) was incorrect
+    when rhohat was called with method="piecewise".
+    Fixed.
+
+    o clusterfield
+    Values of the cluster field were slightly incorrect (slightly higher
+    than the correct values) near the edge of the window,
+    because an 'edge correction' was mistakenly applied.
+    Fixed.
+
+        CHANGES IN spatstat.core VERSION 2.2-0
+
+OVERVIEW
+
+    o We thank Abdollah Jalilian, Yongtao Guan and Rasmus Waagepetersen
+    for contributions.
+    
+    o summary method for spatial logistic regression models
+
+    o estimation of the spatial covariance function of a pixel image
+
+    o simulation of the product shot noise Cox process.
+
+    o extensions to rhohat
+    
+NEW FUNCTIONS
+
+    o rPSNCP
+    Generate simulated realisations of the product shot noise Cox process.
+    Contributed by Abdollah Jalilian, Yongtao Guan and Rasmus Waagepetersen.
+    
+    o spatcov
+    Estimate the spatial covariance function of a pixel image.
+
+    o summary.slrm, print.summary.slrm
+    Summary method for spatial logistic regression models
+
+    o coef.summary.slrm
+    Print the fitted coefficients, confidence interval and p-values
+    for a spatial logistic regression model.
+
+    o pairMean
+    Compute the mean of a specified function of interpoint distance
+    between random points in a window.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o rhohat
+    New option (smoother='piecewise') computes a piecewise-constant
+    estimate of rho(z).
+    
+    o rhohat
+    The result now includes the 'average' intensity rho.
+
+    o distcdf
+    Arguments which are NULL will be treated as missing.
+
+    o distcdf
+    New argument 'savedenom'.
+    
+
+        CHANGES IN spatstat.core VERSION 2.1-2
+
+OVERVIEW
+
+    o Reduced CRAN check time.
+
+        CHANGES IN spatstat.core VERSION 2.1-1
+
+OVERVIEW
+
+    o Minor bug fix
+
+BUG FIXES
+
+    o simulate.kppm
+    Conditional simulation crashed on rare occasions,
+    with an error about negative probabilities.
+    Fixed.
+
+        CHANGES IN spatstat.core VERSION 2.1-0
+
+OVERVIEW
+
+    o We thank Achmad Choiruddin, Jean-Francois Coeurjolly
+    and Rasmus Waagepetersen for contributions.
+
+    o Conditional simulation in kppm
+    
+    o Information criteria for model selection in kppm
+
+    o Modified handling of covariates in slrm
+
+    o densityfun.ppp handles query points outside original window
+
+    o Improved output in summary.mppm
+
+    o Minor improvements and bug fixes.
+
+NEW FUNCTIONS
+
+    o ic
+    Information criteria for model selection in ppm and kppm.
+    Kindly contributed by Achmad Choiruddin, Jean-Francois Coeurjolly
+    and Rasmus Waagepetersen.
+    
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o simulate.kppm
+    Conditional simulation of the model, given a fixed number of points,
+    is now supported using the new arguments 'n.cond' and 'w.cond'.
+    
+    o densityfun.ppp
+    The resulting function can now handle query points which lie
+    outside the window of the original data,
+    and has argument 'drop=TRUE' which specifies how to handle them.
+
+    o rpoint
+    New argument 'forcewin' forces the code to use the window 'win'
+    when 'f' is a pixel image.
+
+    o slrm
+    In the default case (where dataAtPoints is not given)
+    all spatial covariates, including the spatial coordinates x and y,
+    are now evaluated at the centre of each pixel. This improves
+    consistency with other implementations of spatial logistic regression.
+    
+    o slrm
+    Silently ignores any arguments '...' that are not recognised by 'as.mask'
+
+    o summary.mppm
+    Improved summary of the dependence of the
+    interpoint interaction on the covariates.
+
+    o pairs.im
+    New argument 'drop'.
+    
+BUG FIXES
+
+    o model.matrix.mppm
+    If the model was fitted using 'gam', the resulting matrix
+    did not have an 'assign' attribute.
+    Fixed.
+    
+    o model.depends
+    Crashed for models fitted using 'gam'.
+    Fixed.
+
+    o predict.slrm, fitted.slrm
+    Crashed if the model was fitted using split pixels (argument 'splitby').
+    Fixed.
+
+    o predict.slrm, fitted.slrm
+    Crashed in some cases when 'window' was given.
+    Fixed.
+
+    o update.slrm
+    Failed to find covariates that were provided in 'env'.
+    Fixed.
+
+    o cdf.test
+    Crashed if the covariate was constant.
+    Fixed.
+
+        CHANGES IN spatstat.core VERSION 2.0-0
+
+OVERVIEW
+
+    o We thank Tilman Davies,  Greg McSwiggan and Suman Rakshit
+    for contributions.
+    
+    o Diffusion kernel smoothing.
+    
+    o More support for spatial logistic regression models.
+
+NEW FUNCTIONS
+
+    o densityHeat, densityHeat.ppp
+    Given a point pattern, compute the diffusion kernel estimate
+    of point process intensity. This is an alternative to density.ppp.
+    
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o slrm
+    'step' can now be applied to models fitted using 'slrm'.
+
+
+        CHANGES IN spatstat.core VERSION 1.65-11
+
+OVERVIEW
+
+    o Internal tweaks.
+    
+        CHANGES IN spatstat.core VERSION 1.65-10
+
+OVERVIEW
+
+    o Minor corrections to documentation.
+
         CHANGES IN spatstat.core VERSION 1.65-9
 
 OVERVIEW

@@ -93,16 +93,18 @@
   \code{\link{profilepl}}
 }
 \examples{
-  rstep <- if(interactive()) 0.005 else 0.02
+  live <- interactive()
+  nr <- if(live) 20 else 3
 
   # one irregular parameter
-  rr <- data.frame(r=seq(0.05,0.15, by=rstep))
+  rr <- data.frame(r=seq(0.05,0.15, length=nr))
   ps <- profilepl(rr, Strauss, cells)
   plot(ps)                      # profile pseudolikelihood 
   plot(ps, coeff="Interaction") # fitted interaction coefficient log(gamma)
 
   # two irregular parameters
-  rs <- expand.grid(r=seq(0.05,0.15, by=rstep),sat=1:3)
+  smax <- if(live) 3 else 2
+  rs <- expand.grid(r=seq(0.05,0.15, length=nr), sat=1:smax)
   pg <- profilepl(rs, Geyer, cells)
   plot(pg) # profile pseudolikelihood against r for each value of 'sat'
   plot(pg, coeff="Interaction")
