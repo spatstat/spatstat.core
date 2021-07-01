@@ -321,7 +321,12 @@
     }
   }
   The estimating equation for the adaptive composite likelihood is solved 
-  by the generic non linear equation solver \code{\link[nleqslv]{nleqslv}}.
+  by the generic non linear equation solver \code{\link[nleqslv]{nleqslv}}. 
+  Its behaviour can be modified using the arguments \code{control}, 
+  \code{globStrat}, \code{startparm} for inital guesses and 
+  \code{algorithm} for the method. 
+  The available control arguments are documented in the help for   
+  \code{\link[nleqslv]{nleqslv}}.
   In all other three methods, the optimisation is performed by the generic
   optimisation algorithm \code{\link[stats]{optim}}.
   The behaviour of this algorithm can be modified using the

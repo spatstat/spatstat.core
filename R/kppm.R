@@ -144,7 +144,7 @@ kppm.ppp <- kppm.quad <-
                              rmax=rmax, algorithm=algorithm, ...),
          cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, epsilon=epsilon, 
-                             weightfun=weightfun, rmax=rmax, 
+                             weightfun=weightfun, rmax=rmax,
                              ...))
   ##
   h <- attr(out, "h")
@@ -1975,7 +1975,7 @@ psib.kppm <- function(object) {
 
 # needs non linear equation solver nleqslv
 kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, 
-                       rmax=NULL, epsilon=0.01, DPP=NULL, ..., 
+                       rmax=NULL, epsilon=0.01, DPP=NULL, algorithm="Broyden", ..., 
                        startparm=NULL, globStrat="dbldog", pint=NULL) {
   W <- as.owin(X)
   
@@ -2074,7 +2074,12 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   # determine starting parameter values
   startpar <- selfstart(X)
   if(!is.null(startparm)){
-    startpar <- startparm
+    if(!isDPP){
+      checkpar  <- info$checkpar
+      startpar <- checkpar(startparm, old=TRUE)
+    } else {
+      startpar <- startparm
+    }
   }
   startpar.human <- startpar
   pcftheo <- pcfun
@@ -2148,7 +2153,9 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   }
   
   ## .................   optimize it ..............................
-  opt <- nleqslv(x = startpar, fn = wlogcl2score, global=globStrat, control=control, 
+  opt <- nleqslv(x = startpar, fn = wlogcl2score, 
+                 method = algorithm,
+                 global = globStrat, control = control, 
                  paco=paco, dpaco=dpaco, 
                  dIJ=dIJ, gscale=gscale, epsilon=epsilon)
     
