@@ -133,7 +133,7 @@ densityVoronoi(X, \dots)
   Moradi, M., Cronie, 0., Rubak, E., Lachieze-Rey, R.,
   Mateu, J. and Baddeley, A. (2019)
   Resample-smoothing of Voronoi intensity estimators.
-  \emph{Statistics and Computing}, in press.
+  \emph{Statistics and Computing} \bold{29} (5) 995--1010.
 
   Ogata, Y. (2004)
   Space-time model for regional seismicity and detection of crustal
