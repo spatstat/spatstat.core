@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.53 $   $Date: 2021/06/30 09:55:06 $
+#  $Revision: 1.54 $   $Date: 2021/07/04 14:51:41 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -838,5 +838,110 @@ slrmInfluence <- function(model,
   return(result)
 }
 
-
+valid.slrm <- function(object, warn=TRUE, ...) {
+  verifyclass(object, "slrm")
+  coeffs <- coef(object)
+  ok <- all(is.finite(coeffs))
+  return(ok)
+}
   
+emend.slrm <- local({
+  tracemessage <- function(depth, ...) {
+    if(depth == 0) return(NULL)
+    spacer <- paste(rep.int("  ", depth), collapse="")
+    marker <- ngettext(depth, "trace", paste("trace", depth))
+    marker <- paren(marker, "[")
+    splat(paste0(spacer, marker, " ", paste(...)))
+  }
+  leaving <- function(depth) {
+    tracemessage(depth, ngettext(depth, "Returning.", "Exiting level."))
+  }
+  emend.slrm <- function(object, ..., fatal=FALSE, trace=FALSE) {
+    verifyclass(object, "slrm")
+    fast <- spatstat.options("project.fast")
+    # user specifies 'trace' as logical
+    # but 'trace' can also be integer representing trace depth
+    td <- as.integer(trace)
+    trace <- (td > 0)
+    tdnext <- if(trace) td+1 else 0
+    if(valid.slrm(object)) {
+      tracemessage(td, "Model is valid.")
+      leaving(td)
+      return(object)
+    }
+    # Fitted coefficients
+    coef.orig <- coeffs <- coef(object)
+    coefnames  <- names(coeffs)
+    # Trend terms in trend formula
+    trendterms <- attr(terms(object), "term.labels")
+    # Mapping from coefficients to terms of GLM
+    coef2term  <- attr(model.matrix(object), "assign")
+    istrend <- (coef2term > 0)
+    # Identify non-finite trend coefficients
+    bad <-  !is.finite(coeffs)
+    if(!any(bad)) {
+      tracemessage(td, "Trend terms are valid.")
+    } else {
+      nbad <- sum(bad)
+      tracemessage(td,
+                   "Non-finite ",
+                   ngettext(nbad,
+                            "coefficient for term ",
+                            "coefficients for terms "),
+                   commasep(sQuote(trendterms[coef2term[bad]])))
+      if(fast) {
+        # remove first illegal term
+        firstbad <- min(which(bad))
+        badterm <- trendterms[coef2term[firstbad]]
+        # remove this term from model
+        tracemessage(td, "Removing term ", sQuote(badterm))
+        removebad <- as.formula(paste("~ . - ", badterm), env=object$callframe)
+        newobject <- update(object, removebad)
+        if(trace) {
+          tracemessage(td, "Updated model:")
+          print(newobject)
+        }
+        # recurse
+        newobject <- emend.slrm(newobject, fatal=fatal, trace=tdnext)
+        # return
+        leaving(td)
+        return(newobject)
+      } else {
+        # consider all illegal terms
+        bestobject <- NULL
+        for(i in which(bad)) {
+          badterm <- trendterms[coef2term[i]]
+          # remove this term from model
+          tracemessage(td, "Considering removing term ", sQuote(badterm))
+          removebad <- as.formula(paste("~ . - ", badterm),
+                                  env=object$callframe)
+          object.i <- update(object, removebad)
+          if(trace) {
+            tracemessage(td, "Considering updated model:")
+            print(object.i)
+          }
+          # recurse
+          object.i <- emend.slrm(object.i, fatal=fatal, trace=tdnext)
+          # evaluate log likelihood
+          logL.i   <- logLik(object.i, warn=FALSE)
+          tracemessage(td, "max log likelihood = ", logL.i)
+          # optimise
+          if(is.null(bestobject) || (logLik(bestobject, warn=FALSE) < logL.i))
+            bestobject <- object.i
+        }
+        if(trace) {
+          tracemessage(td, "Best submodel:")
+          print(bestobject)
+        }
+        # return
+        leaving(td)
+        return(bestobject)
+      }
+    }
+    object$projected <- TRUE
+    object$coef.orig  <- coef.orig
+    leaving(td)
+    return(object)
+  }
+  emend.slrm
+})

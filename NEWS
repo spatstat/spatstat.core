@@ -1,15 +1,15 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.009
+        CHANGES IN spatstat.core VERSION 2.2-0.010
 
 OVERVIEW
 
     o Substantially more support for spatial logistic regression models.
 
-    o curved transects of images.
+    o Transect of an image along a curve.
 
-    o image cross-correlation
+    o Image cross-correlation.
     
-    o summary method for 'objsurf'
+    o Summary method for 'objsurf'.
 
     o Minor bug fixes.
 
@@ -54,6 +54,12 @@ NEW FUNCTIONS
     o parameters.slrm
     Method for 'parameters' for spatial logistic regression models.
 
+    o valid.slrm
+    Method for 'valid' for spatial logistic regression models.
+
+    o emend.slrm
+    Method for 'emend' for spatial logistic regression models.
+
     o Window.slrm, as.owin.slrm
     Methods for 'Window' and 'as.owin' for spatial logistic regression models.
 
@@ -64,15 +70,15 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
 
-    o rhohat
-    The rug plot (produced by plot.rhohat) was incorrect
-    when rhohat was called with method="piecewise".
-    Fixed.
-
     o clusterfield
     Values of the cluster field were slightly incorrect (slightly higher
     than the correct values) near the edge of the window,
     because an 'edge correction' was mistakenly applied.
+    Fixed.
+
+    o rhohat
+    The rug plot (produced by plot.rhohat) was incorrect
+    when rhohat was called with method="piecewise".
     Fixed.
 
         CHANGES IN spatstat.core VERSION 2.2-0
