@@ -3,6 +3,10 @@
 
 OVERVIEW
 
+    o We thank Chiara Fend for cobtributions.
+    
+    o Extension to kppm and dppm
+    
     o Substantially more support for spatial logistic regression models.
 
     o Transect of an image along a curve.
@@ -65,6 +69,10 @@ NEW FUNCTIONS
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o kppm, dppm
+    New option 'method="adapcl"' performs adaptive composite likelihood fitting.
+    [Contributed by Chiara Fend.]
+    
     o transect.im
     New argument 'curve' allows the user to specify a curved transect.
 

@@ -627,8 +627,9 @@ kppmMinCon(X, Xname, po, clusters, control, statistic, statargs,
            algorithm, DPP, \dots)
 kppmPalmLik(X, Xname, po, clusters, control, weightfun, rmax, 
            algorithm, DPP, \dots, pint)
-kppmCLadap(X, Xname, po, clusters, control, weightfun, rmax, 
-           algorithm, DPP, \dots, pint)
+kppmCLadap(X, Xname, po, clusters, control, weightfun, 
+           rmax, epsilon, DPP, algorithm, \dots,
+           startparm, globStrat)
 kraever(package, fatal)
 kraeverRandomFields()
 \method{labels}{ppm}(object, \dots)

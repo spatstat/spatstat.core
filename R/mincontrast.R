@@ -35,37 +35,17 @@ mincontrast <- local({
         stop("theoretical function did not return a numeric vector")
       if(length(theo) != nrvals)
         stop("theoretical function did not return the correct number of values")
-      ## experimental
-      if(!is.null(adjustment)) {
-        theo <- adjustment$fun(theo=theo, par=par,
-                               auxdata=adjustment$auxdata, ...)
-        if(!is.vector(theo) || !is.numeric(theo))
-	  stop("adjustment did not return a numeric vector")
-        if(length(theo) != nrvals)
-          stop("adjustment did not return the correct number of values")
-      }
-      ## experimental
-      if(is.function(transfo)) theo <- transfo(theo)
+      
+
       ## integrand of discrepancy 
       discrep <- (abs(theo^qq - obsq))^pp
       ## protect C code from weird values
       bigvalue <- BIGVALUE + sqrt(sum(par^2))
       discrep <- safevalue(discrep, default=bigvalue)
       ## rescaled integral of discrepancy
-      value <- mean(discrep) 
-      if(is.function(whiu)) value <- whiu(par, value, -1)
-      ## debugger activated by spatstat.options(mincon.trace)
-      if(isTRUE(TRACE)) {
-        cat("Parameters:", fill=TRUE)
-        print(par)
-        splat("Discrepancy value:", value)
-      }
-      if(is.environment(saveplace)) {
-        h <- get("h", envir=saveplace)
-        hplus <- as.data.frame(append(par, list(value=value)))
-        h <- rbind(h, hplus)
-        assign("h", h, envir=saveplace)
-      }
+      value <- mean(discrep)
+      
+
       return(value)
     })
   }
@@ -192,24 +172,8 @@ mincontrast <- local({
                         "Please choose a narrower range [rmin, rmax]"),
                   call.=FALSE)
     }
-    ## debugging
-    TRACE <- pint$trace %orifnull% spatstat.options("mincon.trace")
-    if(SAVE <- isTRUE(pint$save)) {
-      saveplace <- new.env()
-      assign("h", NULL, envir=saveplace)
-    } else saveplace <- NULL
-    ## experimental: custom transformation of summary function 
-    transfo <- pint$transfo
-    if(is.function(transfo)) {
-      obs <- try(transfo(obs))
-      if(inherits(obs, "try-error"))
-        stop("Transformation of observed summary function failed", call.=FALSE)
-      if(length(obs) != length(rvals))
-        stop(paste("Transformation of observed summary function values",
-                   "changed length",
-                   paren(paste(length(rvals), "to", length(obs)))),
-             call.=FALSE)
-    } else transfo <- NULL
+    
+
     ## pack data into a list
     objargs <- list(theoretical = theoretical,
                     rvals       = rvals,
@@ -219,11 +183,6 @@ mincontrast <- local({
                     pp          = ctrl$p,
                     rmin        = rmin,
                     rmax        = rmax,
-		    adjustment  = adjustment,
-                    whiu        = pint$whiu,
-                    transfo     = transfo,
-                    saveplace   = saveplace,
-                    TRACE       = TRACE,
                     BIGVALUE    = 1)
     ## determine a suitable large number to replace Inf values of objective
     objargs$BIGVALUE <- bigvaluerule(contrast.objective,
@@ -245,15 +204,6 @@ mincontrast <- local({
     fitfv <- bind.fv(observed[sub, ],
                      data.frame(fit=fittheo),
                      label, desc)
-    if(!is.null(adjustment)) {
-      adjtheo <- adjustment$fun(theo=fittheo,
-      	                        par=minimum$par,
-				auxdata=adjustment$auxdata, ...)
-      fitfv <- bind.fv(fitfv,
-                       data.frame(adjfit=adjtheo),
-		       "%s[adjfit](r)",
-		       paste("adjusted", desc))
-    }				
     result <- list(par      = minimum$par,
                    fit      = fitfv,
                    opt      = minimum,
@@ -264,7 +214,6 @@ mincontrast <- local({
                    objargs  = objargs,
                    dotargs  = list(...))
     class(result) <- c("minconfit", class(result))
-    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
     return(result)
   }
 

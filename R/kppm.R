@@ -3,8 +3,9 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.159 $ $Date: 2021/04/15 04:25:16 $
+# $Revision: 1.167 $ $Date: 2021/07/05 11:03:38 $
 #
+
 
 kppm <- function(X, ...) {
   UseMethod("kppm")
@@ -64,12 +65,12 @@ kppm.ppp <- kppm.quad <-
            ...,
            covariates = data,
            subset, 
-           method = c("mincon", "clik2", "palm", "cladap"),
+           method = c("mincon", "clik2", "palm", "adapcl"),
            improve.type = c("none", "clik1", "wclik1", "quasi"),
            improve.args = list(),
            weightfun=NULL,
            control=list(),
-           algorithm="Nelder-Mead",
+           algorithm,
            statistic="K",
            statargs=list(),
            rmax = NULL,
@@ -86,6 +87,11 @@ kppm.ppp <- kppm.quad <-
   if(method == "mincon")
     statistic <- pickoption("summary statistic", statistic,
                             c(K="K", g="pcf", pcf="pcf"))
+  
+  if(missing(algorithm)) {
+    algorithm <- if(method == "adapcl") "Broyden" else "Nelder-Mead"
+  } else check.1.string(algorithm)
+
   ClusterArgs <- list(method = method,
                       improve.type = improve.type,
                       improve.args = improve.args,
@@ -118,22 +124,25 @@ kppm.ppp <- kppm.quad <-
             forcefit=TRUE, rename.intercept=FALSE,
             covfunargs=covfunargs, use.gam=use.gam, nd=nd, eps=eps)
   XX <- if(isquad) X$data else X
-  # set default weight functions
-  if(is.null(weightfun) && method == "cladap"){
-    weightfun <- function(d) { as.integer(abs(d) <= 1)*exp(1/(d^2-1)) }
-    attr(weightfun, "selfprint") <- paste0("Indicator(-1 <= distance <= 1)",
-                                           "*exp(1/(distance^2-1))")
-  }
-  if(is.null(weightfun) && method != "mincon") {
-    RmaxW <- (rmax %orifnull% rmax.rule("K", Window(XX), intensity(XX))) / 2
-    weightfun <- function(d, rr=RmaxW) { as.integer(d <= rr) }
-    formals(weightfun)[[2]] <- RmaxW
-    attr(weightfun, "selfprint") <- paste0("Indicator(distance <= ", RmaxW, ")")
-  }
-  if(algorithm == "Nelder-Mead" && method == "cladap"){
-    algorithm <- "Broyden"
-  }
-  # fit
+  
+  ## set default weight function
+  if(is.null(weightfun))
+    switch(method,
+           adapcl = {
+             weightfun <- function(d) { as.integer(abs(d) <= 1)*exp(1/(d^2-1)) }
+             attr(weightfun, "selfprint") <-
+               "Indicator(-1 <= distance <= 1) * exp(1/(distance^2-1))"
+           },
+           mincon = { },
+           {
+             RmaxW <- (rmax %orifnull% rmax.rule("K", Window(XX),
+                                                 intensity(XX))) / 2
+             weightfun <- function(d) { as.integer(d <= RmaxW) }
+             attr(weightfun, "selfprint") <-
+               paste0("Indicator(distance <= ", RmaxW, ")")
+           })
+  
+  ## fit
   out <- switch(method,
          mincon = kppmMinCon(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, statistic=statistic,
@@ -145,7 +154,7 @@ kppm.ppp <- kppm.quad <-
          palm   = kppmPalmLik(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, weightfun=weightfun, 
                              rmax=rmax, algorithm=algorithm, ...),
-         cladap   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
+         adapcl   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, epsilon=epsilon, 
                              weightfun=weightfun, rmax=rmax,
                              algorithm=algorithm,
@@ -226,14 +235,12 @@ kppmMinCon <- function(X, Xname, po, clusters, control, statistic, statargs,
                 lambda     = lambda,
                 mu         = mcfit$mu,
                 par        = mcfit$par,
-                par.canon  = mcfit$par.canon,
                 clustpar   = mcfit$clustpar,
                 clustargs  = mcfit$clustargs,
                 modelpar   = mcfit$modelpar,
                 covmodel   = mcfit$covmodel,
                 Fit        = Fit)
   }
-  attr(out, "h") <- attr(mcfit, "h")
   return(out)
 }
 
@@ -364,58 +371,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   #' explanatory text
   desc <- paste("minimum contrast fit of", info$descname)
 
-  #' ............ experimental .........................
-  strict <- !isFALSE(spatstat.options("kppm.strict"))
-  sargs <- if(strict) list() else list(strict=FALSE)
-  
-  #' ............ experimental .........................
-  do.adjust <- spatstat.options("kppm.adjusted")
-  if(do.adjust) {
-    if(verbose) splat("Applying kppm adjustment")
-    W <- Window(X)
-    adjdata <- list(paircorr = info[["pcf"]],
-                    pairWcdf = distcdf(W),
-		    tohuman  = NULL)
-    adjfun <- function(theo, par, auxdata, ...) {
-      with(auxdata, {
-        if(!is.null(tohuman))
-	  par <- tohuman(par)
-        a <- as.numeric(stieltjes(paircorr, pairWcdf, par=par, ...))
-	return(theo/a)
-      })
-    }
-    adjustment <- list(fun=adjfun, auxdata=adjdata)
-  } else adjustment <- NULL
-    
-  #' ............ experimental .........................
-  usecanonical <- spatstat.options("kppm.canonical")
-  if(usecanonical) {
-    if(verbose) splat("Converting to canonical parameters")
-     tocanonical <- info$tocanonical
-     tohuman <- info$tohuman
-     if(is.null(tocanonical) || is.null(tohuman)) {
-       warning("Canonical parameters are not yet supported for this model")
-       usecanonical <- FALSE
-     } 
 
-  }
-  startpar.human <- startpar
-  if(usecanonical) {
-    htheo <- theoret
-    startpar <- tocanonical(startpar)
-    theoret <- function(par, ...) { htheo(tohuman(par), ...) }
-    if(do.adjust)
-      adjustment$auxdata$tohuman <- tohuman
-  }
-  #' ............ experimental .........................
-  whiu <- pint$whiu
-  if(is.function(whiu) && usecanonical) {
-    whiu.human <- whiu
-    whiu <- function(par, ...) { whiu.human(tohuman(par), ...) }
-    pint$whiu <- whiu
-  }
-  #' ...................................................
-  
   #'
   mcargs <- resolve.defaults(list(observed=Stat,
                                   theoretical=theoret,
@@ -430,10 +386,9 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                                   margs=dots$margs,
                                   model=dots$model,
                                   funaux=info$funaux,
-				  adjustment=adjustment,
                                   pint=pint),
-                             list(...),
-                             sargs)
+                             list(...)
+                             )
 
   if(isDPP && algorithm=="Brent" && changealgorithm)
     mcargs <- resolve.defaults(mcargs, list(lower=alg$lower, upper=alg$upper))
@@ -443,20 +398,12 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   mcfit <- do.call(mincontrast, mcargs)
   if(verbose) splat("Returned from minimum contrast fit")
   ## ..........................................
+
+  ## extract fitted parameters
+  optpar        <- mcfit$par
+  names(optpar) <- names(startpar)
+  mcfit$par     <- optpar
   
-  ## extract fitted parameters and reshape
-  if(!usecanonical) {
-    optpar.canon <- NULL
-    optpar.human <- mcfit$par
-    names(optpar.human) <- names(startpar.human)
-  } else {
-    optpar.canon <- mcfit$par
-    names(optpar.canon) <- names(startpar)
-    optpar.human <- tohuman(optpar.canon)
-    names(optpar.human) <- names(startpar.human)
-  }
-  mcfit$par       <- optpar.human
-  mcfit$par.canon <- optpar.canon
   # Return results for DPPs
   if(isDPP){
     extra <- list(Stat      = Stat,
@@ -471,7 +418,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   ## Extra stuff for ordinary cluster/lgcp models
   ## imbue with meaning
   ## infer model parameters
-  mcfit$modelpar <- info$interpret(optpar.human, lambda)
+  mcfit$modelpar <- info$interpret(optpar, lambda)
   mcfit$internal <- list(model=ifelse(isPCP, clusters, "lgcp"))
   mcfit$covmodel <- dots$covmodel
   
@@ -488,8 +435,8 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   }
   ## Parameter values (new format)
   mcfit$mu <- mu
-  mcfit$clustpar <- info$checkpar(mcfit$par, old=FALSE, strict=strict)
-  mcfit$clustargs <- info$checkclustargs(dots$margs, old=FALSE, strict=strict)
+  mcfit$clustpar <- info$checkpar(mcfit$par, old=FALSE)
+  mcfit$clustargs <- info$checkclustargs(dots$margs, old=FALSE)
 
   ## The old fit fun that would have been used (DO WE NEED THIS?)
   FitFun <- paste0(tolower(clusters), ".est", statistic)
@@ -591,36 +538,8 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   } else clargs <- NULL
   # determine starting parameter values
   startpar <- selfstart(X)
-  #' ............ experimental .........................
-  strict <- !isFALSE(spatstat.options("kppm.strict"))
-  if(!strict) pcfunargs <- append(pcfunargs, list(strict=FALSE))
-  #' ............ experimental .........................
-  usecanonical <- spatstat.options("kppm.canonical")
-  if(usecanonical) {
-     tocanonical <- info$tocanonical
-     tohuman <- info$tohuman
-     if(is.null(tocanonical) || is.null(tohuman)) {
-       warning("Canonical parameters are not yet supported for this model")
-       usecanonical <- FALSE
-     }
-  }
-  startpar.human <- startpar
-  if(usecanonical) {
-    pcftheo <- pcfun
-    startpar <- tocanonical(startpar)
-    pcfun <- function(par, ...) { pcftheo(tohuman(par), ...) }
-  }
-  #' ............ experimental/debugger .........................
-  whiu <- pint$whiu
-  if(is.function(whiu) && usecanonical) {
-    whiu.human <- whiu
-    whiu <- function(par, ...) { whiu.human(tohuman(par), ...) }
-  }
-  TRACE <- isTRUE(pint$trace)
-  if(SAVE <- isTRUE(pint$save)) {
-    saveplace <- new.env()
-    assign("h", NULL, envir=saveplace)
-  } else saveplace <- NULL
+  
+  
   # .....................................................
   # create local function to evaluate pair correlation
   #  (with additional parameters 'pcfunargs' in its environment)
@@ -632,9 +551,6 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     # pack up necessary information
     objargs <- list(dIJ=dIJ, sumweight=sumweight, g=g, gscale=gscale, 
                     envir=environment(paco),
-                    whiu=NULL,   # updated below
-                    TRACE=FALSE, # updated below
-                    saveplace=NULL, # updated below
                     BIGVALUE=1, # updated below
                     SMALLVALUE=.Machine$double.eps)
     # define objective function (with 'paco' in its environment)
@@ -646,29 +562,13 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
         integ <- unlist(stieltjes(paco, g, par=par))
         integ <- pmax(SMALLVALUE, integ)
         logcl <- 2*(logprod - sumweight * log(integ))
-        if(is.function(whiu)) logcl <- whiu(par, logcl, 1)
         logcl <- safevalue(logcl, default=-BIGVALUE)
-        ## debugger
-        if(isTRUE(TRACE)) {
-          cat("Parameters:", fill=TRUE)
-          print(par)
-          splat("log composite likelihood:", logcl)
-        }
-        if(is.environment(saveplace)) {
-          h <- get("h", envir=saveplace)
-          hplus <- as.data.frame(append(par, list(logcl=logcl)))
-          h <- rbind(h, hplus)
-          assign("h", h, envir=saveplace)
-        }
         return(logcl)
       },
       enclos=objargs$envir)
     }
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
-    objargs$whiu <- whiu
-    objargs$saveplace <- saveplace
-    objargs$TRACE <- TRACE
   } else {
     # create local function to evaluate  pair correlation(d) * weight(d)
     #  (with additional parameters 'pcfunargs', 'weightfun' in its environment)
@@ -681,9 +581,6 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     # pack up necessary information
     objargs <- list(dIJ=dIJ, wIJ=wIJ, sumweight=sumweight, g=g, gscale=gscale, 
                     envir=environment(wpaco),
-                    whiu=NULL,   # updated below
-                    TRACE=FALSE, # updated below
-                    saveplace=NULL, # updated below
                     BIGVALUE=1, # updated below
                     SMALLVALUE=.Machine$double.eps)
     # define objective function (with 'paco', 'wpaco' in its environment)
@@ -698,28 +595,12 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
           2*(sum(wIJ * log(safevalue(paco(dIJ, par))))
             - sumweight * log(integ)),
           default=-BIGVALUE)
-        if(is.function(whiu)) logcl <- whiu(par, logcl, 1)
-        ## debugger
-        if(isTRUE(TRACE)) {
-          cat("Parameters:", fill=TRUE)
-          print(par)
-          splat("log composite likelihood:", logcl)
-        }
-        if(is.environment(saveplace)) {
-          h <- get("h", envir=saveplace)
-          hplus <- as.data.frame(append(par, list(logcl=logcl)))
-          h <- rbind(h, hplus)
-          assign("h", h, envir=saveplace)
-        }
         return(logcl)
       },
       enclos=objargs$envir)
     }
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
-    objargs$whiu <- whiu
-    objargs$saveplace <- saveplace
-    objargs$TRACE <- TRACE
   }
   #' .........................................................
   ## arguments for optimization
@@ -729,7 +610,7 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   changealgorithm <- length(startpar)==1 && algorithm=="Nelder-Mead"
   if(isDPP){
     alg <- dppmFixAlgorithm(algorithm, changealgorithm, clusters,
-                            startpar.human)
+                            startpar)
     algorithm <- optargs$method <- alg$algorithm
     if(algorithm=="Brent" && changealgorithm){
       optargs$lower <- alg$lower
@@ -743,22 +624,13 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   signalStatus(optimStatus(opt), errors.only=TRUE)
   
   ## .......... extract fitted parameters .....................
-  if(!usecanonical) {
-    optpar.canon <- NULL
-    optpar.human <- opt$par
-    names(optpar.human) <- names(startpar.human)
-  } else {
-    optpar.canon <- opt$par
-    names(optpar.canon) <- names(startpar)
-    optpar.human <- tohuman(optpar.canon)
-    names(optpar.human) <- names(startpar.human)
-  }
-  opt$par       <- optpar.human
-  opt$par.canon <- optpar.canon
+  optpar        <- opt$par
+  names(optpar) <- names(startpar)
+  opt$par       <- optpar
 
   ## Finish in DPP case
   if(!is.null(DPP)){
-    # all info that depends on the fitting method:
+    ## all info that depends on the fitting method:
     Fit <- list(method    = "clik2",
                 clfit     = opt,
                 weightfun = weightfun,
@@ -776,21 +648,20 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                    po         = po,
                    lambda     = lambda,
                    Fit        = Fit)
-    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
     return(result)
   }
   
   ## meaningful model parameters
-  modelpar <- info$interpret(optpar.human, lambda)
+  modelpar <- info$interpret(optpar, lambda)
   # infer parameter 'mu'
   if(isPCP) {
     # Poisson cluster process: extract parent intensity kappa
-    kappa <- optpar.human[["kappa"]]
+    kappa <- optpar[["kappa"]]
     # mu = mean cluster size
     mu <- if(stationary) lambda/kappa else eval.im(lambda/kappa)
   } else {
     # LGCP: extract variance parameter sigma2
-    sigma2 <- optpar.human[["sigma2"]]
+    sigma2 <- optpar[["sigma2"]]
     # mu = mean of log intensity 
     mu <- if(stationary) log(lambda) - sigma2/2 else
           eval.im(log(lambda) - sigma2/2)    
@@ -813,14 +684,14 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                  po         = po,
                  lambda     = lambda,
                  mu         = mu,
-                 par        = optpar.human,
-                 par.canon  = optpar.canon,
-                 clustpar   = info$checkpar(par=optpar.human, old=FALSE, strict=strict),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE, strict=strict), #clargs$margs,
+                 par        = optpar,
+                 clustpar   = info$checkpar(par=optpar, old=FALSE),
+                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE), #clargs$margs,
                  modelpar   = modelpar,
                  covmodel   = clargs,
                  Fit        = Fit)
-  if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
+  
+
   return(result)
 }
 
@@ -910,37 +781,9 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   } else clargs <- NULL
   # determine starting parameter values
   startpar <- selfstart(X)
-  #' ............ experimental .........................
-  strict <- !isFALSE(spatstat.options("kppm.strict"))
-  if(!strict) pcfunargs <- append(pcfunargs, list(strict=strict))
-  #' ............ experimental .........................
-  usecanonical <- spatstat.options("kppm.canonical")
-  if(usecanonical) {
-     tocanonical <- info$tocanonical
-     tohuman <- info$tohuman
-     if(is.null(tocanonical) || is.null(tohuman)) {
-       warning("Canonical parameters are not yet supported for this model")
-       usecanonical <- FALSE
-     }
-  }
-  startpar.human <- startpar
-  if(usecanonical) {
-    pcftheo <- pcfun
-    startpar <- tocanonical(startpar)
-    pcfun <- function(par, ...) { pcftheo(tohuman(par), ...) }
-  }
-  #' ............ experimental/debugger .........................
-  whiu <- pint$whiu
-  if(is.function(whiu) && usecanonical) {
-    whiu.human <- whiu
-    whiu <- function(par, ...) { whiu.human(tohuman(par), ...) }
-  }
-  TRACE <- isTRUE(pint$trace)
-  if(SAVE <- isTRUE(pint$save)) {
-    saveplace <- new.env()
-    assign("h", NULL, envir=saveplace)
-  } else saveplace <- NULL
-  # .....................................................
+  
+
+  ## .....................................................
   # create local function to evaluate pair correlation
   #  (with additional parameters 'pcfunargs' in its environment)
   paco <- function(d, par) {
@@ -952,9 +795,6 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     objargs <- list(dIJ=dIJ, g=g, gscale=gscale,
                     sumloglam=safevalue(sum(log(lambdaJ))),
                     envir=environment(paco),
-                    whiu=NULL,   # updated below
-                    TRACE=FALSE, # updated below
-                    saveplace=NULL, # updated below
                     BIGVALUE=1, # updated below
                     SMALLVALUE=.Machine$double.eps)
     # define objective function (with 'paco' in its environment)
@@ -966,28 +806,12 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
         logplik <- safevalue(sumloglam + sum(log(safevalue(paco(dIJ, par))))
                            - gscale * integ,
                            default=-BIGVALUE)
-        if(is.function(whiu)) logplik <- whiu(par, logplik, 1)
-        ## debugger
-        if(isTRUE(TRACE)) {
-          cat("Parameters:", fill=TRUE)
-          print(par)
-          splat("log Palm likelihood:", logplik)
-        }
-        if(is.environment(saveplace)) {
-          h <- get("h", envir=saveplace)
-          hplus <- as.data.frame(append(par, list(logplik=logplik)))
-          h <- rbind(h, hplus)
-          assign("h", h, envir=saveplace)
-        }
         return(logplik)
       },
       enclos=objargs$envir)
     }
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
-    objargs$whiu <- whiu
-    objargs$saveplace <- saveplace
-    objargs$TRACE <- TRACE
   } else {
     # create local function to evaluate  pair correlation(d) * weight(d)
     #  (with additional parameters 'pcfunargs', 'weightfun' in its environment)
@@ -1001,9 +825,6 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     objargs <- list(dIJ=dIJ, wIJ=wIJ, g=g, gscale=gscale,
                     wsumloglam=safevalue(sum(wIJ * safevalue(log(lambdaJ)))),
                     envir=environment(wpaco),
-                    whiu=NULL,   # updated below
-                    TRACE=FALSE, # updated below
-                    saveplace=NULL, # updated below
                     BIGVALUE=1, # updated below
                     SMALLVALUE=.Machine$double.eps)
     # define objective function (with 'paco', 'wpaco' in its environment)
@@ -1016,18 +837,6 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                              sum(wIJ * log(safevalue(paco(dIJ, par))))
                              - gscale * integ,
                              default=-BIGVALUE)
-        ## debugger
-        if(isTRUE(TRACE)) {
-          cat("Parameters:", fill=TRUE)
-          print(par)
-          splat("log Palm likelihood:", logplik)
-        }
-        if(is.environment(saveplace)) {
-          h <- get("h", envir=saveplace)
-          hplus <- as.data.frame(append(par, list(logplik=logplik)))
-          h <- rbind(h, hplus)
-          assign("h", h, envir=saveplace)
-        }
         return(logplik)
         
       },
@@ -1035,9 +844,6 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     }
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
-    objargs$whiu <- whiu
-    objargs$saveplace <- saveplace
-    objargs$TRACE <- TRACE
   }
   # arguments for optimization
   ctrl <- resolve.defaults(list(fnscale=-1), control, list(trace=0))
@@ -1047,7 +853,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   changealgorithm <- length(startpar)==1 && algorithm=="Nelder-Mead"
   if(isDPP){
     alg <- dppmFixAlgorithm(algorithm, changealgorithm, clusters,
-                            startpar.human)
+                            startpar)
     algorithm <- optargs$method <- alg$algorithm
     if(algorithm=="Brent" && changealgorithm){
       optargs$lower <- alg$lower
@@ -1058,22 +864,16 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   opt <- do.call(optim, optargs)
   # raise warning/error if something went wrong
   signalStatus(optimStatus(opt), errors.only=TRUE)
-  # Extract optimal values of parameters
-  if(!usecanonical) {
-    optpar.canon <- NULL
-    optpar.human <- opt$par
-    names(optpar.human) <- names(startpar.human)
-  } else {
-    optpar.canon <- opt$par
-    names(optpar.canon) <- names(startpar)
-    optpar.human <- tohuman(optpar.canon)
-    names(optpar.human) <- names(startpar.human)
-  }
-  # Finish in DPP case
+  
+  ## Extract optimal values of parameters
+  optpar <- opt$par
+  names(optpar) <- names(startpar)
+
+  ## Finish in DPP case
   if(!is.null(DPP)){
-    opt$par <- optpar.human
-    opt$par.canon <- optpar.canon
-    # all info that depends on the fitting method:
+    opt$par <- optpar
+
+    ## all info that depends on the fitting method:
     Fit <- list(method    = "palm",
                 clfit     = opt,
                 weightfun = weightfun,
@@ -1082,7 +882,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                 objargs   = objargs,
                 maxlogcl  = opt$value)
     # pack up
-    clusters <- update(clusters, as.list(optpar.human))
+    clusters <- update(clusters, as.list(optpar))
     result <- list(Xname      = Xname,
                    X          = X,
                    stationary = stationary,
@@ -1091,20 +891,19 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                    po         = po,
                    lambda     = lambda,
                    Fit        = Fit)
-    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
     return(result)
   }
   # meaningful model parameters
-  modelpar <- info$interpret(optpar.human, lambda)
+  modelpar <- info$interpret(optpar, lambda)
   # infer parameter 'mu'
   if(isPCP) {
     # Poisson cluster process: extract parent intensity kappa
-    kappa <- optpar.human[["kappa"]]
+    kappa <- optpar[["kappa"]]
     # mu = mean cluster size
     mu <- if(stationary) lambda/kappa else eval.im(lambda/kappa)
   } else {
     # LGCP: extract variance parameter sigma2
-    sigma2 <- optpar.human[["sigma2"]]
+    sigma2 <- optpar[["sigma2"]]
     # mu = mean of log intensity 
     mu <- if(stationary) log(lambda) - sigma2/2 else
           eval.im(log(lambda) - sigma2/2)    
@@ -1127,16 +926,247 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                  po         = po,
                  lambda     = lambda,
                  mu         = mu,
-                 par        = optpar.human,
-                 par.canon  = optpar.canon,
-                 clustpar   = info$checkpar(par=optpar.human, old=FALSE, strict=strict),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE, strict=strict), #clargs$margs,
+                 par        = optpar,
+                 clustpar   = info$checkpar(par=optpar, old=FALSE),
+                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE), #clargs$margs,
                  modelpar   = modelpar,
                  covmodel   = clargs,
                  Fit        = Fit)
-  if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
   return(result)
 }
+
+## ........... contributed by Chiara Fend ...................
+## needs nonlinear equation solver nleqslv
+
+kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, 
+                       rmax=NULL, epsilon=0.01, DPP=NULL,
+                       algorithm="Broyden", ..., 
+                       startparm=NULL, globStrat="dbldog") {
+
+  if(!requireNamespace("nleqslv", quietly=TRUE))
+    stop(paste("The package", sQuote("nleqslv"), "is required"),
+           call.=FALSE)
+  
+  W <- as.owin(X)
+  
+  if(is.null(rmax)) # specified for numerical stability
+    rmax <- shortside(W)
+
+  # identify pairs of points that might contribute
+  cl <- closepairs(X, rmax)
+  dIJ <- cl$d #pairwise distances
+  Rmin <- min(dIJ)
+  indexmin <- which(dIJ==Rmin) #for later use
+  
+  # convert window to mask, saving other arguments for later
+  dcm <- do.call.matched(as.mask,
+                         append(list(w=W), list(...)),
+                         sieve=TRUE)
+  M         <- dcm$result
+  otherargs <- dcm$otherargs
+  
+  # compute intensity at pairs of data points
+  # and c.d.f. of interpoint distance in window
+  if(stationary <- is.stationary(po)) {
+    # stationary unmarked Poisson process
+    lambda <- intensity(X)
+    # compute cdf of distance between two uniform random points in W
+    g <- distcdf(W)
+    # scaling constant is (area * intensity)^2
+    gscale <- npoints(X)^2  
+  } else {
+    # compute fitted intensity at data points and in window
+    #    lambdaX <- fitted(po, dataonly=TRUE)
+    lambda <- lambdaM <- predict(po, locations=M)
+    # compute cdf of distance between two random points in W
+    # with density proportional to intensity function
+    g <- distcdf(M, dW=lambdaM)
+    # scaling constant is (integral of intensity)^2
+    gscale <- safevalue(integral.im(lambdaM)^2, default=npoints(X)^2)
+  }
+  
+  isDPP <- !is.null(DPP)
+  if(isDPP){
+    tmp <- dppmFixIntensity(DPP, lambda, po)
+    clusters <- tmp$clusters
+    lambda <- tmp$lambda
+    po <- tmp$po
+  }
+  
+  # get pair correlation function (etc) for model
+  info <- spatstatClusterModelInfo(clusters)
+  pcfun      <- info$pcf
+  dpcfun     <- info$dpcf
+  funaux     <- info$funaux
+  selfstart  <- info$selfstart
+  isPCP      <- info$isPCP
+  parhandler <- info$parhandler
+  modelname  <- info$modelname
+  # Assemble information required for computing pair correlation
+  pcfunargs <- list(funaux=funaux)
+  if(is.function(parhandler)) {
+    # Additional parameters of cluster model are required.
+    # These may be given as individual arguments,
+    # or in a list called 'covmodel'
+    clustargs <- if("covmodel" %in% names(otherargs))
+      otherargs[["covmodel"]] else otherargs
+    clargs <- do.call(parhandler, clustargs)
+    pcfunargs <- append(clargs, pcfunargs)
+  } else clargs <- NULL
+  
+  # determine starting parameter values
+  startpar <- selfstart(X)
+  if(!is.null(startparm)){
+    if(!isDPP){
+      checkpar  <- info$checkpar
+      startpar <- checkpar(startparm, old=TRUE)
+    } else {
+      startpar <- startparm
+    }
+  }
+  startpar.human <- startpar
+  pcftheo <- pcfun
+  dpcftheo <- dpcfun
+  # optimization later in terms of log of params
+  startpar <- log(startpar)
+  pcfun <- function(par, ...) { pcftheo(exp(par), ...) }
+  dpcfun <- function(par, ...) { dpcftheo(exp(par), ...) }
+  
+  # create local functions to evaluate pair correlation and its gradient
+  #  (with additional parameters 'pcfunargs' in its environment)
+  paco <- function(d, par) {
+    do.call(pcfun, append(list(par=par, rvals=d), pcfunargs))
+  }
+  
+  dpaco <- function(d, par) {
+    do.call(dpcfun, append(list(par=par, rvals=d), pcfunargs))
+  }
+  
+  # trim 'g' to [0, rmax] 
+  g <- g[with(g, .x) <= rmax,]
+  
+  
+  #' ..........  define objective function ......................
+  # create local function to evaluate  weight(epsilon*M/(pcf(d)-1))
+  weight <- function(d, par) {
+    y <- paco(d=d, par=par)
+    # calculate M (only needs to be calculated for cluster models)
+    M <- 1
+    if(!isDPP){
+      M <- abs(paco(d=0, par=par)-1)
+    }
+    return(weightfun(epsilon*M/(y-1)))
+  }
+
+  wlogcl2score <- function(par, paco, dpaco, dIJ, gscale, epsilon, cdf=g){
+    p <- length(par)
+    temp <- rep(0, p)
+    
+    # check if current parameter is valid, if not return inf
+    if(isDPP){
+      if(length(par)==1 && is.null(names(par)))
+        names(par) <- clusters$freepar
+      mod <- update(clusters, as.list(exp(par)))
+      if(!valid(mod)){
+        return(rep(Inf, p))
+      }
+    }
+    
+    # everything can be computed
+    wdIJ <- weight(d=dIJ, par=par)
+    index <- unique(c(which(wdIJ!=0), indexmin))
+    dIJcurrent <- dIJ[index]
+    
+    for(i in 1:p){
+      parname <- names(par)[i]
+      # weighted derivatives wrt log of parname
+      dpcfweighted <- function(d, par){ 
+        y <- dpaco(d = d, par = par)[parname,]*exp(par[i])
+        return(y*weight(d = d, par = par))
+      } 
+      temp[i] <- sum(dpcfweighted(d = dIJcurrent, par=par)/paco(d = dIJcurrent, par = par)) - gscale * stieltjes(dpcfweighted,cdf, par=par)$f
+    }
+    return(temp)
+  }
+  
+  ## .................   optimize it ..............................
+  opt <- nleqslv::nleqslv(x = startpar, fn = wlogcl2score, 
+                          method = algorithm,
+                          global = globStrat, control = control, 
+                          paco=paco, dpaco=dpaco, 
+                          dIJ=dIJ, gscale=gscale, epsilon=epsilon)
+    
+  ## .......... extract fitted parameters .....................
+  optpar        <- exp(opt$x)
+  names(optpar) <- names(startpar)
+
+  ## Finish in DPP case
+  if(isDPP){
+    # all info that depends on the fitting method:
+    Fit <- list(method    = "adapcl",
+                cladapfit = opt,
+                weightfun = weightfun,
+                rmax      = rmax,
+                epsilon   = epsilon,
+                objfun    = wlogcl2score,
+                objargs   = control,
+                estfunc  = opt$fvec)
+    # pack up
+    clusters <- update(clusters, as.list(exp(opt$x)))
+    result <- list(Xname      = Xname,
+                   X          = X,
+                   stationary = stationary,
+                   fitted     = clusters,
+                   modelname  = modelname,
+                   po         = po,
+                   lambda     = lambda,
+                   Fit        = Fit)
+    return(result)
+  }
+  
+  ## meaningful model parameters
+  modelpar <- info$interpret(optpar, lambda)
+  # infer parameter 'mu'
+  if(isPCP) {
+    # Poisson cluster process: extract parent intensity kappa
+    kappa <- optpar[["kappa"]]
+    # mu = mean cluster size
+    mu <- if(stationary) lambda/kappa else eval.im(lambda/kappa)
+  } else {
+    # LGCP: extract variance parameter sigma2
+    sigma2 <- optpar[["sigma2"]]
+    # mu = mean of log intensity 
+    mu <- if(stationary) log(lambda) - sigma2/2 else
+      eval.im(log(lambda) - sigma2/2)    
+  }
+  # all info that depends on the fitting method:
+  Fit <- list(method    = "adapcl",
+              cladapfit = opt,
+              weightfun = weightfun,
+              rmax      = rmax,
+              epsilon   = epsilon,
+              objfun    = wlogcl2score,
+              objargs   = control,
+              estfunc  = opt$fvec)
+  # pack up
+  result <- list(Xname      = Xname,
+                 X          = X,
+                 stationary = stationary,
+                 clusters   = clusters,
+                 modelname  = modelname,
+                 isPCP      = isPCP,
+                 po         = po,
+                 lambda     = lambda,
+                 mu         = mu,
+                 par        = optpar,
+                 clustpar   = info$checkpar(par=optpar, old=FALSE),
+                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE),
+                 modelpar   = modelpar,
+                 covmodel   = clargs,
+                 Fit        = Fit)
+  return(result)
+}
+
 
 improve.kppm <- local({
 
@@ -1144,10 +1174,11 @@ improve.kppm <- local({
 
   improve.kppm <- function(object, type=c("quasi", "wclik1", "clik1"),
                            rmax = NULL, eps.rmax = 0.01,
-                           dimyx = c(50,50), maxIter = 100, tolerance = 1e-06,
+                           dimyx = 50, maxIter = 100, tolerance = 1e-06,
                            fast = TRUE, vcov = FALSE, fast.vcov = FALSE,
                            verbose = FALSE,
                            save.internals = FALSE) {
+    verifyclass(object, "kppm")
     type <- match.arg(type)
     gfun <- pcfmodel(object)
     X <- object$X
@@ -1354,17 +1385,17 @@ print.kppm <- print.dppm <- function(x, ...) {
                splat("\tweight function:", a)
              }
            },
-           cladap = {
-             splat("Fitted by adaptive second order composite likelihood")
-             splat("\tepsilon =", x$Fit$epsilon)
+           palm = {
+             splat("Fitted by maximum Palm likelihood")
+             splat("\trmax =", x$Fit$rmax)
              if(!is.null(wtf <- x$Fit$weightfun)) {
                a <- attr(wtf, "selfprint") %orifnull% pasteFormula(wtf)
                splat("\tweight function:", a)
              }
            },
-           palm = {
-             splat("Fitted by maximum Palm likelihood")
-             splat("\trmax =", x$Fit$rmax)
+           adapcl = {
+             splat("Fitted by adaptive second order composite likelihood")
+             splat("\tepsilon =", x$Fit$epsilon)
              if(!is.null(wtf <- x$Fit$weightfun)) {
                a <- attr(wtf, "selfprint") %orifnull% pasteFormula(wtf)
                splat("\tweight function:", a)
@@ -1406,11 +1437,6 @@ print.kppm <- print.dppm <- function(x, ...) {
       splat("\tCovariance parameters:",
             paste(tagvalue, collapse=", "))
     }
-  }
-  pc <- x$par.canon
-  if(!is.null(pc)) {
-    splat("Fitted canonical parameters:")
-    print(pc, digits=digits)
   }
   pa <- x$clustpar
   if (!is.null(pa)) {
@@ -1807,274 +1833,4 @@ psib.kppm <- function(object) {
   g <- pcfmodel(object)
   p <- 1 - 1/g(0)
   return(p)
-}
-
-
-# needs non linear equation solver nleqslv
-kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, 
-                       rmax=NULL, epsilon=0.01, DPP=NULL, algorithm="Broyden", ..., 
-                       startparm=NULL, globStrat="dbldog", pint=NULL) {
-  W <- as.owin(X)
-  
-  if(is.null(rmax)) # specified for numerical stability
-    rmax <- shortside(W)
-
-  # identify pairs of points that might contribute
-  cl <- closepairs(X, rmax)
-  dIJ <- cl$d #pairwise distances
-  Rmin <- min(dIJ)
-  indexmin <- which(dIJ==Rmin) #for later use
-  
-  # convert window to mask, saving other arguments for later
-  dcm <- do.call.matched(as.mask,
-                         append(list(w=W), list(...)),
-                         sieve=TRUE)
-  M         <- dcm$result
-  otherargs <- dcm$otherargs
-  
-  # compute intensity at pairs of data points
-  # and c.d.f. of interpoint distance in window
-  if(stationary <- is.stationary(po)) {
-    # stationary unmarked Poisson process
-    lambda <- intensity(X)
-    # compute cdf of distance between two uniform random points in W
-    g <- distcdf(W)
-    # scaling constant is (area * intensity)^2
-    gscale <- npoints(X)^2  
-  } else {
-    # compute fitted intensity at data points and in window
-    #    lambdaX <- fitted(po, dataonly=TRUE)
-    lambda <- lambdaM <- predict(po, locations=M)
-    # compute cdf of distance between two random points in W
-    # with density proportional to intensity function
-    g <- distcdf(M, dW=lambdaM)
-    # scaling constant is (integral of intensity)^2
-    gscale <- safevalue(integral.im(lambdaM)^2, default=npoints(X)^2)
-  }
-  
-  isDPP <- !is.null(DPP)
-  if(isDPP){
-    tmp <- dppmFixIntensity(DPP, lambda, po)
-    clusters <- tmp$clusters
-    lambda <- tmp$lambda
-    po <- tmp$po
-  }
-  
-  # get pair correlation function (etc) for model
-  info <- spatstatClusterModelInfo(clusters)
-  pcfun      <- info$pcf
-  dpcfun     <- info$dpcf
-  funaux     <- info$funaux
-  selfstart  <- info$selfstart
-  isPCP      <- info$isPCP
-  parhandler <- info$parhandler
-  modelname  <- info$modelname
-  # Assemble information required for computing pair correlation
-  pcfunargs <- list(funaux=funaux)
-  if(is.function(parhandler)) {
-    # Additional parameters of cluster model are required.
-    # These may be given as individual arguments,
-    # or in a list called 'covmodel'
-    clustargs <- if("covmodel" %in% names(otherargs))
-      otherargs[["covmodel"]] else otherargs
-    clargs <- do.call(parhandler, clustargs)
-    pcfunargs <- append(clargs, pcfunargs)
-  } else clargs <- NULL
-  
-  #' ............ experimental .........................
-  strict <- !isFALSE(spatstat.options("kppm.strict"))
-  if(!strict) pcfunargs <- append(pcfunargs, list(strict=FALSE))
-  #' ............ experimental .........................
-  usecanonical <- spatstat.options("kppm.canonical")
-  if(usecanonical) {
-    tocanonical <- info$tocanonical
-    tohuman <- info$tohuman
-    if(is.null(tocanonical) || is.null(tohuman)) {
-      warning("Canonical parameters are not yet supported for this model")
-      usecanonical <- FALSE
-    }
-  }
-
-  #' ............ experimental/debugger .........................
-  whiu <- pint$whiu
-  if(is.function(whiu) && usecanonical) {
-    whiu.human <- whiu
-    whiu <- function(par, ...) { whiu.human(tohuman(par), ...) }
-  }
-  TRACE <- isTRUE(pint$trace)
-  if(SAVE <- isTRUE(pint$save)) {
-    saveplace <- new.env()
-    assign("h", NULL, envir=saveplace)
-  } else saveplace <- NULL
-  # .....................................................
-  
-  # determine starting parameter values
-  startpar <- selfstart(X)
-  if(!is.null(startparm)){
-    if(!isDPP){
-      checkpar  <- info$checkpar
-      startpar <- checkpar(startparm, old=TRUE)
-    } else {
-      startpar <- startparm
-    }
-  }
-  startpar.human <- startpar
-  pcftheo <- pcfun
-  dpcftheo <- dpcfun
-  # optimization later in terms of log of params
-  if(usecanonical){
-    startpar <- log(tocanonical(startpar))
-    pcfun <- function(par, ...) { pcftheo(tohuman(exp(par)), ...) }
-    dpcfun <- function(par, ...) { dpcftheo(tohuman(exp(par)), ...) }
-  }
-  
-  startpar <- log(startpar)
-  pcfun <- function(par, ...) { pcftheo(exp(par), ...) }
-  dpcfun <- function(par, ...) { dpcftheo(exp(par), ...) }
-  
-  # create local functions to evaluate pair correlation and its gradient
-  #  (with additional parameters 'pcfunargs' in its environment)
-  paco <- function(d, par) {
-    do.call(pcfun, append(list(par=par, rvals=d), pcfunargs))
-  }
-  
-  dpaco <- function(d, par) {
-    do.call(dpcfun, append(list(par=par, rvals=d), pcfunargs))
-  }
-  
-  # trim 'g' to [0, rmax] 
-  g <- g[with(g, .x) <= rmax,]
-  
-  
-  #' ..........  define objective function ......................
-  # create local function to evaluate  weight(epsilon*M/(pcf(d)-1))
-  weight <- function(d, par) {
-    y <- paco(d=d, par=par)
-    # calculate M (only needs to be calculated for cluster models)
-    M <- 1
-    if(!isDPP){
-      M <- abs(paco(d=0, par=par)-1)
-    }
-    return(weightfun(epsilon*M/(y-1)))
-  }
-
-  wlogcl2score <- function(par, paco, dpaco, dIJ, gscale, epsilon, cdf=g){
-    p <- length(par)
-    temp <- rep(0, p)
-    
-    # check if current parameter is valid, if not return inf
-    if(isDPP){
-      if(length(par)==1 && is.null(names(par)))
-        names(par) <- clusters$freepar
-      mod <- update(clusters, as.list(exp(par)))
-      if(!valid(mod)){
-        return(rep(Inf, p))
-      }
-    }
-    
-    # everything can be computed
-    wdIJ <- weight(d=dIJ, par=par)
-    index <- unique(c(which(wdIJ!=0), indexmin))
-    dIJcurrent <- dIJ[index]
-    
-    for(i in 1:p){
-      parname <- names(par)[i]
-      # weighted derivatives wrt log of parname
-      dpcfweighted <- function(d, par){ 
-        y <- dpaco(d = d, par = par)[parname,]*exp(par[i])
-        return(y*weight(d = d, par = par))
-      } 
-      temp[i] <- sum(dpcfweighted(d = dIJcurrent, par=par)/paco(d = dIJcurrent, par = par)) - gscale * stieltjes(dpcfweighted,cdf, par=par)$f
-    }
-    return(temp)
-  }
-  
-  ## .................   optimize it ..............................
-  opt <- nleqslv(x = startpar, fn = wlogcl2score, 
-                 method = algorithm,
-                 global = globStrat, control = control, 
-                 paco=paco, dpaco=dpaco, 
-                 dIJ=dIJ, gscale=gscale, epsilon=epsilon)
-    
-  ## .......... extract fitted parameters .....................
-  if(!usecanonical) {
-    optpar.canon <- NULL
-    optpar.human <- exp(opt$x)
-    names(optpar.human) <- names(startpar.human)
-  } else {
-    optpar.canon <- exp(opt$x)
-    names(optpar.canon) <- names(startpar)
-    optpar.human <- tohuman(optpar.canon)
-    names(optpar.human) <- names(startpar.human)
-  }
-
-  ## Finish in DPP case
-  if(isDPP){
-    # all info that depends on the fitting method:
-    Fit <- list(method    = "cladap",
-                cladapfit = opt,
-                weightfun = weightfun,
-                rmax      = rmax,
-                epsilon   = epsilon,
-                objfun    = wlogcl2score,
-                objargs   = control,
-                estfunc  = opt$fvec)
-    # pack up
-    clusters <- update(clusters, as.list(exp(opt$x)))
-    result <- list(Xname      = Xname,
-                   X          = X,
-                   stationary = stationary,
-                   fitted     = clusters,
-                   modelname  = modelname,
-                   po         = po,
-                   lambda     = lambda,
-                   Fit        = Fit)
-    if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
-    return(result)
-  }
-  
-  ## meaningful model parameters
-  modelpar <- info$interpret(optpar.human, lambda)
-  # infer parameter 'mu'
-  if(isPCP) {
-    # Poisson cluster process: extract parent intensity kappa
-    kappa <- optpar.human[["kappa"]]
-    # mu = mean cluster size
-    mu <- if(stationary) lambda/kappa else eval.im(lambda/kappa)
-  } else {
-    # LGCP: extract variance parameter sigma2
-    sigma2 <- optpar.human[["sigma2"]]
-    # mu = mean of log intensity 
-    mu <- if(stationary) log(lambda) - sigma2/2 else
-      eval.im(log(lambda) - sigma2/2)    
-  }
-  # all info that depends on the fitting method:
-  Fit <- list(method    = "cladap",
-              cladapfit = opt,
-              weightfun = weightfun,
-              rmax      = rmax,
-              epsilon   = epsilon,
-              objfun    = wlogcl2score,
-              objargs   = control,
-              estfunc  = opt$fvec)
-  # pack up
-  result <- list(Xname      = Xname,
-                 X          = X,
-                 stationary = stationary,
-                 clusters   = clusters,
-                 modelname  = modelname,
-                 isPCP      = isPCP,
-                 po         = po,
-                 lambda     = lambda,
-                 mu         = mu,
-                 par        = optpar.human,
-                 par.canon  = optpar.canon,
-                 clustpar   = info$checkpar(par=optpar.human, old=FALSE, strict=strict),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE, strict=strict),
-                 modelpar   = modelpar,
-                 covmodel   = clargs,
-                 Fit        = Fit)
-  
-  if(SAVE) attr(result, "h") <- get("h", envir=saveplace)
-  return(result)
 }

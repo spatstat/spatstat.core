@@ -16,51 +16,51 @@
   kppm(X, \dots)
 
   \method{kppm}{formula}(X,
-       clusters = c("Thomas","MatClust","Cauchy","VarGamma","LGCP"),
-       \dots,
-       data = NULL)
+                clusters = c("Thomas","MatClust","Cauchy","VarGamma","LGCP"),
+                \dots,
+                data=NULL)
 
   \method{kppm}{ppp}(X,
        trend = ~1,
        clusters = c("Thomas","MatClust","Cauchy","VarGamma","LGCP"),
        data = NULL,
        ...,
-       covariates = data,
+       covariates=data,
        subset,
-       method = c("mincon", "clik2", "cladap", "palm"),
+       method = c("mincon", "clik2", "palm", "adapcl"),
        improve.type = c("none", "clik1", "wclik1", "quasi"),
        improve.args = list(),
-       weightfun = NULL,
-       control = list(),
-       algorithm = "Nelder-Mead",
-       statistic = "K",
-       statargs = list(),
+       weightfun=NULL,
+       control=list(),
+       algorithm,
+       statistic="K",
+       statargs=list(),
        rmax = NULL,
-       epsilon = 0.01,
-       covfunargs = NULL,
-       use.gam = FALSE,
-       nd = NULL, eps = NULL)
+       epsilon=0.01,
+       covfunargs=NULL,
+       use.gam=FALSE,
+       nd=NULL, eps=NULL)
 
 \method{kppm}{quad}(X,
        trend = ~1,
        clusters = c("Thomas","MatClust","Cauchy","VarGamma","LGCP"),
        data = NULL,
        ...,
-       covariates = data,
+       covariates=data,
        subset,
-       method = c("mincon", "clik2", "cladap", "palm"),
+       method = c("mincon", "clik2", "palm", "adapcl"),
        improve.type = c("none", "clik1", "wclik1", "quasi"),
        improve.args = list(),
-       weightfun = NULL,
-       control = list(),
-       algorithm = "Nelder-Mead",
-       statistic = "K",
-       statargs = list(),
+       weightfun=NULL,
+       control=list(),
+       algorithm,
+       statistic="K",
+       statargs=list(),
        rmax = NULL,
-       epsilon = 0.01,
-       covfunargs = NULL,
-       use.gam = FALSE,
-       nd = NULL, eps = NULL)
+       epsilon=0.01,
+       covfunargs=NULL,
+       use.gam=FALSE,
+       nd=NULL, eps=NULL)
 }
 \arguments{
   \item{X}{
@@ -100,7 +100,7 @@
     The fitting method. Either 
     \code{"mincon"} for minimum contrast,
     \code{"clik2"} for second order composite likelihood,
-    \code{"cladap"} for adaptive second order composite likelihood,
+    \code{"adapcl"} for adaptive second order composite likelihood,
     or \code{"palm"} for Palm likelihood.
     Partially matched.
   }
@@ -123,7 +123,7 @@
   }
   \item{weightfun}{
     Optional weighting function \eqn{w}
-    in the composite likelihood or Palm likelihood.
+    in the composite likelihoods or Palm likelihood.
     A \code{function} in the \R language.
     See Details.
   }
@@ -132,9 +132,15 @@
     \code{\link[stats]{optim}}.
   }
   \item{algorithm}{
-    Character string determining the mathematical optimisation algorithm
-    to be used by \code{\link[stats]{optim}}. This argument is
-    passed to  \code{\link[stats]{optim}} as the argument \code{method}.
+    Character string determining the mathematical algorithm
+    to be used to solve the fitting problem.
+    If \code{method="mincon", "clik2"} or \code{"palm"} this argument
+    is passed to the generic optimization function
+    \code{\link[stats]{optim}} (renamed as the argument \code{method})
+    with default \code{"Nelder-Mead"}.
+    If \code{method="adapcl"}) the argument is passed to the
+    equation solver \code{\link[nleqslv]{nleqslv}},
+    with default \code{"Bryden"}.
   }
   \item{statistic}{
     Name of the summary statistic to be used
@@ -149,7 +155,7 @@
     to use in the composite likelihood.
   }
   \item{epsilon}{
-    Tuning parameter of the adaptive composite likelihood.
+    Tuning parameter for the adaptive composite likelihood method.
   }
   \item{covfunargs,use.gam,nd,eps}{
     Arguments passed to \code{\link{ppm}} when fitting the intensity.
@@ -201,10 +207,11 @@
   \code{\link{improve.kppm}} are passed as a named list in
   \code{improve.args}.
   
-  The clustering parameters of the model are then fitted
-  either by minimum contrast estimation, by maximum
-  composite likelihood, by maximum Palm likelihood, or by solving the adaptive 
-  composite likelihood estimating equation.
+  The cluster parameters of the model are then fitted
+  either by minimum contrast estimation,
+  or by a composite likelihood method (maximum
+  composite likelihood, maximum Palm likelihood, or by solving the adaptive 
+  composite likelihood estimating equation).
 
   \describe{
    \item{Minimum contrast:}{
@@ -240,8 +247,11 @@
       Additional arguments \code{\dots} will be passed to
       \code{\link{clusterfit}} to control the minimum contrast fitting
       algorithm.
+
+      The optimisation is performed by the generic
+      optimisation algorithm \code{\link[stats]{optim}}.
     }
-    \item{Composite likelihood:}{
+    \item{Second order composite likelihood:}{
       If \code{method = "clik2"} the clustering parameters of the
       model will be fitted by maximising the second-order composite likelihood
       (Guan, 2006). The log composite likelihood is
@@ -270,39 +280,9 @@
       If this is missing or \code{NULL} then the default is
       a threshold weight function,
       \eqn{w(d) = 1(d \le R)}{w(d) = 1(d <= R)}, where \eqn{R} is \code{rmax/2}.
-    }
-    \item{Adaptive Composite likelihood:}{
-      If \code{method = "cladap"} the interaction parameters of the
-      model will be fitted by solving the adaptive second order 
-      composite likelihood estimating equation (Lavancier et al, 2021).
-      The estimating function is
-      \deqn{
-	\sum_{u, v} w(\epsilon \frac{\abs(g(0; \theta) - 1)}{g(\|u-v\|; \theta)-1}) 
-	\frac{\nabla_\theta g(\|u-v\|;\theta)}{g(\|u-v\|;\theta)} - 
-	\int_D \int_D w(\epsilon \frac{M(u,v; \theta)} \nabla_\theta g(\|u-v\|; \theta) 
-	\rho(u) \rho(v)\, du\, dv
-      }{
-	\sum[u,v] w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1)) 
-	g'(||u-v||; theta) / g(||u-v||; theta) - integral[D,D] 
-	w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1))
-	g'(||u-v||; theta) rho(u) rho(v) du dv
-      }
-      where the sum is taken over all distinct pairs of points.
-      Here \eqn{g(d;\theta)}{g(d; theta)} is the
-      pair correlation function  with
-      parameters \eqn{\theta}{theta}. The partial derivative w.r.t \eqn{\theta}{theta} 
-      is \eqn{g'(d; \theta)}{g'(d; theta)}. \eqn{\rho(u)}{rho(u)} denotes
-      the fitted intensity function of the model.
-      
-      The tuning parameter \eqn{\epsilon}{epsilon} is 
-      independent of the data. It can be specified by the
-      argument \code{epsilon} with default value \eqn{0.01}.
-      
-      The function \eqn{w} in the estimating function
-      is a weighting function of bounded support \eqn{[-1,1]}.
-      It is specified by the argument \code{weightfun}.
-      If this is missing or \code{NULL} then the default is
-      \eqn{w(d) = 1(\|d\| \le 1) \exp(1/(r^2-1))}{w(d) = 1(||d|| \le 1) exp(1/(d^2-1))}.
+
+      The optimisation is performed by the generic
+      optimisation algorithm \code{\link[stats]{optim}}.
     }
     \item{Palm likelihood:}{
       If \code{method = "palm"} the clustering parameters of the
@@ -318,16 +298,63 @@
       with the same notation as above. Here
       \eqn{\lambda_P(u|v;\theta}{lambdaP(u|v;theta)} is the Palm intensity of
       the model at location \eqn{u} given there is a point at \eqn{v}.
+
+      The optimisation is performed by the generic
+      optimisation algorithm \code{\link[stats]{optim}}.
     }
+   \item{Adaptive Composite likelihood:}{
+      If \code{method = "cladap"} the clustering parameters of the
+      model will be fitted by solving the adaptive second order 
+      composite likelihood estimating equation (Lavancier et al, 2021).
+      The estimating function is
+      \deqn{
+	\sum_{u, v} w(\epsilon \frac{| g(0; \theta) - 1 |}{g(\|u-v\|; \theta)-1}) 
+	\frac{\nabla_\theta g(\|u-v\|;\theta)}{g(\|u-v\|;\theta)} - 
+	\int_D \int_D w(\epsilon \frac{M(u,v; \theta)} \nabla_\theta g(\|u-v\|; \theta) 
+	\rho(u) \rho(v)\, du\, dv
+      }{
+	\sum[u,v] w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1)) 
+	g'(||u-v||; theta) / g(||u-v||; theta) - integral[D,D] 
+	w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1))
+	g'(||u-v||; theta) rho(u) rho(v) du dv
+      }
+      where the sum is taken over all distinct pairs of points.
+      Here \eqn{g(d;\theta)}{g(d; theta)} is the
+      pair correlation function  with
+      parameters \eqn{\theta}{theta}.
+      The partial derivative with respect to \eqn{\theta}{theta} 
+      is \eqn{g'(d; \theta)}{g'(d; theta)}, and \eqn{\rho(u)}{rho(u)} denotes
+      the fitted intensity function of the model.
+      
+      The tuning parameter \eqn{\epsilon}{epsilon} is 
+      independent of the data. It can be specified by the
+      argument \code{epsilon} and has default value \eqn{0.01}.
+      
+      The function \eqn{w} in the estimating function
+      is a weighting function of bounded support \eqn{[-1,1]}.
+      It is specified by the argument \code{weightfun}.
+      If this is missing or \code{NULL} then the default is
+      \eqn{
+	w(d) = 1(\|d\| \le 1) \exp(1/(r^2-1))}{w(d) = 1(||d|| \le 1)
+	exp(1/(d^2-1))
+      }.
+      The estimating equation is solved using the
+      nonlinear equation solver \code{\link[nleqslv]{nleqslv}}
+      from the package \pkg{nleqslv}. The package \pkg{nleqslv}
+      must be installed in order to use this option.
+    }    
   }
-  The estimating equation for the adaptive composite likelihood is solved 
-  by the generic non linear equation solver \code{\link[nleqslv]{nleqslv}}. 
-  Its behaviour can be modified using the arguments \code{control}, 
-  \code{globStrat}, \code{startparm} for inital guesses and 
-  \code{algorithm} for the method. 
-  The available control arguments are documented in the help for   
-  \code{\link[nleqslv]{nleqslv}}.
-  In all other three methods, the optimisation is performed by the generic
+  Fitting the LGCP model requires the \pkg{RandomFields} package,
+  except in the default case where the exponential covariance
+  is assumed.
+}
+\section{Optimization algorithm}{
+  The following details allow greater control over the fitting
+  procedure.
+  
+  For the first three fitting methods
+  (\code{method="mincon", "clik2"} and \code{"palm"}), 
+  the optimisation is performed by the generic
   optimisation algorithm \code{\link[stats]{optim}}.
   The behaviour of this algorithm can be modified using the
   arguments \code{control} and \code{algorithm}.
@@ -335,9 +362,15 @@
   \code{trace}, \code{maxit} and \code{abstol}
   (documented in the help for \code{\link[stats]{optim}}).
 
-  Fitting the LGCP model requires the \pkg{RandomFields} package,
-  except in the default case where the exponential covariance
-  is assumed.
+  For \code{method="adapcl"}, the estimating equation is solved
+  using the nonlinear equation solver \code{\link[nleqslv]{nleqslv}}
+  from the package \pkg{nleqslv}. 
+  Arguments available for controlling the solver are
+  documented in the help for   
+  \code{\link[nleqslv]{nleqslv}}; they include \code{control}, 
+  \code{globStrat}, \code{startparm} for the initial estimates and 
+  \code{algorithm} for the method. 
+  The package \pkg{nleqslv} must be installed in order to use this option.
 }
 \section{Log-Gaussian Cox Models}{
   To fit a log-Gaussian Cox model with non-exponential covariance,
@@ -434,10 +467,11 @@
   \emph{Scandinavian Journal of Statistics} \bold{40}, 119--137.
 
   Lavancier, F., Poinas, A., and Waagepetersen, R. (2021)
-  Adaptive estimating function inference for nonstationary determinantal point processes.
-  \emph{Scandinavian Journal of Statistics}, \bold{48(1)}, 87--107.
+  Adaptive estimating function inference for nonstationary
+  determinantal point processes.
+  \emph{Scandinavian Journal of Statistics}, \bold{48} (1), 87--107.
   
-  Tanaka, U., Ogata, Y. and Stoyan, D. (2008)
+  Tanaka, U. and Ogata, Y. and Stoyan, D. (2008)
   Parameter estimation and model selection for
   Neyman-Scott point processes. 
   \emph{Biometrical Journal} \bold{50}, 43--57.
@@ -482,6 +516,8 @@
 \author{
   \spatstatAuthors,
   with contributions from Abdollah Jalilian and Rasmus Waagepetersen.
+  Adaptive composite likelihood method contributed by Chiara Fend
+  and modified by Adrian Baddeley.
 }
 \keyword{spatial}
 \keyword{models}

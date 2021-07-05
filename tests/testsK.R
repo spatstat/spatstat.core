@@ -326,7 +326,7 @@ reset.spatstat.options()
 #
 # tests/kppm.R
 #
-# $Revision: 1.35 $ $Date: 2021/01/22 08:08:55 $
+# $Revision: 1.36 $ $Date: 2021/07/05 04:20:57 $
 #
 # Test functionality of kppm that depends on RandomFields
 # Test update.kppm for old style kppm objects
@@ -524,34 +524,7 @@ local({
 })
 }
 
-local({
-  #'  experimental
-  spatstat.options(kppm.canonical=TRUE, kppm.adjusted=TRUE)
-  futTT1 <- kppm(redwood)
-  futTT2 <- kppm(redwood, method="palm")
-  futTT3 <- kppm(redwood, method="clik2")
-  spatstat.options(kppm.canonical=TRUE, kppm.adjusted=FALSE)
-  futTF1 <- kppm(redwood)
-  futTF2 <- kppm(redwood, method="palm")
-  futTF3 <- kppm(redwood, method="clik2")
-  spatstat.options(kppm.canonical=FALSE, kppm.adjusted=TRUE)
-  futFT1 <- kppm(redwood)
-  futFT2 <- kppm(redwood, method="palm")
-  futFT3 <- kppm(redwood, method="clik2")
-  spatstat.options(kppm.canonical=FALSE, kppm.adjusted=FALSE)
-  futFF1 <- kppm(redwood)
-  futFF2 <- kppm(redwood, method="palm")
-  futFF3 <- kppm(redwood, method="clik2")
-  ## unsupported options that give a warning
-  spatstat.options(kppm.canonical=TRUE, kppm.adjusted=TRUE)
-  futXX1 <- kppm(redwood, clusters="MatClust") 
-  futXX2 <- kppm(redwood, clusters="MatClust", method="palm")
-  futXX3 <- kppm(redwood, clusters="MatClust", method="clik2")
-  jpines <- residualspaper$Fig1
-  fut <- dppm(jpines ~ 1, dppGauss)
-  print(fut)
-  spatstat.options(kppm.canonical=FALSE, kppm.adjusted=FALSE)
-})
+
 
 if(FULLTEST) {
 local({

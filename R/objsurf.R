@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.9 $ $Date: 2021/06/23 02:49:56 $
+#  $Revision: 1.10 $ $Date: 2021/07/05 04:13:55 $
 #
 
 objsurf <- function(x, ...) {
@@ -32,13 +32,13 @@ objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TR
 }
 
 objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
-  optpar  <- x$par.canon %orifnull% x$par
+  optpar  <- x$par
   objfun  <- x$objfun
   objargs <- x$objargs
   dotargs <- x$dotargs
-  objsurfEngine(objfun, optpar, objargs, ...,
-                dotargs=dotargs,
-                ngrid=ngrid, ratio=ratio, verbose=verbose)
+  result <- objsurfEngine(objfun, optpar, objargs, ...,
+                          dotargs=dotargs,
+                          ngrid=ngrid, ratio=ratio, verbose=verbose)
 }
 
 objsurfEngine <- function(objfun, optpar, objargs, 
@@ -89,7 +89,8 @@ summary.objsurf <- function(object, ...) {
             yrange=range(object$y),
             objrange=range(object$z),
             optpar=as.list(attr(object, "optpar")),
-            objname=attr(object, "objname"))
+            objname=attr(object, "objname")
+            )
   class(y) <- c("summary.objsurf", class(y))
   return(y)
 }
@@ -119,11 +120,12 @@ image.objsurf <- plot.objsurf <- function(x, ...) {
   do.call(image,
           resolve.defaults(list(x=quote(xx)), 
                            list(...),
-                           list(xlab=nama[1], ylab=nama[2], main=xname)))
-  abline(v=optpar[1], lty=3)
-  abline(h=optpar[2], lty=3)
+                           list(xlab=nama[1L], ylab=nama[2L], main=xname)))
+  abline(v=optpar[1L], lty=3)
+  abline(h=optpar[2L], lty=3)
   invisible(NULL)
 }
+
 
 contour.objsurf <- function(x, ...) {
   xname <- short.deparse(substitute(x))

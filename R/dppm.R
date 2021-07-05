@@ -1,23 +1,26 @@
 #'
 #'     dppm.R
 #'
-#'     $Revision: 1.9 $   $Date: 2018/12/08 11:14:52 $
+#'     $Revision: 1.14 $   $Date: 2021/07/05 12:27:15 $
 
 dppm <-
   function(formula, family, data=NULL,
            ...,
            startpar = NULL,
-           method = c("mincon", "clik2", "palm","cladap"),
+           method = c("mincon", "clik2", "palm", "adapcl"),
            weightfun=NULL,
            control=list(),
-           algorithm="Nelder-Mead",
+           algorithm,
            statistic="K",
            statargs=list(),
            rmax = NULL,
+           epsilon = 0.01,
            covfunargs=NULL,
            use.gam=FALSE,
            nd=NULL, eps=NULL) {
 
+  method <- match.arg(method)
+    
   # Instantiate family if not already done.
   if(is.character(family))
     family <- get(family, mode="function")
@@ -43,6 +46,10 @@ dppm <-
 #       control = control, algorithm = algorithm, statistic = statistic,
 #       statargs = statargs, rmax = rmax, covfunargs = covfunargs,
 #       use.gam = use.gam, nd = nd, eps = eps, ...)
+
+  if(missing(algorithm)) {
+    algorithm <- if(method == "adapcl") "Broyden" else "Nelder-Mead"
+  } else check.1.string(algorithm)
 
   thecall <- call("kppm",
                   X=formula,

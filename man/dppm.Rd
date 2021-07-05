@@ -10,10 +10,10 @@
   dppm(formula, family, data=NULL,
        ...,
        startpar = NULL,
-       method = c("mincon", "clik2", "cladap", "palm"),
+       method = c("mincon", "clik2", "palm", "adapcl"),
        weightfun = NULL,
        control =  list(),
-       algorithm = "Nelder-Mead",
+       algorithm,
        statistic = "K",
        statargs = list(),
        rmax = NULL,
@@ -57,13 +57,13 @@
     The fitting method. Either
     \code{"mincon"} for minimum contrast,
     \code{"clik2"} for second order composite likelihood,
-    \code{"cladap"} for adaptive second order composite likelihood,
+    \code{"adapcl"} for adaptive second order composite likelihood,
     or \code{"palm"} for Palm likelihood.
     Partially matched.
   }
   \item{weightfun}{
     Optional weighting function \eqn{w}
-    in the composite likelihood or Palm likelihood.
+    in the composite likelihoods or Palm likelihood.
     A \code{function} in the \R language.
     See Details.
   }
@@ -72,9 +72,15 @@
     \code{\link[stats]{optim}}.
   }
   \item{algorithm}{
-    Character string determining the mathematical optimisation algorithm
-    to be used by \code{\link[stats]{optim}}. See
-    the argument \code{method} of \code{\link[stats]{optim}}.
+    Character string determining the mathematical algorithm
+    to be used to solve the fitting problem.
+    If \code{method="mincon", "clik2"} or \code{"palm"} this argument
+    is passed to the generic optimization function
+    \code{\link[stats]{optim}} (renamed as the argument \code{method})
+    with default \code{"Nelder-Mead"}.
+    If \code{method="adapcl"}) the argument is passed to the
+    equation solver \code{\link[nleqslv]{nleqslv}},
+    with default \code{"Bryden"}.
   }
   \item{statistic}{
     Name of the summary statistic to be used
@@ -89,7 +95,7 @@
     to use in the composite likelihood.
   }
   \item{epsilon}{
-    Tuning parameter of the adaptive composite likelihood.
+    Tuning parameter for the adaptive composite likelihood.
   }
   \item{covfunargs,use.gam,nd,eps}{
     Arguments passed to \code{\link{ppm}} when fitting the intensity.
@@ -140,9 +146,10 @@
   (See \code{\link{ppm}} for further explanation).
 
   The interaction parameters of the model are then fitted
-  either by minimum contrast estimation, by maximum
-  composite likelihood, by maximum Palm likelihood, or by solving the adaptive 
-  composite likelihood estimating equation.
+  either by minimum contrast estimation,
+  or by a composite likelihood method (maximum
+  composite likelihood, maximum Palm likelihood, or by solving the adaptive 
+  composite likelihood estimating equation).
 
   \describe{
    \item{Minimum contrast:}{
@@ -209,40 +216,6 @@
       a threshold weight function,
       \eqn{w(d) = 1(d \le R)}{w(d) = 1(d \le R)}, where \eqn{R} is \code{rmax/2}.
     }
-    \item{Adaptive Composite likelihood:}{
-      If \code{method = "cladap"} the interaction parameters of the
-      model will be fitted by solving the adaptive second order 
-      composite likelihood estimating equation (Lavancier et al, 2021).
-      The estimating function is
-      \deqn{
-	\sum_{u, v} w(\epsilon \frac{\abs(g(0; \theta) - 1)}{g(\|u-v\|; \theta)-1}) 
-	\frac{\nabla_\theta g(\|u-v\|;\theta)}{g(\|u-v\|;\theta)} - 
-	\int_D \int_D w(\epsilon \frac{M(u,v; \theta)} \nabla_\theta g(\|u-v\|; \theta) 
-	\rho(u) \rho(v)\, du\, dv
-      }{
-	\sum[u,v] w(\epsilon |g(0; \theta)-1|/(g(||u-v||; \theta)-1)) 
-	g'(||u-v||; \theta) / g(||u-v||; \theta) - integral[D,D] 
-	w(\epsilon |g(0; \theta)-1|/(g(||u-v||; \theta)-1))
-	g'(||u-v||; \theta) \rho(u) \rho(v) du dv
-      }
-      where the sum is taken over all distinct pairs of points.
-      Here \eqn{g(d;\theta)}{g(d; \theta)} is the
-      pair correlation function  with
-      interaction parameters \eqn{\theta}{\theta}. 
-      The partial derivative w.r.t \eqn{\theta}{\theta} 
-      is \eqn{g'(d; \theta)}{g'(d; \theta)}. \eqn{\rho(u)}{\rho(u)} denotes
-      the fitted intensity function of the model.
-      
-      The tuning parameter \eqn{\epsilon}{\epsilon} is 
-      independent of the data. It can be specified by the
-      argument \code{epsilon} with default value \eqn{0.01}.
-      
-      The function \eqn{w} in the estimating function
-      is a weighting function of bounded support \eqn{[-1,1]}.
-      It is specified by the argument \code{weightfun}.
-      If this is missing or \code{NULL} then the default is
-      \eqn{w(d) = 1(\|d\| \le 1) \exp(1/(r^2-1))}{w(d) = 1(||d|| \le 1) exp(1/(d^2-1))}.
-    }
     \item{Palm likelihood:}{
       If \code{method = "palm"} the interaction parameters of the
       model will be fitted by maximising the Palm loglikelihood
@@ -258,15 +231,59 @@
       \eqn{\lambda_P(u|v;\theta}{\lambda[P](u|v;\theta)} is the Palm intensity of
       the model at location \eqn{u} given there is a point at \eqn{v}.
     }
+   \item{Adaptive Composite likelihood:}{
+      If \code{method = "cladap"} the clustering parameters of the
+      model will be fitted by solving the adaptive second order 
+      composite likelihood estimating equation (Lavancier et al, 2021).
+      The estimating function is
+      \deqn{
+	\sum_{u, v} w(\epsilon \frac{|g(0; \theta) - 1|}{g(\|u-v\|; \theta)-1}) 
+	\frac{\nabla_\theta g(\|u-v\|;\theta)}{g(\|u-v\|;\theta)} - 
+	\int_D \int_D w(\epsilon \frac{M(u,v; \theta)} \nabla_\theta g(\|u-v\|; \theta) 
+	\rho(u) \rho(v)\, du\, dv
+      }{
+	\sum[u,v] w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1)) 
+	g'(||u-v||; theta) / g(||u-v||; theta) - integral[D,D] 
+	w(epsilon |g(0; theta)-1|/(g(||u-v||; theta)-1))
+	g'(||u-v||; theta) rho(u) rho(v) du dv
+      }
+      where the sum is taken over all distinct pairs of points.
+      Here \eqn{g(d;\theta)}{g(d; theta)} is the
+      pair correlation function  with
+      parameters \eqn{\theta}{theta}.
+      The partial derivative with respect to \eqn{\theta}{theta} 
+      is \eqn{g'(d; \theta)}{g'(d; theta)}, and \eqn{\rho(u)}{rho(u)} denotes
+      the fitted intensity function of the model.
+      
+      The tuning parameter \eqn{\epsilon}{epsilon} is 
+      independent of the data. It can be specified by the
+      argument \code{epsilon} and has default value \eqn{0.01}.
+      
+      The function \eqn{w} in the estimating function
+      is a weighting function of bounded support \eqn{[-1,1]}.
+      It is specified by the argument \code{weightfun}.
+      If this is missing or \code{NULL} then the default is
+      \eqn{
+	w(d) = 1(\|d\| \le 1) \exp(1/(r^2-1))}{w(d) = 1(||d|| \le 1)
+	exp(1/(d^2-1))
+      }.
+      The estimating equation is solved using the
+      nonlinear equation solver \code{\link[nleqslv]{nleqslv}}
+      from the package \pkg{nleqslv}. The package \pkg{nleqslv}
+      must be installed in order to use this option.
+    }
   }
-  The estimating equation for the adaptive composite likelihood is solved 
-  by the generic non linear equation solver \code{\link[nleqslv]{nleqslv}}. 
-  Its behaviour can be modified using the arguments \code{control}, 
-  \code{globStrat}, \code{startparm} for inital guesses and 
-  \code{algorithm} for the method. 
-  The available control arguments are documented in the help for   
-  \code{\link[nleqslv]{nleqslv}}.
-  In all other three methods, the optimisation is performed by the generic
+  It is also possible to fix any parameters desired before the
+  optimisation by specifying them as \code{name=value}
+  in the call to the family function. See Examples.
+}
+\section{Optimization algorithm}{
+  The following details allow greater control over the fitting
+  procedure.
+  
+  For the first three fitting methods
+  (\code{method="mincon", "clik2"} and \code{"palm"}), 
+  the optimisation is performed by the generic
   optimisation algorithm \code{\link[stats]{optim}}.
   The behaviour of this algorithm can be modified using the
   arguments \code{control} and \code{algorithm}.
@@ -274,9 +291,15 @@
   \code{trace}, \code{maxit} and \code{abstol}
   (documented in the help for \code{\link[stats]{optim}}).
 
-  Finally, it is also possible to fix any parameters desired before the
-  optimisation by specifying them as \code{name=value}
-  in the call to the family function. See Examples.
+  For \code{method="adapcl"}, the estimating equation is solved
+  using the nonlinear equation solver \code{\link[nleqslv]{nleqslv}}
+  from the package \pkg{nleqslv}. 
+  Arguments available for controlling the solver are
+  documented in the help for   
+  \code{\link[nleqslv]{nleqslv}}; they include \code{control}, 
+  \code{globStrat}, \code{startparm} for the initial estimates and 
+  \code{algorithm} for the method. 
+  The package \pkg{nleqslv} must be installed in order to use this option.
 }
 \value{
   An object of class \code{"dppm"} representing the fitted model.
@@ -326,8 +349,9 @@
   \bold{77}, 853--977.
 
   Lavancier, F., Poinas, A., and Waagepetersen, R. (2021)
-  Adaptive estimating function inference for nonstationary determinantal point processes.
-  \emph{Scandinavian Journal of Statistics}, \bold{48(1)}, 87--107.
+  Adaptive estimating function inference for nonstationary
+  determinantal point processes.
+  \emph{Scandinavian Journal of Statistics}, \bold{48} (1), 87--107.
   
   Tanaka, U., Ogata, Y. and Stoyan, D. (2008)
   Parameter estimation and model selection for
@@ -350,6 +374,7 @@
 
   dppm(jpines ~ 1, dppGauss, method="c")
   dppm(jpines ~ 1, dppGauss, method="p")
+  dppm(jpines ~ 1, dppGauss, method="a")
 
   # Fixing the intensity to lambda=2 rather than the Poisson MLE 2.04:
   dppm(jpines ~ 1, dppGauss(lambda=2))
@@ -367,6 +392,8 @@
 }
 \author{
   \spatstatAuthors.
+  Adaptive composite likelihood method contributed by Chiara Fend
+  and modified by Adrian Baddeley.
 }
 \keyword{spatial}
 \keyword{models}

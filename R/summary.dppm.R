@@ -1,7 +1,7 @@
 #'
 #'  summary.dppm.R
 #'
-#'  $Revision: 1.4 $ $Date: 2019/12/06 01:35:46 $
+#'  $Revision: 1.5 $ $Date: 2021/07/05 08:48:33 $
 
 summary.dppm <- function(object, ..., quick=FALSE) {
   nama <- names(object)
@@ -45,7 +45,7 @@ print.summary.dppm <- function(x, ...) {
              }
              printStatus(optimStatus(Fit$clfit))
            },
-           cladap = {
+           adapcl = {
              splat("Fitted by adaptive second order composite likelihood")
              splat("\tepsilon =", x$Fit$epsilon)
              if(!is.null(wtf <- x$Fit$weightfun)) {

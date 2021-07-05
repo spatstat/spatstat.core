@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.8 $  $Date: 2020/10/31 03:34:39 $
+#'   $Revision: 1.9 $  $Date: 2021/07/05 08:51:36 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
@@ -16,6 +16,7 @@ summary.kppm <- function(object, ..., quick=FALSE) {
                 clik  =,
                 clik2 = Fit$clfit,
                 palm = Fit$clfit,
+                adapcl = Fit$cladapfit,
                 warning(paste("Unrecognised fitting method",
                               sQuote(Fit$method)))
                 )
@@ -95,7 +96,7 @@ print.summary.kppm <- function(x, ...) {
              }
              printStatus(x$optim.status)
            },
-           cladap = {
+           adapcl = {
              splat("Fitted by adaptive second order composite likelihood")
              splat("\tepsilon =", x$Fit$epsilon)
              if(!is.null(wtf <- x$Fit$weightfun)) {

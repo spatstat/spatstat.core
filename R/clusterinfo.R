@@ -79,6 +79,7 @@
              return(rep.int(Inf, length(rvals)))
            1 + exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L] * par[2L])
          },
+         ## gradient of pcf (contributed by Chiara Fend)
          dpcf= function(par,rvals, ..., strict=TRUE){
            if(strict && any(par <= 0)){
              dsigma2 <- rep.int(Inf, length(rvals))
@@ -202,7 +203,7 @@
            out <- rbind(dkappa, dR)
            rownames(out) <- c("kappa","R")
            return(out)
-         },
+         },         
          funaux=list(
            Hfun=function(zz) {
              ok <- (zz < 1)
@@ -326,7 +327,7 @@
              return(rep.int(Inf, length(rvals)))
            1 + ((1 + rvals^2/par[2L])^(-1.5))/(2 * pi * par[2L] * par[1L])
          },
-         dpcf= function(par,rvals, ...){
+          dpcf= function(par,rvals, ...){
            if(any(par <= 0)){
              dkappa <- rep.int(Inf, length(rvals))
              deta2 <- rep.int(Inf, length(rvals))
@@ -509,9 +510,7 @@
                         1)
            return(1 + sig2 * fr)
          },
-         dpcf= function(par,rvals, ...){
-           stop("Gradient of the pcf is not available for this model.")
-         },
+         dpcf = NULL,
          parhandler = function(..., nu.ker = -1/4) {
            check.1.real(nu.ker)
            stopifnot(nu.ker > -1/2)
