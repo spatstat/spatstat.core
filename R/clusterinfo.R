@@ -79,6 +79,18 @@
              return(rep.int(Inf, length(rvals)))
            1 + exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L] * par[2L])
          },
+         dpcf= function(par,rvals, ..., strict=TRUE){
+           if(strict && any(par <= 0)){
+             dsigma2 <- rep.int(Inf, length(rvals))
+             dkappa <- rep.int(Inf, length(rvals))
+           } else {
+             dsigma2 <- exp(-rvals^2/(4 * par[2L])) * (rvals/(4^2 * pi * par[1L] * par[2L]^3) - 1/(4 * pi * par[1L] * par[2L]^2))
+             dkappa <- -exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L]^2 * par[2L])
+           }
+           out <- rbind(dkappa, dsigma2)
+           rownames(out) <- c("kappa","sigma2")
+           return(out)
+         },
          ## sensible starting parameters
          selfstart = function(X) {
            kappa <- intensity(X)
@@ -174,7 +186,23 @@
              g <- funaux$g
              y <- 1 + (1/(pi * kappa * R^2)) * g(rvals/(2 * R))
              return(y)
-           },
+         },
+         dpcf= function(par,rvals, ..., funaux){
+           kappa <- par[1L]
+           R <- par[2L]
+           g <- funaux$g
+           gprime <- funaux$gprime
+           if(any(par <= 0)){
+             dkappa <- rep.int(Inf, length(rvals))
+             dR <- rep.int(Inf, length(rvals))
+           } else {
+             dkappa <- -g(rvals/(2 * R)) / (pi * kappa^2 * R^2)
+             dR <- -2*g(rvals/(2 * R))/(pi * kappa * R^3) - (1/(pi * kappa * R^2)) * gprime(rvals/(2 * R))*rvals/(2*R^2)
+           }
+           out <- rbind(dkappa, dR)
+           rownames(out) <- c("kappa","R")
+           return(out)
+         },
          funaux=list(
            Hfun=function(zz) {
              ok <- (zz < 1)
@@ -204,6 +232,14 @@
              h[!ok] <- 0
              z <- zz[ok]
              h[ok] <- (2/pi) * (acos(z) - z * sqrt(1 - z^2))
+             return(h)
+           },
+           gprime=function(zz) {
+             ok <- (zz < 1)
+             h <- numeric(length(zz))
+             h[!ok] <- 0
+             z <- zz[ok]
+             h[ok] <- -(2/pi) * 2 * sqrt(1 - z^2)
              return(h)
            }),
          ## sensible starting paramters
@@ -289,6 +325,18 @@
            if(any(par <= 0))
              return(rep.int(Inf, length(rvals)))
            1 + ((1 + rvals^2/par[2L])^(-1.5))/(2 * pi * par[2L] * par[1L])
+         },
+         dpcf= function(par,rvals, ...){
+           if(any(par <= 0)){
+             dkappa <- rep.int(Inf, length(rvals))
+             deta2 <- rep.int(Inf, length(rvals))
+           } else {
+             dkappa <- -(1 + rvals^2/par[2L])^(-1.5)/(2 * pi * par[2L] * par[1L]^2)
+             deta2 <- 1.5 * rvals^2 * (1 + rvals^2/par[2L])^(-2.5)/(2 * par[2L]^3 * par[1L] * pi) - (1 + rvals^2/par[2L])^(-1.5)/(2*pi*par[1L]*par[2L]^2)
+           }
+           out <- rbind(dkappa, deta2)
+           rownames(out) <- c("kappa","eta2")
+           return(out)
          },
          selfstart = function(X) {
            kappa <- intensity(X)
@@ -461,6 +509,9 @@
                         1)
            return(1 + sig2 * fr)
          },
+         dpcf= function(par,rvals, ...){
+           stop("Gradient of the pcf is not available for this model.")
+         },
          parhandler = function(..., nu.ker = -1/4) {
            check.1.real(nu.ker)
            stopifnot(nu.ker > -1/2)
@@ -606,6 +657,16 @@
              gtheo <- exp(RandomFields::RFcov(model=mod, x=rvals))
            }
            return(gtheo)
+         },
+         dpcf= function(par,rvals, ..., model){
+           if(!identical(model, "exponential")) {
+             stop("Gradient of the pcf not available for this model.")
+           } 
+           dsigma2 <- exp(-rvals/par[2L]) * exp(par[1L]*exp(-rvals/par[2L]))
+           dalpha <- rvals * par[1L] * exp(-rvals/par[2L]) * exp(par[1L]*exp(-rvals/par[2L]))/par[2L]^2
+           out <- rbind(dsigma2, dalpha)
+           rownames(out) <- c("sigma2","alpha")
+           return(out)
          },
          parhandler=function(model = "exponential", ...) {
            if(!is.character(model))

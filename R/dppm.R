@@ -7,7 +7,7 @@ dppm <-
   function(formula, family, data=NULL,
            ...,
            startpar = NULL,
-           method = c("mincon", "clik2", "palm"),
+           method = c("mincon", "clik2", "palm","cladap"),
            weightfun=NULL,
            control=list(),
            algorithm="Nelder-Mead",
@@ -103,6 +103,16 @@ spatstatDPPModelInfo <- function(model){
         return(pcfmodel(mod)(rvals))
       }
     },
+    dpcf = function(par, rvals, ...){
+      if(length(par)==1 && is.null(names(par)))
+        names(par) <- model$freepar
+      mod <- update(model, as.list(par))
+      if(!valid(mod)){
+        return(rep(Inf, length(rvals)))
+      } else{
+        return(sapply(rvals, FUN = dppdcpf(mod)))
+      }
+      },
     ## sensible starting parameters
     selfstart = function(X) {
       return(model$startpar(model, X))

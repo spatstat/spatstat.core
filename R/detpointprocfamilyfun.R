@@ -183,6 +183,17 @@ dppBessel <- detpointprocfamilyfun(
     rslt[x==0] <- lambda
     return(rslt)
   },
+  dpcf=function(x, lambda, alpha, sigma, d){
+    a <- 0.5*(sigma+d)
+    z <- sqrt(a)*x/alpha
+    dalpha <- ifelse(x==0, 0, -2*gamma(a+1)^2*besselJ(x = 2*z, nu=a)*alpha^{2*a-2}*(x*sqrt(a))^(-2*a)*(
+      a*alpha*besselJ(x=2*z, nu=a) - x*sqrt(a)*(besselJ(x = 2*z, nu = a - 1) - besselJ(x = 2*z, nu = a + 1))))
+    dsigma <- ifelse(x == 0, 0, -2 * besselJ(x = 2*z, nu=a) * gamma(a+1)^2/z^a * ((0.5 * besselJ(x = 2*z, nu=a)*digamma(a+1) + 
+                                           0.5 * x * 0.5 * (besselJ(x = 2*z, nu = a-1) - besselJ(x=2*z, nu=a+1))/(alpha*sqrt(a)))/z^a 
+                             - (0.5 * z^a * (0.5 * log(a) + log(x) - log(alpha)) + x * 2*a * z^(a-1)/(8 * alpha * sqrt(a))) * 
+                               besselJ(x = 2*z, nu=a)/z^(2*a)))
+    return(c(lambda=0, alpha=dalpha, sigma=dsigma))
+  },
   specden=function(x, lambda, alpha, sigma, d){
     a <- sigma+d
     # specden: lambda*(2*pi)^(d/2)*alpha^d*gamma(0.5*a+1)/a^(d/2)/gamma(sigma/2+1)*(1-2*pi^2*alpha^2*x^2/a)^(sigma/2)
@@ -257,6 +268,11 @@ dppCauchy <- detpointprocfamilyfun(
     rslt[x==0] <- lambda
     return(rslt)
   },
+  dpcf=function(x, lambda, alpha, nu, d){
+    dalpha <- (-4*nu-2*d)*x^2*alpha^(-3)*((x/alpha)^2 + 1)^(-2*nu - d - 1)
+    dnu <- 2*log1p((x/alpha)^2)*((x/alpha)^2 + 1)^(-2*nu - d)
+    return(c(lambda=0, alpha=dalpha, nu=dnu))
+  },
   specden=function(x, lambda, alpha, nu, d){
     y <- 2*x*alpha*pi
     rslt <- lambda * y^nu * besselK(x = y, nu = nu) * (sqrt(pi)*alpha)^d * exp((1-nu)*log(2) - lgamma(nu+d/2))
@@ -326,6 +342,10 @@ dppGauss <- detpointprocfamilyfun(
     rslt <- lambda*exp(-(x/alpha)^2)
     return(rslt)
   },
+  dpcf=function(x, lambda, alpha, d){
+    dalpha <- -4*x^2/alpha^3*exp(-(x/alpha)^2)^2
+    return(c(lambda=0, alpha=dalpha))
+  },
   specden=function(x, lambda, alpha, d){
     lambda * (sqrt(pi)*alpha)^d * exp(-(x*alpha*pi)^2)
   },
@@ -377,6 +397,13 @@ dppMatern <- detpointprocfamilyfun(
     rslt <- lambda*2^(1-nu) / gamma(nu) * ((x/alpha)^nu) * besselK(x = x/alpha, nu = nu)
     rslt[x==0] <- lambda
     return(rslt)
+  },
+  dpcf=function(x, lambda, alpha, nu, d){
+    s <- besselK(x = x/alpha, nu = nu)
+    dalpha <- 2 * (2^(1 - nu) * x * s * (x/alpha)^nu/(alpha^2 * gamma(nu)^2) * (-2^(1 - nu) * (0.5 * (besselK(x = x/alpha, nu = nu + 1) + besselK(x = x/alpha, nu = nu - 1))) * (x/alpha)^nu 
+                              + 2^(1 - nu) * nu * s * (x/alpha)^(nu - 1)))
+    dnu <- -2/gamma(nu)^2 * (2^(1-nu)*besselK(x = x/alpha, nu = nu)*(x/alpha)^nu)^2*(log(x/(2*alpha)) + digamma(nu))
+    return(c(lambda=0, alpha=dalpha, nu=dnu))
   },
   specden=function(x, lambda, alpha, nu, d){
     lambda * exp(lgamma(nu+d/2) - lgamma(nu)) * (2*sqrt(pi)*alpha)^d * (1+(2*x*alpha*pi)^2)^(-nu-d/2)

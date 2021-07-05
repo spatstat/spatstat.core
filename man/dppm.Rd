@@ -10,16 +10,17 @@
   dppm(formula, family, data=NULL,
        ...,
        startpar = NULL,
-       method = c("mincon", "clik2", "palm"),
-       weightfun=NULL,
-       control=list(),
-       algorithm="Nelder-Mead",
-       statistic="K",
-       statargs=list(),
+       method = c("mincon", "clik2", "cladap", "palm"),
+       weightfun = NULL,
+       control =  list(),
+       algorithm = "Nelder-Mead",
+       statistic = "K",
+       statargs = list(),
        rmax = NULL,
-       covfunargs=NULL,
-       use.gam=FALSE,
-       nd=NULL, eps=NULL)
+       epsilon = 0.01,
+       covfunargs = NULL,
+       use.gam = FALSE,
+       nd = NULL, eps = NULL)
 }
 \arguments{
   \item{formula}{
@@ -56,6 +57,7 @@
     The fitting method. Either
     \code{"mincon"} for minimum contrast,
     \code{"clik2"} for second order composite likelihood,
+    \code{"cladap"} for adaptive second order composite likelihood,
     or \code{"palm"} for Palm likelihood.
     Partially matched.
   }
@@ -85,6 +87,9 @@
   \item{rmax}{
     Maximum value of interpoint distance
     to use in the composite likelihood.
+  }
+  \item{epsilon}{
+    Tuning parameter of the adaptive composite likelihood.
   }
   \item{covfunargs,use.gam,nd,eps}{
     Arguments passed to \code{\link{ppm}} when fitting the intensity.
@@ -135,8 +140,9 @@
   (See \code{\link{ppm}} for further explanation).
 
   The interaction parameters of the model are then fitted
-  either by minimum contrast estimation, or by maximum
-  composite likelihood.
+  either by minimum contrast estimation, by maximum
+  composite likelihood, by maximum Palm likelihood, or by solving the adaptive 
+  composite likelihood estimating equation.
 
   \describe{
    \item{Minimum contrast:}{
@@ -194,7 +200,7 @@
       \eqn{u,v} in the spatial window of the data.
       Here \eqn{\rho(d;\theta)}{\rho(d;\theta)} is the
       pair correlation function of the model with
-      cluster parameters \eqn{\theta}{\theta}.
+      interaction parameters \eqn{\theta}{\theta}.
 
       The function \eqn{w} in the composite likelihood
       is a weighting function and may be chosen arbitrarily.
@@ -202,6 +208,40 @@
       If this is missing or \code{NULL} then the default is
       a threshold weight function,
       \eqn{w(d) = 1(d \le R)}{w(d) = 1(d \le R)}, where \eqn{R} is \code{rmax/2}.
+    }
+    \item{Adaptive Composite likelihood:}{
+      If \code{method = "cladap"} the interaction parameters of the
+      model will be fitted by solving the adaptive second order 
+      composite likelihood estimating equation (Lavancier et al, 2021).
+      The estimating function is
+      \deqn{
+	\sum_{u, v} w(\epsilon \frac{\abs(g(0; \theta) - 1)}{g(\|u-v\|; \theta)-1}) 
+	\frac{\nabla_\theta g(\|u-v\|;\theta)}{g(\|u-v\|;\theta)} - 
+	\int_D \int_D w(\epsilon \frac{M(u,v; \theta)} \nabla_\theta g(\|u-v\|; \theta) 
+	\rho(u) \rho(v)\, du\, dv
+      }{
+	\sum[u,v] w(\epsilon |g(0; \theta)-1|/(g(||u-v||; \theta)-1)) 
+	g'(||u-v||; \theta) / g(||u-v||; \theta) - integral[D,D] 
+	w(\epsilon |g(0; \theta)-1|/(g(||u-v||; \theta)-1))
+	g'(||u-v||; \theta) \rho(u) \rho(v) du dv
+      }
+      where the sum is taken over all distinct pairs of points.
+      Here \eqn{g(d;\theta)}{g(d; \theta)} is the
+      pair correlation function  with
+      interaction parameters \eqn{\theta}{\theta}. 
+      The partial derivative w.r.t \eqn{\theta}{\theta} 
+      is \eqn{g'(d; \theta)}{g'(d; \theta)}. \eqn{\rho(u)}{\rho(u)} denotes
+      the fitted intensity function of the model.
+      
+      The tuning parameter \eqn{\epsilon}{\epsilon} is 
+      independent of the data. It can be specified by the
+      argument \code{epsilon} with default value \eqn{0.01}.
+      
+      The function \eqn{w} in the estimating function
+      is a weighting function of bounded support \eqn{[-1,1]}.
+      It is specified by the argument \code{weightfun}.
+      If this is missing or \code{NULL} then the default is
+      \eqn{w(d) = 1(\|d\| \le 1) \exp(1/(r^2-1))}{w(d) = 1(||d|| \le 1) exp(1/(d^2-1))}.
     }
     \item{Palm likelihood:}{
       If \code{method = "palm"} the interaction parameters of the
@@ -219,10 +259,17 @@
       the model at location \eqn{u} given there is a point at \eqn{v}.
     }
   }
-  In all three methods, the optimisation is performed by the generic
+  The estimating equation for the adaptive composite likelihood is solved 
+  by the generic non linear equation solver \code{\link[nleqslv]{nleqslv}}. 
+  Its behaviour can be modified using the arguments \code{control}, 
+  \code{globStrat}, \code{startparm} for inital guesses and 
+  \code{algorithm} for the method. 
+  The available control arguments are documented in the help for   
+  \code{\link[nleqslv]{nleqslv}}.
+  In all other three methods, the optimisation is performed by the generic
   optimisation algorithm \code{\link[stats]{optim}}.
   The behaviour of this algorithm can be modified using the
-  argument \code{control}.
+  arguments \code{control} and \code{algorithm}.
   Useful control arguments include
   \code{trace}, \code{maxit} and \code{abstol}
   (documented in the help for \code{\link[stats]{optim}}).
@@ -267,18 +314,22 @@
   See also \code{\link{ppm}}
 }
 \references{
-  Lavancier, F. \Moller, J. and Rubak, E. (2015)
-  Determinantal point process models and statistical inference
-  \emph{Journal of the Royal Statistical Society, Series B}
-  \bold{77}, 853--977.
-
   Guan, Y. (2006)
   A composite likelihood approach in fitting spatial point process
   models.
   \emph{Journal of the American Statistical Association}
   \bold{101}, 1502--1512.
 
-  Tanaka, U. and Ogata, Y. and Stoyan, D. (2008)
+  Lavancier, F., \Moller, J. and Rubak, E. (2015)
+  Determinantal point process models and statistical inference.
+  \emph{Journal of the Royal Statistical Society, Series B}
+  \bold{77}, 853--977.
+
+  Lavancier, F., Poinas, A., and Waagepetersen, R. (2021)
+  Adaptive estimating function inference for nonstationary determinantal point processes.
+  \emph{Scandinavian Journal of Statistics}, \bold{48(1)}, 87--107.
+  
+  Tanaka, U., Ogata, Y. and Stoyan, D. (2008)
   Parameter estimation and model selection for
   Neyman-Scott point processes.
   \emph{Biometrical Journal} \bold{50}, 43--57.
