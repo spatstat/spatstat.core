@@ -4,6 +4,7 @@
 #  Functions for estimation by minimum contrast
 #
 
+
 ##################  base ################################
 
 safevalue <- function(x, default=0) {
@@ -23,7 +24,6 @@ bigvaluerule <- function(objfun, objargs, startpar, ...) {
                   with(.Machine, sqrt(double.xmax) * double.eps))
   return(bigvalue)
 }
-
 
 mincontrast <- local({
 
@@ -219,6 +219,7 @@ mincontrast <- local({
 
   mincontrast
 })
+
 
 print.minconfit <- function(x, ...) {
   terselevel <- spatstat.options('terse')
@@ -987,4 +988,5 @@ vargamma.estpcf <- function(X, startpar=c(kappa=1,scale=1), nu=-1/4,
   result$clustargs <- info$checkclustargs(cmodel$margs, old=FALSE)
   return(result)
 }
+
 

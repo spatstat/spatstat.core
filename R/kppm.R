@@ -3,14 +3,15 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.167 $ $Date: 2021/07/05 11:03:38 $
+# $Revision: 1.169 $ $Date: 2021/07/06 11:53:46 $
 #
+
+
 
 
 kppm <- function(X, ...) {
   UseMethod("kppm")
 }
-
 
 kppm.formula <-
   function(X, clusters = c("Thomas","MatClust","Cauchy","VarGamma","LGCP"),
@@ -935,6 +936,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   return(result)
 }
 
+
 ## ........... contributed by Chiara Fend ...................
 ## needs nonlinear equation solver nleqslv
 
@@ -1347,6 +1349,7 @@ improve.kppm <- local({
 
 is.kppm <- function(x) { inherits(x, "kppm")}
 
+
 print.kppm <- print.dppm <- function(x, ...) {
 
   isPCP <- x$isPCP
@@ -1463,6 +1466,7 @@ print.kppm <- print.dppm <- function(x, ...) {
   invisible(NULL)
 }
 
+
 plot.kppm <- local({
 
   plotem <- function(x, ..., main=dmain, dmain) { plot(x, ..., main=main) }
@@ -1563,6 +1567,7 @@ terms.kppm <- terms.dppm <- function(x, ...) {
 labels.kppm <- labels.dppm <- function(object, ...) {
   labels(object$po, ...)
 }
+
 
 update.kppm <- function(object, ..., evaluate=TRUE) {
   argh <- list(...)
@@ -1669,6 +1674,7 @@ update.kppm <- function(object, ..., evaluate=TRUE) {
   #'
   return(out)
 }
+
 
 unitname.kppm <- unitname.dppm <- function(x) {
   return(unitname(x$X))
@@ -1834,3 +1840,4 @@ psib.kppm <- function(object) {
   p <- 1 - 1/g(0)
   return(p)
 }
+

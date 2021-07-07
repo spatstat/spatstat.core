@@ -1,17 +1,17 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.010
+        CHANGES IN spatstat.core VERSION 2.2-0.012
 
 OVERVIEW
 
-    o We thank Chiara Fend for cobtributions.
+    o We thank Chiara Fend for contributions.
     
-    o Extension to kppm and dppm
-    
-    o Substantially more support for spatial logistic regression models.
+    o Extensive support for spatial logistic regression models.
+
+    o New fitting method in kppm and dppm.
 
     o Transect of an image along a curve.
 
-    o Image cross-correlation.
+    o Image cross-correlation and cross-covariance.
     
     o Summary method for 'objsurf'.
 

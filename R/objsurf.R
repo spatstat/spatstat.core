@@ -3,8 +3,9 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.10 $ $Date: 2021/07/05 04:13:55 $
+#  $Revision: 1.13 $ $Date: 2021/07/07 00:42:04 $
 #
+
 
 objsurf <- function(x, ...) {
   UseMethod("objsurf")
@@ -39,7 +40,9 @@ objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
   result <- objsurfEngine(objfun, optpar, objargs, ...,
                           dotargs=dotargs,
                           ngrid=ngrid, ratio=ratio, verbose=verbose)
+  return(result)
 }
+
 
 objsurfEngine <- function(objfun, optpar, objargs, 
                           ...,
@@ -111,6 +114,7 @@ print.summary.objsurf <- function(x, ...) {
 }
 
 
+
 image.objsurf <- plot.objsurf <- function(x, ...) {
   xname <- short.deparse(substitute(x))
   optpar <- attr(x, "optpar")
@@ -123,8 +127,9 @@ image.objsurf <- plot.objsurf <- function(x, ...) {
                            list(xlab=nama[1L], ylab=nama[2L], main=xname)))
   abline(v=optpar[1L], lty=3)
   abline(h=optpar[2L], lty=3)
-  invisible(NULL)
+  return(invisible(NULL))
 }
+
 
 
 contour.objsurf <- function(x, ...) {
@@ -139,7 +144,7 @@ contour.objsurf <- function(x, ...) {
                            list(xlab=nama[1], ylab=nama[2], main=xname)))
   abline(v=optpar[1], lty=3)
   abline(h=optpar[2], lty=3)
-  invisible(NULL)
+  return(invisible(NULL))
 }
 
   
@@ -157,7 +162,7 @@ persp.objsurf <- function(x, ...) {
                                 list(...),
                                 list(xlab=nama[1], ylab=nama[2],
                                      zlab=objname, main=xname)))
-  invisible(r)
+  return(invisible(r))
 }
 
 
