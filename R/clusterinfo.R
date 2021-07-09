@@ -1,5 +1,10 @@
-## lookup table of explicitly-known K functions and pcf
-## and algorithms for computing sensible starting parameters
+##        clusterinfo.R
+## 
+##   Lookup table of explicitly-known K functions and pcf
+##   and algorithms for computing sensible starting parameters
+##
+##   $Revision: 1.23 $ $Date: 2021/07/09 06:46:56 $
+
 
 .Spatstat.ClusterModelInfoTable <- 
   list(
@@ -12,11 +17,11 @@
          printmodelname = function(...) "Thomas process", # Used by print.kppm
          parnames = c("kappa", "sigma2"),
          clustargsnames = NULL,
-         checkpar = function(par, old = TRUE, ..., strict=TRUE){
+         checkpar = function(par, old = TRUE, ...){
              if(is.null(par))
-                 par <- c(kappa=1,scale=1)
-             if(strict && any(par<=0))
-                 stop("par values must be positive.", call.=FALSE)
+               par <- c(kappa=1,scale=1)
+             if(any(par<=0))
+               stop("par values must be positive.", call.=FALSE)
              nam <- check.named.vector(par, c("kappa","sigma2"),
                                        onError="null")
              if(is.null(nam)) {
@@ -25,8 +30,8 @@
                par[2L] <- par[2L]^2
              }
              if(!old){
-                 names(par)[2L] <- "scale"
-                 par[2L] <- sqrt(par[2L])
+               names(par)[2L] <- "scale"
+               par[2L] <- sqrt(par[2L])
              }
              return(par)
          },
@@ -43,7 +48,8 @@
              dots <- list(...)
              par <- dots$par
              # Choose the first of the possible supplied values for scale:
-             scale <- c(dots$scale, dots$par[["scale"]], dots$sigma, dots$par[["sigma"]])[1L]
+             scale <- c(dots$scale, dots$par[["scale"]],
+                        dots$sigma, dots$par[["sigma"]])[1L]
              if(is.null(scale))
                stop(paste("Argument ", sQuote("scale"), " must be given."),
                     call.=FALSE)
@@ -68,20 +74,20 @@
          },
          isPCP=TRUE,
          ## K-function
-         K = function(par,rvals, ..., strict=TRUE){
-           if(strict && any(par <= 0))
+         K = function(par,rvals, ...){
+           if(any(par <= 0))
              return(rep.int(Inf, length(rvals)))
            pi*rvals^2+(1-exp(-rvals^2/(4*par[2L])))/par[1L]
          },
          ## pair correlation function
-         pcf= function(par,rvals, ..., strict=TRUE){
-           if(strict && any(par <= 0))
+         pcf= function(par,rvals, ...){
+           if(any(par <= 0))
              return(rep.int(Inf, length(rvals)))
            1 + exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L] * par[2L])
          },
          ## gradient of pcf (contributed by Chiara Fend)
-         dpcf= function(par,rvals, ..., strict=TRUE){
-           if(strict && any(par <= 0)){
+         dpcf= function(par,rvals, ...){
+           if(any(par <= 0)){
              dsigma2 <- rep.int(Inf, length(rvals))
              dkappa <- rep.int(Inf, length(rvals))
            } else {
@@ -105,20 +111,8 @@
            mu <- if(is.numeric(lambda) && length(lambda) == 1)
              lambda/kappa else NA
            c(kappa=kappa, sigma=sigma, mu=mu)
-         },
-         ## Experimental: convert to/from canonical cluster parameters
-         tocanonical = function(par) {
-           kappa <- par[[1L]]
-           sigma2 <- par[[2L]]
-           c(strength=1/(4 * pi * kappa * sigma2), scale=sqrt(sigma2))
-         },
-         tohuman = function(can) {
-           strength <- can[[1L]]
-           scale <- can[[2L]]
-           sigma2 <- scale^2
-           c(kappa=1/(4 * pi * strength * sigma2), sigma2=sigma2)
          }
-         ),
+       ),
        ## ...............................................
        MatClust=list(
          ## Matern Cluster process: old par = (kappa, R) (internally used everywhere)

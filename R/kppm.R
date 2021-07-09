@@ -1408,6 +1408,7 @@ print.kppm <- print.dppm <- function(x, ...) {
            )
   }
 
+  
   parbreak(terselevel)
   
   # ............... trend .........................

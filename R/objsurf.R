@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.13 $ $Date: 2021/07/07 00:42:04 $
+#  $Revision: 1.14 $ $Date: 2021/07/07 01:41:47 $
 #
 
 
@@ -134,7 +134,7 @@ image.objsurf <- plot.objsurf <- function(x, ...) {
 
 contour.objsurf <- function(x, ...) {
   xname <- short.deparse(substitute(x))
-  optpar <- attr(x, "optpar")
+  optpar <- summary(x)[["optpar"]]
   nama <- names(optpar)
   xx <- unclass(x)
   dont.complain.about(xx)
