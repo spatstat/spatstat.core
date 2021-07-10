@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.013
+        CHANGES IN spatstat.core VERSION 2.2-0.014
 
 OVERVIEW
 
@@ -89,6 +89,10 @@ BUG FIXES
     when rhohat was called with method="piecewise".
     Fixed.
 
+    o markcrosscorr
+    Did not recognise the option 'correction="none"'.
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.2-0
 
 OVERVIEW

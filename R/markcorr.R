@@ -2,7 +2,7 @@
 ##
 ##     markcorr.R
 ##
-##     $Revision: 1.85 $ $Date: 2020/11/25 01:23:42 $
+##     $Revision: 1.86 $ $Date: 2021/07/10 08:53:29 $
 ##
 ##    Estimate the mark correlation function
 ##    and related functions 
@@ -660,7 +660,18 @@ markcrosscorr <-
         stop("negative marks are not permitted")
     
       ## Compute estimates ##############
-        
+      
+      if(any(correction == "none")) {
+        ## uncorrected estimate
+        edgewt <- rep.int(1, length(dIJ))
+        ## get smoothed estimate of mark covariance
+        Mnone <- sewsmod(dIJ, ff, edgewt, Efdenom, r, method, ...)
+        fun.ij <- bind.fv(fun.ij,
+                          data.frame(un=Mnone),
+                          "{hat(%s)[%s]^{un}}(r)",
+                          "uncorrected estimate of %s",
+                          "un")
+      }
       if(any(correction == "translate")) {
         ## translation correction
         XJ <- ppp(close$xj, close$yj, window=W, check=FALSE)
