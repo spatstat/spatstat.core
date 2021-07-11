@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.015
+        CHANGES IN spatstat.core VERSION 2.2-0.016
 
 OVERVIEW
 
@@ -98,7 +98,12 @@ BUG FIXES
     o markcrosscorr
     Did not recognise the option 'correction="none"'.
     Fixed.
-    
+
+   o roc.ppp
+   The default plot of the result of roc.ppp
+   did not include the diagonal line 'y=x'.
+   Fixed.
+   
         CHANGES IN spatstat.core VERSION 2.2-0
 
 OVERVIEW

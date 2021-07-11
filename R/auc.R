@@ -3,7 +3,7 @@
 ##
 ##  Calculate ROC curve or area under it
 ##
-## $Revision: 1.9 $ $Date: 2021/07/11 03:09:11 $
+## $Revision: 1.10 $ $Date: 2021/07/11 10:12:38 $
 
 roc <- function(X, ...) { UseMethod("roc") }
 
@@ -24,6 +24,7 @@ rocData <- function(covariate, nullmodel, ..., high=TRUE) {
                argu="p",
                ylab=quote(roc(p)),
                valu="fobs",
+               fmla= . ~ p,
                desc=c("fraction of area",
                       "observed fraction of points",
                       "expected fraction if no effect"),
