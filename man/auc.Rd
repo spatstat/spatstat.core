@@ -3,6 +3,7 @@
 \alias{auc.ppp}
 \alias{auc.ppm}
 \alias{auc.kppm}
+\alias{auc.slrm}
 \title{
   Area Under ROC Curve
 }
@@ -19,12 +20,14 @@ auc(X, \dots)
 
 \method{auc}{kppm}(X, \dots)
 
+\method{auc}{slrm}(X, \dots)
+
 }
 \arguments{
   \item{X}{
     Point pattern (object of class \code{"ppp"} or \code{"lpp"})
-    or fitted point process model (object of class \code{"ppm"}
-    or \code{"kppm"} or \code{"lppm"}).
+    or fitted point process model (object of class \code{"ppm"},
+    \code{"kppm"}, \code{"slrm"} or \code{"lppm"}).
   }
   \item{covariate}{
     Spatial covariate. Either a \code{function(x,y)},
@@ -71,6 +74,10 @@ auc(X, \dots)
   location.
   The AUC is \bold{not} a measure of the goodness-of-fit of the model
   (Lobo et al, 2007).
+
+  (For spatial logistic regression models (class \code{"slrm"})
+  replace \dQuote{intensity} by \dQuote{probability of presence}
+  in the text above.)
 }
 \value{
   Numeric.

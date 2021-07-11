@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.2-0.014
+        CHANGES IN spatstat.core VERSION 2.2-0.015
 
 OVERVIEW
 
@@ -63,6 +63,12 @@ NEW FUNCTIONS
 
     o emend.slrm
     Method for 'emend' for spatial logistic regression models.
+
+    o roc.slrm
+    Method for 'roc' for spatial logistic regression models.
+
+    o auc.slrm
+    Method for 'auc' for spatial logistic regression models.
 
     o Window.slrm, as.owin.slrm
     Methods for 'Window' and 'as.owin' for spatial logistic regression models.

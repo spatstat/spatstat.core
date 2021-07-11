@@ -3,7 +3,7 @@
 ##
 ##  Calculate ROC curve or area under it
 ##
-## $Revision: 1.8 $ $Date: 2020/11/02 06:09:34 $
+## $Revision: 1.9 $ $Date: 2021/07/11 03:09:11 $
 
 roc <- function(X, ...) { UseMethod("roc") }
 
@@ -51,6 +51,17 @@ roc.kppm <- function(X, ...) {
   result <- rocModel(lambda, nullmodel, ...)
   return(result)
 }
+
+roc.slrm <- function(X, ...) {
+  stopifnot(is.slrm(X))
+  model <- X
+  lambda <- predict(model, ..., type="probabilities")
+  Y <- response(model)
+  nullmodel <- slrm(Y ~ 1)
+  result <- rocModel(lambda, nullmodel, ..., lambdatype="probabilities")
+  return(result)
+}
+
 
 
 rocModel <- function(lambda, nullmodel, ..., high) {
@@ -119,6 +130,12 @@ auc.ppm <- function(X, ...) {
   result <- c(aobs, atheo)
   names(result) <- c("obs", "theo")
   return(result)
+}
+
+auc.slrm <- function(X, ...) {
+  ro <- roc(X, ...)
+  result <- with(ro, list(obs=mean(fobs), theo=mean(ftheo)))
+  return(unlist(result))
 }
 
 

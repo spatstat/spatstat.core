@@ -3,6 +3,7 @@
 \alias{roc.ppp}
 \alias{roc.ppm}
 \alias{roc.kppm}
+\alias{roc.slrm}
 \title{
   Receiver Operating Characteristic
 }
@@ -19,12 +20,15 @@
 
 \method{roc}{kppm}(X, \dots)
 
+\method{roc}{slrm}(X, \dots)
+
 }
 \arguments{
   \item{X}{
     Point pattern (object of class \code{"ppp"} or \code{"lpp"})
     or fitted point process model
-    (object of class \code{"ppm"} or \code{"kppm"} or \code{"lppm"}).
+    (object of class \code{"ppm"}, \code{"kppm"}, \code{"slrm"}
+    or \code{"lppm"}).
   }
   \item{covariate}{
     Spatial covariate. Either a \code{function(x,y)},
@@ -62,6 +66,10 @@
   into areas of high and low density of points.
   The ROC is \bold{not} a diagnostic for the goodness-of-fit of the model
   (Lobo et al, 2007).
+
+  (For spatial logistic regression models (class \code{"slrm"})
+  replace \dQuote{intensity} by \dQuote{probability of presence}
+  in the text above.)
 }
 \value{
   Function value table (object of class \code{"fv"})
