@@ -3,7 +3,7 @@
 ##   Lookup table of explicitly-known K functions and pcf
 ##   and algorithms for computing sensible starting parameters
 ##
-##   $Revision: 1.23 $ $Date: 2021/07/09 06:46:56 $
+##   $Revision: 1.24 $ $Date: 2021/07/14 07:33:19 $
 
 
 .Spatstat.ClusterModelInfoTable <- 
@@ -86,7 +86,7 @@
            1 + exp(-rvals^2/(4 * par[2L]))/(4 * pi * par[1L] * par[2L])
          },
          ## gradient of pcf (contributed by Chiara Fend)
-         dpcf= function(par,rvals, ...){
+         Dpcf= function(par,rvals, ...){
            if(any(par <= 0)){
              dsigma2 <- rep.int(Inf, length(rvals))
              dkappa <- rep.int(Inf, length(rvals))
@@ -182,7 +182,7 @@
              y <- 1 + (1/(pi * kappa * R^2)) * g(rvals/(2 * R))
              return(y)
          },
-         dpcf= function(par,rvals, ..., funaux){
+         Dpcf= function(par,rvals, ..., funaux){
            kappa <- par[1L]
            R <- par[2L]
            g <- funaux$g
@@ -321,7 +321,7 @@
              return(rep.int(Inf, length(rvals)))
            1 + ((1 + rvals^2/par[2L])^(-1.5))/(2 * pi * par[2L] * par[1L])
          },
-          dpcf= function(par,rvals, ...){
+         Dpcf= function(par,rvals, ...){
            if(any(par <= 0)){
              dkappa <- rep.int(Inf, length(rvals))
              deta2 <- rep.int(Inf, length(rvals))
@@ -504,7 +504,7 @@
                         1)
            return(1 + sig2 * fr)
          },
-         dpcf = NULL,
+         Dpcf = NULL,
          parhandler = function(..., nu.ker = -1/4) {
            check.1.real(nu.ker)
            stopifnot(nu.ker > -1/2)
@@ -651,7 +651,7 @@
            }
            return(gtheo)
          },
-         dpcf= function(par,rvals, ..., model){
+         Dpcf= function(par,rvals, ..., model){
            if(!identical(model, "exponential")) {
              stop("Gradient of the pcf not available for this model.")
            } 

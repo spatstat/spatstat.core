@@ -1,6 +1,6 @@
 ##    detpointprocfamilyfun.R
 ##
-##    $Revision: 1.7 $   $Date: 2021/07/05 08:26:43 $
+##    $Revision: 1.8 $   $Date: 2021/07/14 09:44:04 $
 ##
 ## This file contains the function `detpointprocfamilyfun'
 ## to define new DPP model family functions
@@ -183,7 +183,7 @@ dppBessel <- detpointprocfamilyfun(
     rslt[x==0] <- lambda
     return(rslt)
   },
-  dpcf=function(x, lambda, alpha, sigma, d){
+  Dpcf=function(x, lambda, alpha, sigma, d){
     a <- 0.5*(sigma+d)
     z <- sqrt(a)*x/alpha
     dalpha <- ifelse(x==0, 0, -2*gamma(a+1)^2*besselJ(x = 2*z, nu=a)*alpha^{2*a-2}*(x*sqrt(a))^(-2*a)*(
@@ -268,7 +268,7 @@ dppCauchy <- detpointprocfamilyfun(
     rslt[x==0] <- lambda
     return(rslt)
   },
-  dpcf=function(x, lambda, alpha, nu, d){
+  Dpcf=function(x, lambda, alpha, nu, d){
     dalpha <- (-4*nu-2*d)*x^2*alpha^(-3)*((x/alpha)^2 + 1)^(-2*nu - d - 1)
     dnu <- 2*log1p((x/alpha)^2)*((x/alpha)^2 + 1)^(-2*nu - d)
     return(c(lambda=0, alpha=dalpha, nu=dnu))
@@ -342,7 +342,7 @@ dppGauss <- detpointprocfamilyfun(
     rslt <- lambda*exp(-(x/alpha)^2)
     return(rslt)
   },
-  dpcf=function(x, lambda, alpha, d){
+  Dpcf=function(x, lambda, alpha, d){
     dalpha <- -4*x^2/alpha^3*exp(-(x/alpha)^2)^2
     return(c(lambda=0, alpha=dalpha))
   },
@@ -398,7 +398,7 @@ dppMatern <- detpointprocfamilyfun(
     rslt[x==0] <- lambda
     return(rslt)
   },
-  dpcf=function(x, lambda, alpha, nu, d){
+  Dpcf=function(x, lambda, alpha, nu, d){
     s <- besselK(x = x/alpha, nu = nu)
     dalpha <- 2 * (2^(1 - nu) * x * s * (x/alpha)^nu/(alpha^2 * gamma(nu)^2) * (-2^(1 - nu) * (0.5 * (besselK(x = x/alpha, nu = nu + 1) + besselK(x = x/alpha, nu = nu - 1))) * (x/alpha)^nu 
                               + 2^(1 - nu) * nu * s * (x/alpha)^(nu - 1)))

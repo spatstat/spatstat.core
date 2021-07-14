@@ -69,6 +69,7 @@
 \alias{dimnames.msr}
 \alias{distributecbind}
 \alias{doMultiStraussHard}
+\alias{dppDpcf}
 \alias{dppmFixAlgorithm}
 \alias{dppmFixIntensity}
 \alias{envelopeEngine}
@@ -495,6 +496,7 @@ digital.volume(range, nval, vside)
 \method{dimnames}{msr}(x)
 distributecbind(x)
 doMultiStraussHard(iradii, hradii, types)
+dppDpcf(model, \dots)
 dppmFixIntensity(DPP, lambda, po)
 dppmFixAlgorithm(algorithm, changealgorithm, clusters, startpar)
 envelopeEngine(X, fun, simul,

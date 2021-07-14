@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.169 $ $Date: 2021/07/06 11:53:46 $
+# $Revision: 1.174 $ $Date: 2021/07/14 07:33:51 $
 #
 
 
@@ -627,7 +627,9 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   ## .......... extract fitted parameters .....................
   optpar        <- opt$par
   names(optpar) <- names(startpar)
+  ## save starting values in 'opt' for consistency with mincontrast()
   opt$par       <- optpar
+  opt$startpar  <- startpar
 
   ## Finish in DPP case
   if(!is.null(DPP)){
@@ -839,7 +841,6 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                              - gscale * integ,
                              default=-BIGVALUE)
         return(logplik)
-        
       },
       enclos=objargs$envir)
     }
@@ -869,11 +870,12 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
   ## Extract optimal values of parameters
   optpar <- opt$par
   names(optpar) <- names(startpar)
+  ## save starting values in 'opt' for consistency with minconfit()
+  opt$par      <- optpar
+  opt$startpar <- startpar
 
   ## Finish in DPP case
   if(!is.null(DPP)){
-    opt$par <- optpar
-
     ## all info that depends on the fitting method:
     Fit <- list(method    = "palm",
                 clfit     = opt,
@@ -998,7 +1000,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   # get pair correlation function (etc) for model
   info <- spatstatClusterModelInfo(clusters)
   pcfun      <- info$pcf
-  dpcfun     <- info$dpcf
+  dpcfun     <- info$Dpcf
   funaux     <- info$funaux
   selfstart  <- info$selfstart
   isPCP      <- info$isPCP
@@ -1026,7 +1028,6 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
       startpar <- startparm
     }
   }
-  startpar.human <- startpar
   pcftheo <- pcfun
   dpcftheo <- dpcfun
   # optimization later in terms of log of params
@@ -1101,6 +1102,9 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   ## .......... extract fitted parameters .....................
   optpar        <- exp(opt$x)
   names(optpar) <- names(startpar)
+  ## insert entries expected in 'opt'
+  opt$par      <- optpar
+  opt$startpar <- startpar
 
   ## Finish in DPP case
   if(isDPP){

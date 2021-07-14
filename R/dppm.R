@@ -1,7 +1,7 @@
 #'
 #'     dppm.R
 #'
-#'     $Revision: 1.14 $   $Date: 2021/07/05 12:27:15 $
+#'     $Revision: 1.15 $   $Date: 2021/07/14 09:44:32 $
 
 dppm <-
   function(formula, family, data=NULL,
@@ -110,21 +110,21 @@ spatstatDPPModelInfo <- function(model){
         return(pcfmodel(mod)(rvals))
       }
     },
-    dpcf = function(par, rvals, ...){
+    Dpcf = function(par, rvals, ...){
       if(length(par)==1 && is.null(names(par)))
         names(par) <- model$freepar
       mod <- update(model, as.list(par))
       if(!valid(mod)){
         return(rep(Inf, length(rvals)))
       } else{
-        return(sapply(rvals, FUN = dppdcpf(mod)))
+        return(sapply(rvals, FUN = dppDpcf(mod)))
       }
-      },
+    },
     ## sensible starting parameters
     selfstart = function(X) {
       return(model$startpar(model, X))
     }
-    )
+  )
   return(out)
 }
 

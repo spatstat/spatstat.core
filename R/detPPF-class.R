@@ -159,20 +159,20 @@ dppapproxkernel <- function(model, trunc = .99, W = NULL){
     return(f)
 }
 
-dppdcpf <- function(model, ...){
+dppDpcf <- function(model, ...){
   if(inherits(model, "dppm"))
     model <- model$fitted
-  fun <- model$dpcf
+  fun <- model$Dpcf
   if(is.null(fun))
     stop("Gradient of the pcf is not available for this model.")
   if(length(model$freepar)>0)
     stop("Cannot extract the gradient of the pcf of a partially specified model. Please supply all parameters.")
   firstarg <- names(formals(fun))[1L]
-  dpcf <- function(x){
+  Dg <- function(x){
     allargs <- c(structure(list(x), .Names=firstarg), model$fixedpar)
     do.call(fun, allargs)
   }
-  return(dpcf)
+  return(Dg)
 }
 
 pcfmodel.detpointprocfamily <- function(model, ...){
