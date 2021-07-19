@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.174 $ $Date: 2021/07/14 07:33:51 $
+# $Revision: 1.175 $ $Date: 2021/07/19 06:49:18 $
 #
 
 
@@ -251,7 +251,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                        ctrl=list(q=q, p=p, rmin=rmin, rmax=rmax),
                        statistic = NULL, statargs = NULL,
                        algorithm="Nelder-Mead", verbose=FALSE,
-                       pint=NULL){
+                       pspace=NULL){
   if(verbose) splat("Fitting cluster model")
   ## If possible get dataname from dots
   dataname <- list(...)$dataname
@@ -387,7 +387,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                                   margs=dots$margs,
                                   model=dots$model,
                                   funaux=info$funaux,
-                                  pint=pint),
+                                  pspace=pspace),
                              list(...)
                              )
 
@@ -456,7 +456,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
 
 
 kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
-                       algorithm="Nelder-Mead", DPP=NULL, ..., pint=NULL) {
+                       algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
     rmax <- rmax.rule("K", W, intensity(X))
@@ -700,7 +700,7 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
 
 
 kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
-                        algorithm="Nelder-Mead", DPP=NULL, ..., pint=NULL) {
+                        algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
     rmax <- rmax.rule("K", W, intensity(X))

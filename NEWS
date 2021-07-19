@@ -1,9 +1,25 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.001
+        CHANGES IN spatstat.core VERSION 2.3-0.003
 
 OVERVIEW
 
-    o Nothing yet.
+    o Minor tweaks.
+
+NEW FUNCTIONS
+
+    o None
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o clusterfit
+    Minor changes to the argument list.
+
+    o mincontrast
+    Minor changes to the argument list.
+
+BUG FIXES
+
+    o None!
     
 
         CHANGES IN spatstat.core VERSION 2.3-0

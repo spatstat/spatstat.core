@@ -10,7 +10,7 @@ clusterfit(X, clusters, lambda = NULL, startpar = NULL, \dots,
            q = 1/4, p = 2, rmin = NULL, rmax = NULL,
            ctrl=list(q=q, p=p, rmin=rmin, rmax=rmax),
            statistic = NULL, statargs = NULL, algorithm="Nelder-Mead",
-           verbose=FALSE, pint=NULL)
+           verbose=FALSE, pspace=NULL)
 }
 \arguments{
   \item{X}{
@@ -70,7 +70,7 @@ clusterfit(X, clusters, lambda = NULL, startpar = NULL, \dots,
     Logical value indicating whether to print detailed progress reports
     for debugging purposes.
   }
-  \item{pint}{For internal use by package code only.}
+  \item{pspace}{For internal use by package code only.}
 }
 \details{
   This function fits the clustering parameters of a cluster or Cox point
