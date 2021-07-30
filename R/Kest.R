@@ -1,7 +1,7 @@
 #
 #	Kest.R		Estimation of K function
 #
-#	$Revision: 5.130 $	$Date: 2021/01/07 03:08:41 $
+#	$Revision: 5.131 $	$Date: 2021/07/30 02:15:30 $
 #
 #
 # -------- functions ----------------------------------------
@@ -309,6 +309,13 @@ function(X, ..., r=NULL, rmax=NULL, breaks=NULL,
   ##  VARIANCE APPROXIMATION
   #############################
 
+  if(var.approx && !any(correction == "isotropic")) {
+    warn.once("varapproxiso",
+              "Ignored argument 'var.approx=TRUE'; the variance approximation",
+              "is available only for the isotropic correction")
+    var.approx <- FALSE
+  }
+  
   if(var.approx) {
     ## Compute variance approximations
     A <- areaW
