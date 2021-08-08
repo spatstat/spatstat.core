@@ -3,7 +3,7 @@
 ##   Lookup table of explicitly-known K functions and pcf
 ##   and algorithms for computing sensible starting parameters
 ##
-##   $Revision: 1.24 $ $Date: 2021/07/14 07:33:19 $
+##   $Revision: 1.25 $ $Date: 2021/08/08 08:55:42 $
 
 
 .Spatstat.ClusterModelInfoTable <- 
@@ -686,7 +686,7 @@
              log(lambda) - sigma2/2 else NA
            c(sigma2=sigma2, alpha=alpha, mu=mu)
          }
-         )
+       )
   )
 
 spatstatClusterModelInfo <- function(name, onlyPCP = FALSE) {

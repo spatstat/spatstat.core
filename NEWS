@@ -1,15 +1,24 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.004
+        CHANGES IN spatstat.core VERSION 2.3-0.005
 
 OVERVIEW
 
-    o Minor tweaks.
+    o Minor improvements and bug fixes.
 
 NEW FUNCTIONS
 
     o None
 
 SIGNIFICANT USER-VISIBLE CHANGES
+
+    o reach.kppm
+    Now returns a result for LGCP models as well as cluster models.
+
+    o distcdf
+    Improved regularisation algorithm.
+
+    o distcdf
+    Argument 'nr=NULL' is now accepted.
 
     o clusterfit
     Minor changes to the argument list.
@@ -19,7 +28,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
 BUG FIXES
 
-    o None!
+    o varcount
+    The result was very inaccurate if the cluster radius was small 
+    compared to the size of the window 'B', due to discretisation error.
+    Fixed.
     
 
         CHANGES IN spatstat.core VERSION 2.3-0

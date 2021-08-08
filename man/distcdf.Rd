@@ -35,6 +35,8 @@
     Integer. The number of values of interpoint distance \eqn{r}
     for which the CDF will be computed.
     Should be a large value!
+    Alternatively if \code{nr=NULL}, a good default value will be
+    chosen, depending on the pixel resolution.
   }
   \item{regularise}{
     Logical value indicating whether to smooth the results
@@ -90,7 +92,7 @@
   If \code{regularise=TRUE} (the default), values of the cumulative
   distribution function for very short distances are smoothed to avoid
   discretisation artefacts. Smoothing is applied to all distances
-  shorter than the width of 7 pixels. 
+  shorter than the width of 10 pixels. 
 }
 \seealso{
   \code{\link{setcov}},

@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.9 $  $Date: 2021/07/05 08:51:36 $
+#'   $Revision: 1.11 $  $Date: 2021/08/08 07:45:26 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
@@ -49,9 +49,9 @@ summary.kppm <- function(object, ..., quick=FALSE) {
       }
     }
   }
-  #' clustering measures
+
   #' sibling probability
-  result$psib <- mean(psib(object))
+  if(object$isPCP) result$psib <- mean(psib(object))
   #' overdispersion index
   win <- as.owin(object, from="points")
   vac <- varcount(object, B=win)
@@ -192,6 +192,7 @@ print.summary.kppm <- function(x, ...) {
             signif(odi, 3))
   }
   
+
   #'
   invisible(NULL)
 }

@@ -3,6 +3,8 @@
 \alias{pcfmodel.zclustermodel}
 \alias{predict.zclustermodel}
 \alias{print.zclustermodel}
+\alias{clusterradius.zclustermodel}
+\alias{reach.zclustermodel}
 \title{
   Methods for Cluster Models
 }
@@ -16,6 +18,10 @@
                   locations, type = "intensity", ngrid = NULL)
 
  \method{print}{zclustermodel}(x, \dots)
+
+ \method{clusterradius}{zclustermodel}(model,\dots,thresh=NULL, precision=FALSE)
+
+ \method{reach}{zclustermodel}(x, \dots, epsilon)
 }
 \arguments{
   \item{model,object,x}{
@@ -34,6 +40,10 @@
   \item{ngrid}{
     Pixel grid dimensions for prediction, if \code{locations} is
     a rectangle or polygon.
+  }
+  \item{thresh,epsilon}{Tolerance thresholds}
+  \item{precision}{
+    Logical value stipulating whether the precision should also be returned.
   }
 }
 \details{

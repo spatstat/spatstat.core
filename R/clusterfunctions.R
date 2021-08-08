@@ -5,7 +5,7 @@
 ##  - clusterfield
 ##  - clusterradius.
 ##
-##   $Revision: 1.6 $  $Date: 2021/04/16 11:05:06 $
+##   $Revision: 1.7 $  $Date: 2021/08/08 08:54:55 $
 ##
 
 clusterkernel <- function(model, ...) {
@@ -83,14 +83,18 @@ clusterradius <- function(model, ...){
 }
 
 clusterradius.character <- function(model, ..., thresh = NULL, precision = FALSE){
-    info <- spatstatClusterModelInfo(model, onlyPCP = TRUE)
-    rmax <- info$range(..., thresh = thresh)
-    if(precision){
-        ddist <- function(r) info$ddist(r, ...)
-        prec <- integrate(ddist, 0, rmax)
-        attr(rmax, "prec") <- prec
-    }
-    return(rmax)
+  info <- spatstatClusterModelInfo(model, onlyPCP=FALSE)
+  if(!isTRUE(info$isPCP)) {
+    warning("cluster radius is only defined for cluster processes", call.=FALSE)
+    return(NA)
+  }
+  rmax <- info$range(..., thresh = thresh)
+  if(precision && is.function(info$ddist)){
+    ddist <- function(r) info$ddist(r, ...)
+    prec <- integrate(ddist, 0, rmax)
+    attr(rmax, "prec") <- prec
+  }
+  return(rmax)
 }
 
 clusterradius.kppm <- function(model, ..., thresh = NULL, precision = FALSE){
@@ -103,5 +107,17 @@ clusterradius.kppm <- function(model, ..., thresh = NULL, precision = FALSE){
 
 reach.kppm <- function(x, ..., epsilon) {
   thresh <- if(missing(epsilon)) NULL else epsilon
-  2 * clusterradius.kppm(x, ..., thresh=thresh)
+  if(x$isPCP) 
+    return(2 * clusterradius.kppm(x, ..., thresh=thresh))
+  ## use pair correlation
+  g <- pcfmodel(x)
+  ## find upper bound
+  if(is.null(thresh)) thresh <- 0.01
+  f <- function(r) { g(r) - 1 - thresh }
+  scal <- as.list(x$par)$scale %orifnull% 1
+  for(a in scal * 2^(0:10)) { if(f(a) < 0) break; }
+  if(f(a) > 0) return(Inf)
+  ## solve g(r) = 1 + epsilon
+  b <- uniroot(f, c(0, a))$root
+  return(b)
 }

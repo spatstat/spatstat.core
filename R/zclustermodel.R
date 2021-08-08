@@ -84,4 +84,18 @@ predict.zclustermodel <- function(object, ...,
   return(lambda[locations])
 }
 
+clusterradius.zclustermodel <- function(model, ...,
+                                        thresh = NULL, precision = FALSE) {
+  do.call(clusterradius.character,
+          resolve.defaults(
+            list(model = model$name, thresh = thresh, precision = precision),
+            list(...),
+            as.list(model$par),
+            model$clustargs)
+          )
+}
 
+reach.zclustermodel <- function(x, ..., epsilon) {
+  thresh <- if(missing(epsilon)) NULL else epsilon
+  2 * clusterradius(x, ..., thresh=thresh)
+}
