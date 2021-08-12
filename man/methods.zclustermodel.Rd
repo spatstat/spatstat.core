@@ -1,7 +1,9 @@
 \name{methods.zclustermodel}
 \alias{methods.zclustermodel} % DoNotExport
 \alias{pcfmodel.zclustermodel}
+\alias{Kmodel.zclustermodel}
 \alias{predict.zclustermodel}
+\alias{intensity.zclustermodel}
 \alias{print.zclustermodel}
 \alias{clusterradius.zclustermodel}
 \alias{reach.zclustermodel}
@@ -14,6 +16,10 @@
 \usage{
  \method{pcfmodel}{zclustermodel}(model, \dots)
 
+ \method{Kmodel}{zclustermodel}(model, \dots)
+
+ \method{intensity}{zclustermodel}(X, \dots)
+
  \method{predict}{zclustermodel}(object, \dots,
                   locations, type = "intensity", ngrid = NULL)
 
@@ -24,7 +30,7 @@
  \method{reach}{zclustermodel}(x, \dots, epsilon)
 }
 \arguments{
-  \item{model,object,x}{
+  \item{model,object,x,X}{
     Object of class \code{"zclustermodel"}.
   }
   \item{\dots}{

@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.006
+        CHANGES IN spatstat.core VERSION 2.3-0.007
 
 OVERVIEW
 
@@ -25,6 +25,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o mincontrast
     Minor changes to the argument list.
 
+    o varcount
+    Argument B has a sensible default.
+    
 BUG FIXES
 
     o varcount

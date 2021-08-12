@@ -54,6 +54,7 @@ print.zclustermodel <- local({
   print.zclustermodel
 })
 
+
                              
 pcfmodel.zclustermodel <- function(model, ...) {
   p <- model$rules$pcf
@@ -65,6 +66,20 @@ pcfmodel.zclustermodel <- function(model, ...) {
   return(f)
 }
 
+Kmodel.zclustermodel <- function(model, ...) {
+  K <- model$rules$K
+  mpar <- model$par
+  other <- model$other
+  f <- function(r) {
+    as.numeric(do.call(K, c(list(par=mpar, rvals=r), other, model$rules["funaux"])))
+  }
+  return(f)
+}
+
+intensity.zclustermodel <- function(X, ...) {
+  X$par[["kappa"]] * X$mu
+}
+  
 predict.zclustermodel <- function(object, ...,
                                  locations,
                                  type="intensity",
@@ -72,7 +87,7 @@ predict.zclustermodel <- function(object, ...,
   ## limited use!!!
   if(!identical(type, "intensity"))
     stop("Sorry, only type='intensity' is implemented")
-  lambda <- object$par["kappa"] * object$mu
+  lambda <- object$par[["kappa"]] * object$mu
   if(is.numeric(lambda)) {
     if(is.ppp(locations))
       return(rep(lambda, npoints(locations)))

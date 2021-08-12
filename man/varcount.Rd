@@ -8,7 +8,7 @@
   of the number of points in a nominated set \code{B}.
 }
 \usage{
-varcount(model, B, \dots, dimyx = NULL)
+varcount(model, B=Window(model), \dots, dimyx = NULL)
 }
 \arguments{
   \item{model}{
@@ -21,6 +21,8 @@ varcount(model, B, \dots, dimyx = NULL)
     Alternatively a pixel image (object of class \code{"im"})
     or a function of spatial coordinates specifying a numerical weight
     for each random point.
+    The default is the window of the original point pattern data to which
+    the model was fitted.
   }
   \item{\dots}{
     Additional arguments passed to \code{B} when it is a function.
