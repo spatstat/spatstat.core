@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.179 $ $Date: 2021/08/08 08:07:59 $
+# $Revision: 1.180 $ $Date: 2021/08/12 06:27:15 $
 #
 
 
@@ -491,7 +491,7 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     lambda <- intensity(X)
 #    lambdaIJ <- lambda^2
     # compute cdf of distance between two uniform random points in W
-    g <- distcdf(W)
+    g <- distcdf(W, delta=rmax/4096)
     # scaling constant is (area * intensity)^2
     gscale <- npoints(X)^2  
   } else {
@@ -502,7 +502,7 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
 #    lambdaIJ <- lambdaX[I] * lambdaX[J]
     # compute cdf of distance between two random points in W
     # with density proportional to intensity function
-    g <- distcdf(M, dW=lambdaM)
+    g <- distcdf(M, dW=lambdaM, delta=rmax/4096)
     # scaling constant is (integral of intensity)^2
     gscale <- safevalue(integral.im(lambdaM)^2, default=npoints(X)^2)
   }
@@ -736,7 +736,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     lambdaJ <- rep(lambda, length(J))
     # compute cdf of distance between a uniform random point in W
     # and a randomly-selected point in X 
-    g <- distcdf(X, M)
+    g <- distcdf(X, M, delta=rmax/4096)
     # scaling constant is (integral of intensity) * (number of points)
     gscale <- npoints(X)^2
   } else {
@@ -746,7 +746,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     lambdaJ <- lambdaX[J] 
     # compute cdf of distance between a uniform random point in X 
     # and a random point in W with density proportional to intensity function
-    g <- distcdf(X, M, dV=lambdaM)
+    g <- distcdf(X, M, dV=lambdaM, delta=rmax/4096)
     # scaling constant is (integral of intensity) * (number of points)
     gscale <- safevalue(integral.im(lambdaM) * npoints(X),
                         default=npoints(X)^2)
@@ -975,7 +975,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
     # stationary unmarked Poisson process
     lambda <- intensity(X)
     # compute cdf of distance between two uniform random points in W
-    g <- distcdf(W)
+    g <- distcdf(W, delta=rmax/4096)
     # scaling constant is (area * intensity)^2
     gscale <- npoints(X)^2  
   } else {
@@ -984,7 +984,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
     lambda <- lambdaM <- predict(po, locations=M)
     # compute cdf of distance between two random points in W
     # with density proportional to intensity function
-    g <- distcdf(M, dW=lambdaM)
+    g <- distcdf(M, dW=lambdaM, delta=rmax/4096)
     # scaling constant is (integral of intensity)^2
     gscale <- safevalue(integral.im(lambdaM)^2, default=npoints(X)^2)
   }

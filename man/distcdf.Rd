@@ -8,7 +8,7 @@
 }
 \usage{
   distcdf(W, V=W, \dots, dW=1, dV=dW, nr=1024,
-          regularise=TRUE, savedenom=FALSE)
+          regularise=TRUE, savedenom=FALSE, delta=NULL)
 }
 \arguments{
   \item{W}{
@@ -34,7 +34,7 @@
   \item{nr}{
     Integer. The number of values of interpoint distance \eqn{r}
     for which the CDF will be computed.
-    Should be a large value!
+    Should be a large value.
     Alternatively if \code{nr=NULL}, a good default value will be
     chosen, depending on the pixel resolution.
   }
@@ -45,6 +45,10 @@
   \item{savedenom}{
     Logical value indicating whether to save the denominator of the
     double integral as an attribute of the result.
+  }
+  \item{delta}{
+    Optional. A positive number.
+    The maximum permitted spacing between values of the function argument.
   }
 }
 \value{
@@ -92,7 +96,14 @@
   If \code{regularise=TRUE} (the default), values of the cumulative
   distribution function for very short distances are smoothed to avoid
   discretisation artefacts. Smoothing is applied to all distances
-  shorter than the width of 10 pixels. 
+  shorter than the width of 10 pixels.
+
+  Numerical accuracy of some calculations requires
+  very fine spacing of the values of the function argument \code{r}.
+  If the argument \code{delta} is given, then
+  after the cumulative distribution function
+  has been calculated, it will be interpolated onto a finer grid of \code{r}
+  values with spacing less than or equal to \code{delta}.
 }
 \seealso{
   \code{\link{setcov}},

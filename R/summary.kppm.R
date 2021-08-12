@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.11 $  $Date: 2021/08/08 07:45:26 $
+#'   $Revision: 1.19 $  $Date: 2021/08/11 07:13:14 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
@@ -20,8 +20,10 @@ summary.kppm <- function(object, ..., quick=FALSE) {
                 warning(paste("Unrecognised fitting method",
                               sQuote(Fit$method)))
                 )
-  result$optim.converged <- optimConverged(opt)
-  result$optim.status    <- optimStatus(opt)
+  if(Fit$method != "adapcl") {
+    result$optim.converged <- optimConverged(opt)
+    result$optim.status    <- optimStatus(opt)
+  }
   ## summarise trend component
   result$trend <- summary(as.ppm(object), ..., quick=quick)
   if(identical(quick, FALSE)) {

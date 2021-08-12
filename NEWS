@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.005
+        CHANGES IN spatstat.core VERSION 2.3-0.006
 
 OVERVIEW
 
@@ -16,9 +16,8 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o distcdf
     Improved regularisation algorithm.
-
-    o distcdf
     Argument 'nr=NULL' is now accepted.
+    New argument 'delta' allows the result to be interpolated onto a finer grid.
 
     o clusterfit
     Minor changes to the argument list.
