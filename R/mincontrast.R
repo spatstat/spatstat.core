@@ -306,6 +306,8 @@ as.fv.minconfit <- function(x) x$fit
 
 optimConverged <- function(x) { x$convergence == 0 }
 
+optimNsteps <- function(x) { x$counts[["function"]] }
+
 optimStatus <- function(x, call=NULL) {
   cgce <- x$convergence
   neval <- x$counts[["function"]]

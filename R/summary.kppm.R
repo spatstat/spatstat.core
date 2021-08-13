@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.19 $  $Date: 2021/08/11 07:13:14 $
+#'   $Revision: 1.23 $  $Date: 2021/08/13 02:15:22 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
@@ -23,10 +23,11 @@ summary.kppm <- function(object, ..., quick=FALSE) {
   if(Fit$method != "adapcl") {
     result$optim.converged <- optimConverged(opt)
     result$optim.status    <- optimStatus(opt)
+    result$optim.nsteps    <- optimNsteps(opt)
   }
   ## summarise trend component
   result$trend <- summary(as.ppm(object), ..., quick=quick)
-  if(identical(quick, FALSE)) {
+  if(isFALSE(quick)) {
     theta <- coef(object)
     if(length(theta) > 0) {
       vc <- vcov(object, matrix.action="warn")

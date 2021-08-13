@@ -202,6 +202,7 @@
 \alias{objsurfEngine}
 \alias{optimConverged}
 \alias{optimStatus}
+\alias{optimNsteps}
 \alias{outdated.interact}
 \alias{oversize.quad}    
 \alias{pairs.listof}
@@ -689,6 +690,7 @@ objsurfEngine(objfun, optpar, objargs,
               ngrid, ratio, verbose)
 optimConverged(x)
 optimStatus(x, call)
+optimNsteps(x)
 outdated.interact(object)
 oversize.quad(Q, \dots, nU, nX, p)
 PairPotentialType(pairpot)
