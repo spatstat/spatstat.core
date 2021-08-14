@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.008
+        CHANGES IN spatstat.core VERSION 2.3-0.009
 
 OVERVIEW
 
@@ -19,6 +19,11 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Argument 'nr=NULL' is now accepted.
     New argument 'delta' allows the result to be interpolated onto a finer grid.
 
+    o reload.or.compute
+    Now prints a message indicating whether the data were recomputed
+    or reloaded from file.
+    New argument 'verbose'.
+    
     o clusterfit
     Minor changes to the argument list.
 

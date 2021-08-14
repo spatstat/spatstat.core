@@ -9,9 +9,10 @@
 reload.or.compute <- function(filename, expr, 
                               objects=NULL,
                               destination=parent.frame(),
-                              force=FALSE) {
+                              force=FALSE, verbose=TRUE) {
   stopifnot(is.character(filename) && length(filename) == 1)
   if(force || !file.exists(filename)) {
+    if(verbose) splat("Recomputing...")
     ## evaluate 'expr' in a fresh environment
     ee <- as.expression(substitute(expr))
     en <- new.env()
@@ -26,6 +27,9 @@ reload.or.compute <- function(filename, expr,
       assign(objects[i], get(objects[i], envir=en), envir=destination)
     result <- objects
   } else {
+    if(verbose)
+      splat("Reloading from", sQuote(filename),
+            "saved at", file.mtime(filename))
     result <- load(filename, envir=destination)
     if(!all(ok <- (objects %in% result))) {
       nbad <- sum(!ok)

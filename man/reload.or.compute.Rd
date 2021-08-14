@@ -10,7 +10,7 @@
 }
 \usage{
 reload.or.compute(filename, expr, objects = NULL,
-                  destination = parent.frame(), force=FALSE)
+                  destination = parent.frame(), force=FALSE, verbose=TRUE)
 }
 \arguments{
   \item{filename}{
@@ -31,6 +31,10 @@ reload.or.compute(filename, expr, objects = NULL,
   \item{force}{
     Logical value indicating whether to perform the computation
     in any case.
+  }
+  \item{verbose}{
+    Logical value indicating whether to print a message indicating
+    whether the data were recomputed or reloaded from the file.
   }
 }
 \details{
