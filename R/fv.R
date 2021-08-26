@@ -4,7 +4,7 @@
 ##
 ##    class "fv" of function value objects
 ##
-##    $Revision: 1.164 $   $Date: 2020/11/30 13:11:54 $
+##    $Revision: 1.170 $   $Date: 2021/08/26 06:45:01 $
 ##
 ##
 ##    An "fv" object represents one or more related functions
@@ -608,51 +608,89 @@ collapse.fv <- local({
     } else if(is.list(object) && all(sapply(object, is.fv))) {
       x <- append(object, list(...))
     } else stop("Format not understood")
-    if(!all(unlist(lapply(x, is.fv))))
+    if(!all(sapply(x, is.fv)))
       stop("arguments should be objects of class fv")
-    if(is.null(same)) same <- character(0)
-    if(is.null(different)) different <- character(0)
+    same <- as.character(same)
+    different <- as.character(different)
     if(anyDuplicated(c(same, different)))
       stop(paste("The arguments", sQuote("same"), "and", sQuote("different"),
                  "should not have entries in common"))
-    either <- c(same, different)
+    ## handle function argument
+    xname <- unique(sapply(x, fvnames, a=".x"))
+    if(length(xname) > 1)
+      stop(paste("Objects have different names for the function argument:",
+                 commasep(sQuote(xname))))
+    xalias <- c(xname, ".x")
+    same <- setdiff(same, xalias)
+    different <- setdiff(different, xalias)
     ## validate
+    either <- c(same, different)
     if(length(either) == 0)
-      stop(paste("At least one column of values must be selected",
-                 "using the arguments", sQuote("same"), "and",
+      stop(paste("At least one column of function values must be selected",
+                 "using the arguments", sQuote("same"), "and/or",
                  sQuote("different")))
-    nbg <- unique(unlist(lapply(x, missingnames, expected=either)))
+    mussung <- lapply(x, missingnames, expected=either)
+    nbg <- Reduce(intersect, mussung)
     if((nbad <- length(nbg)) > 0)
-      stop(paste(ngettext(nbad, "The name", "The names"),
+      stop(paste(ngettext(nbad, "The column", "The columns"),
                  commasep(sQuote(nbg)),
                  ngettext(nbad, "is", "are"),
-                 "not present in the function objects"))
-    ## names for different versions
-    versionnames <- names(x)
-    if(is.null(versionnames))
-      versionnames <- paste("x", seq_along(x), sep="")
-    shortnames <- abbreviate(versionnames, minlength=12)
+                 "not present in any of the function objects"))
+    ## .............. same ....................................
     ## extract the common values
-    y <- x[[1L]]
-    xname <- fvnames(y, ".x")
-    yname <- fvnames(y, ".y")
-    if(length(same) == 0) {
-      ## The column of 'preferred values' .y cannot be deleted
+    nsame <- length(same)
+    if(nsame == 0) {
+      ## Initialise using first object
+      y <- x[[1L]]
+      xname <- fvnames(y, ".x")
+      yname <- fvnames(y, ".y")
+      ## The column of 'preferred values' .y cannot be deleted.
       ## retain .y for now and delete it later.
       z <- y[, c(xname, yname)]
     } else {
-      same <-  fvnames(y, same) # expand abbreviations if present
-      if(!(yname %in% same))
-        fvnames(y, ".y") <- same[1L]
-      z <- y[, c(xname, same)]
+      ## Find first object that contains same[1L]
+      same1 <- same[1L]
+      j <- min(which(sapply(x, isRecognised, expected=same1)))
+      y <- x[[j]]
+      xname <- fvnames(y, ".x")
+      yname <- fvnames(y, ".y")
+      ## possibly expand abbreviation 
+      same[1L] <- same1 <- fvnames(y, same1)
+      if(yname != same1)
+        yname <- fvnames(y, ".y") <- same1
+      z <- y[, c(xname, yname)]
+      if(nsame > 1) {
+        ## Find objects that contain same[2], ..., 
+        for(k in 2:nsame) {
+          samek <- same[k]
+          j <- min(which(sapply(x, isRecognised, expected=samek)))
+          xj <- x[[j]]
+          same[k] <- samek <- fvnames(xj, samek)
+          ## identify relevant column in object xj
+          wanted <- (names(xj) == samek)
+          if(any(wanted)) {
+            y <- as.data.frame(xj)[, wanted, drop=FALSE]
+            desc <- attr(xj, "desc")[wanted]
+            labl <- attr(xj, "labl")[wanted]
+            ## glue onto fv object
+            z <- bind.fv(z, y, labl=labl, desc=desc)
+          }
+        }
+      }
     }
     dotnames <- same
+    ## .............. different  .............................
+    ## create names for different versions
+    versionnames <- good.names(names(x), "f", seq_along(x))
+    shortnames <- abbreviate(versionnames, minlength=12)
     ## now merge the different values
     if(length(different)) {
       for(i in seq_along(x)) {
         ## extract values for i-th object
         xi <- x[[i]]
-        diffi <- fvnames(xi, different) # expand abbreviations if present
+        diffi <- availablenames(xi, different) # which columns are available
+        diffi <- unlist(fvnames(xi, diffi)) # expand abbreviations if used
+        ## identify current position of columns
         wanted <- (names(xi) %in% diffi)
         if(any(wanted)) {
           y <- as.data.frame(xi)[, wanted, drop=FALSE]
@@ -680,11 +718,19 @@ collapse.fv <- local({
   }
 
   
-  missingnames <- function(z, expected) {
+  isRecognised <- function(z, expected) {
     known <- c(names(z), .Spatstat.FvAbbrev)
-    absent <- is.na(match(expected, known)) 
-    return(expected[absent])
+    !is.na(match(expected, known))
   }
+    
+  missingnames <- function(z, expected) {
+    expected[!isRecognised(z, expected)]
+  }
+
+  availablenames <- function(z, expected){
+    expected[isRecognised(z, expected)]
+  }
+
   
   collapse.fv
 })

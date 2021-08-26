@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.009
+        CHANGES IN spatstat.core VERSION 2.3-0.010
 
 OVERVIEW
 
@@ -19,6 +19,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Argument 'nr=NULL' is now accepted.
     New argument 'delta' allows the result to be interpolated onto a finer grid.
 
+    o collapse.fv
+    Columns identified by the arguments 'same' and 'different'
+    may now be absent from some of the 'fv' objects that will be collapsed.
+    
     o reload.or.compute
     Now prints a message indicating whether the data were recomputed
     or reloaded from file.
@@ -39,7 +43,10 @@ BUG FIXES
     The result was very inaccurate if the cluster radius was small 
     compared to the size of the window 'B', due to discretisation error.
     Fixed.
-    
+
+    o collapse.fv
+    Crashed if 'length(same) > 1'.
+    Fixed.
 
         CHANGES IN spatstat.core VERSION 2.3-0
 

@@ -22,14 +22,14 @@
     Additional objects of class \code{"fv"}.
   }
   \item{same}{
-    Character string or character vector specifying a column or columns,
-    present in each \code{"fv"} object, that are identical
-    in each object. This column or columns will be included only once.
+    Character string or character vector specifying a column or columns
+    of function values that are identical in different \code{"fv"}
+    objects. These columns will be included only once in the result.
   }
   \item{different}{
-    Character string or character vector specifying a column or columns,
-    present in each \code{"fv"} object, that contain different values in
-    each object. Each of these columns of data will be included, with
+    Character string or character vector specifying a column or columns
+    of function values, that are different in different \code{"fv"} objects.
+    Each of these columns of data will be included, with
     labels that distinguish them from each other.
   }
 }
@@ -54,18 +54,23 @@
   have the same values of the function argument. 
 
   The argument \code{same} identifies any columns that are present
-  in each function table, and which are known to contain exactly
-  the same values in each table. This column or columns will be
+  in some or all of the function tables, and 
+  which are known to contain exactly the same values in each table
+  that includes them. This column or columns will be
   included only once in the result.
 
   The argument \code{different} identifies any columns that are present
-  in each function table, and which contain different numerical values
-  in each table. Each of these columns will be included, with labels
+  in some or all of the function tables, and which may contain
+  different numerical values in different tables.
+  Each of these columns will be included, with labels
   to distinguish them. 
 
   Columns that are not named in \code{same} or \code{different} will not
   be included.
 
+  The function argument is always included and does not need to be
+  specified.
+  
   The arguments \code{same} and \code{different} can be \code{NULL},
   or they can be character vectors containing the names
   of columns of \code{object}. The argument \code{different} can be
