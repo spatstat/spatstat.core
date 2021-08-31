@@ -4,6 +4,7 @@
 \alias{print.fii}
 \alias{plot.fii}
 \alias{coef.fii}
+\alias{coef<-.fii}
 \alias{summary.fii}
 \alias{print.summary.fii}
 \alias{coef.summary.fii}
@@ -18,6 +19,8 @@
 \method{print}{fii}(x, \dots)
 
 \method{coef}{fii}(object, \dots)
+
+\method{coef}{fii}(object, \dots) <- value
 
 \method{plot}{fii}(x, \dots)
 
@@ -35,6 +38,10 @@
   \item{\dots}{
     Arguments passed to other methods.
   }
+  \item{value}{
+    Numeric vector containing new values for the fitted
+    interaction coefficients.
+  }
 }
 \details{
   These are methods for the class \code{"fii"}.
@@ -45,11 +52,11 @@
   See \code{\link{fitin}} for further explanation of this class.
   
   The commands listed here are methods for the generic functions
-  \code{\link{print}},
-  \code{\link{summary}},
-  \code{\link{plot}} 
-  and 
-  \code{\link{coef}}
+  \code{\link[base]{print}},
+  \code{\link[base]{summary}},
+  \code{\link[base]{plot}},
+  \code{\link[stats]{coef}}
+  and \code{\link[nlme]{coef<-}}
   for objects of the class \code{"fii"}.
 
   Following the usual convention, \code{summary.fii} returns an object of class

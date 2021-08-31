@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.010
+        CHANGES IN spatstat.core VERSION 2.3-0.011
 
 OVERVIEW
 
@@ -7,8 +7,10 @@ OVERVIEW
 
 NEW FUNCTIONS
 
-    o None
-
+    o coef<-.fii
+    Changes the coefficients of a fitted interaction
+    (a method for the generic "coef<-")
+    
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o reach.kppm
@@ -39,6 +41,14 @@ SIGNIFICANT USER-VISIBLE CHANGES
     
 BUG FIXES
 
+    o subfits
+    The fitted interaction coefficients were garbled.
+    If 'mfit' is the mppm object and 'a <- subfits(mfit)[[i]]' is one of the
+    sub-models, then coef(a) was correct, but coef(fitin(a)) was incorrect.
+    The fitted interaction was shown correctly by printing 'mfit'
+    but incorrectly by printing 'a'.
+    Fixed.
+    
     o varcount
     The result was very inaccurate if the cluster radius was small 
     compared to the size of the window 'B', due to discretisation error.

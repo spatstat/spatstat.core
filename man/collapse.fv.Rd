@@ -51,7 +51,8 @@
   The arguments \code{object} and \code{\dots} should be function tables
   (objects of class \code{"fv"}, see \code{\link{fv.object}})
   that are compatible in the sense that they
-  have the same values of the function argument. 
+  have the same values of the function argument.
+  (This can be ensured by applying \code{\link{harmonise.fv}} to them.)
 
   The argument \code{same} identifies any columns that are present
   in some or all of the function tables, and 

@@ -1,6 +1,6 @@
 #
 #
-#  $Revision: 1.53 $   $Date: 2020/03/04 02:47:31 $
+#  $Revision: 1.54 $   $Date: 2021/08/31 06:40:35 $
 #
 #
 
@@ -149,7 +149,7 @@ subfits.new <- local({
     fake.version <- list(major=spv$major,
                          minor=spv$minor,
                          release=spv$patchlevel,
-                         date="$Date: 2020/03/04 02:47:31 $")
+                         date="$Date: 2021/08/31 06:40:35 $")
     fake.call <- call("cannot.update", Q=NULL, trend=trend,
                       interaction=NULL, covariates=NULL,
                       correction=object$Info$correction,
@@ -465,11 +465,15 @@ subfits.old <- local({
       ## check
       if(!all(coefnames.wanted %in% names(coefs.avail))) 
         stop("Internal error: some fitted coefficients not accessible")
-      coefi.new <- coefs.avail[coefnames.wanted]
+
+      ## hack entries in ppm object 
+      fiti$method <- "mppm"
       ## reset coefficients
+      coefi.new <- coefs.avail[coefnames.wanted]
       fiti$coef.orig <- coefi.fitted ## (detected by summary.ppm, predict.ppm)
       fiti$theta <- fiti$coef <- coefi.new
-      fiti$method <- "mppm"
+      ## reset interaction coefficients in 'fii' object
+      coef(fiti$fitin)[] <- coefi.new[names(coef(fiti$fitin))]
       ## ... and replace fake data by true data
       if(has.design) {
         fiti$internal$glmdata.scrambled <- gd <- fiti$internal$glmdata

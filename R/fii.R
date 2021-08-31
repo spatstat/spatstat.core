@@ -248,3 +248,13 @@ coef.fii <- function(object, ...) {
   verifyclass(object, "fii")
   return(object$coefs)
 }
+
+"coef<-.fii" <- function(object, ..., value) {
+  verifyclass(object, "fii")
+  check.nvector(value, length(object$coefs),
+                things="coefficients",
+                naok=TRUE)
+  object$coefs <- value %orifnull% numeric(0)
+  return(object)
+}
+  
