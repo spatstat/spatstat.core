@@ -1,9 +1,12 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.011
+        CHANGES IN spatstat.core VERSION 2.3-0.012
 
 OVERVIEW
 
-    o Minor improvements and bug fixes.
+    o Covariates in ppm and mppm may be functions that depend on the marks
+    as well as the spatial coordinates.
+    
+    o Minor extensions, performance improvements, and bug fixes.
 
 NEW FUNCTIONS
 
@@ -13,6 +16,14 @@ NEW FUNCTIONS
     
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o ppm
+    Covariates which are functions may now depend on the marks
+    as well as the spatial coordinates: function(x,y,marks).
+    
+    o mppm
+    Covariates which are functions may now depend on the marks
+    as well as the spatial coordinates: function(x,y,marks).
+    
     o reach.kppm
     Now returns a result for LGCP models as well as cluster models.
 

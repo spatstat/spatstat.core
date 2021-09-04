@@ -289,6 +289,8 @@
 	  at any location \code{(x,y)} to obtain the value of the spatial
 	  covariate. It should be a \code{function(x, y)}
 	  or \code{function(x, y, ...)} in the \R language.
+	  For marked point pattern data, the covariate can be a
+	  \code{function(x, y, marks)} or \code{function(x, y, marks, ...)}.
 	  The first two arguments of the function should be the
 	  Cartesian coordinates \eqn{x} and \eqn{y}. The function may have
 	  additional arguments; if the function does not have default

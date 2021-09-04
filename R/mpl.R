@@ -1,6 +1,6 @@
 #    mpl.R
 #
-#	$Revision: 5.234 $	$Date: 2021/02/06 03:43:21 $
+#	$Revision: 5.235 $	$Date: 2021/09/04 09:31:09 $
 #
 #    mpl.engine()
 #          Fit a point process model to a two-dimensional point pattern
@@ -115,7 +115,7 @@ mpl.engine <-
     the.version <- list(major=spv$major,
                         minor=spv$minor,
                         release=spv$patchlevel,
-                        date="$Date: 2021/02/06 03:43:21 $")
+                        date="$Date: 2021/09/04 09:31:09 $")
 
     if(want.inter) {
       ## ensure we're using the latest version of the interaction object
@@ -858,7 +858,7 @@ mpl.get.covariates <- local({
     covargname <- sQuote(short.deparse(substitute(covariates)))
     locargname <- sQuote(short.deparse(substitute(locations)))
     if(is.null(covfunargs)) covfunargs <- list()
-    ##
+    ## extract spatial coordinates
     x <- locations$x
     y <- locations$y
     if(is.null(x) || is.null(y)) {
@@ -868,6 +868,10 @@ mpl.get.covariates <- local({
     }
     if(is.null(x) || is.null(y))
       stop(paste("Can't interpret", locargname, "as x,y coordinates"))
+    ## extract marks if any
+    m <- locations$marks 
+    markinfo <- if(is.null(m)) NULL else list(marks=m)
+    ## validate covariates and extract values
     n <- length(x)
     if(is.data.frame(covariates)) {
       if(nrow(covariates) != n)
@@ -894,7 +898,7 @@ mpl.get.covariates <- local({
       values[isim] <- lapply(covariates[isim], lookup.im, x=x, y=y,
                              naok=TRUE, strict=FALSE)
       values[isfun] <- vf <- lapply(covariates[isfun], evalfxy, x=x, y=y,
-                                    extra=covfunargs)
+                                    extra=append(covfunargs, markinfo))
       values[isnum] <- lapply(covariates[isnum], rep, length(x))
       values[iswin] <- lapply(covariates[iswin], insidexy, x=x, y=y)
       values[istess] <- lapply(covariates[istess], tileindex, x=x, y=y)
