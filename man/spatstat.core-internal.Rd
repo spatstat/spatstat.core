@@ -632,7 +632,7 @@ kppmPalmLik(X, Xname, po, clusters, control, weightfun, rmax,
            algorithm, DPP, \dots, pspace)
 kppmCLadap(X, Xname, po, clusters, control, weightfun, 
            rmax, epsilon, DPP, algorithm, \dots,
-           startparm, globStrat)
+           startpar, globStrat)
 kraever(package, fatal)
 kraeverRandomFields()
 \method{labels}{ppm}(object, \dots)

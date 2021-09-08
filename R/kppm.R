@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.182 $ $Date: 2021/08/14 04:50:46 $
+# $Revision: 1.184 $ $Date: 2021/09/08 06:19:58 $
 #
 
 
@@ -945,7 +945,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
 kppmCLadap <- function(X, Xname, po, clusters, control, weightfun, 
                        rmax=NULL, epsilon=0.01, DPP=NULL,
                        algorithm="Broyden", ..., 
-                       startparm=NULL, globStrat="dbldog") {
+                       startpar=NULL, globStrat="dbldog") {
 
   if(!requireNamespace("nleqslv", quietly=TRUE))
     stop(paste("The package", sQuote("nleqslv"), "is required"),
@@ -954,7 +954,7 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   W <- as.owin(X)
   
   if(is.null(rmax)) # specified for numerical stability
-    rmax <- shortside(W)
+    rmax <- shortside(Frame(W))
 
   # identify pairs of points that might contribute
   cl <- closepairs(X, rmax)
@@ -1018,31 +1018,26 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
     pcfunargs <- append(clargs, pcfunargs)
   } else clargs <- NULL
   
-  # determine starting parameter values
-  startpar <- selfstart(X)
-  if(!is.null(startparm)){
-    if(!isDPP){
-      checkpar  <- info$checkpar
-      startpar <- checkpar(startparm, old=TRUE)
-    } else {
-      startpar <- startparm
-    }
+  ## determine starting parameter values
+  if(is.null(startpar)) {
+    startpar <- selfstart(X)
+  } else if(!isDPP){
+    checkpar  <- info$checkpar
+    startpar <- checkpar(startpar, old=TRUE)
   }
-  pcftheo <- pcfun
-  dpcftheo <- dpcfun
-  # optimization later in terms of log of params
-  startpar <- log(startpar)
-  pcfun <- function(par, ...) { pcftheo(exp(par), ...) }
-  dpcfun <- function(par, ...) { dpcftheo(exp(par), ...) }
+  ## optimization will be over the logarithms of the parameters
+  startparLog <- log(startpar)
+  pcfunLog <- function(par, ...) { pcfun(exp(par), ...) }
+  dpcfunLog <- function(par, ...) { dpcfun(exp(par), ...) }
   
   # create local functions to evaluate pair correlation and its gradient
   #  (with additional parameters 'pcfunargs' in its environment)
   paco <- function(d, par) {
-    do.call(pcfun, append(list(par=par, rvals=d), pcfunargs))
+    do.call(pcfunLog, append(list(par=par, rvals=d), pcfunargs))
   }
   
   dpaco <- function(d, par) {
-    do.call(dpcfun, append(list(par=par, rvals=d), pcfunargs))
+    do.call(dpcfunLog, append(list(par=par, rvals=d), pcfunargs))
   }
   
   # trim 'g' to [0, rmax] 
@@ -1093,13 +1088,13 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   }
   
   ## .................   optimize it ..............................
-  opt <- nleqslv::nleqslv(x = startpar, fn = wlogcl2score, 
+  opt <- nleqslv::nleqslv(x = startparLog, fn = wlogcl2score, 
                           method = algorithm,
                           global = globStrat, control = control, 
                           paco=paco, dpaco=dpaco, 
                           dIJ=dIJ, gscale=gscale, epsilon=epsilon)
     
-  ## .......... extract fitted parameters .....................
+  ## .......... extract fitted parameters on original scale ...............
   optpar        <- exp(opt$x)
   names(optpar) <- names(startpar)
   ## insert entries expected in 'opt'
