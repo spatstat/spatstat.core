@@ -14,29 +14,24 @@ cat(paste("--------- Executing",
           "test code -----------\n"))
 #'  tests/randoms.R
 #'   Further tests of random generation code
-#'  $Revision: 1.13 $ $Date: 2020/12/04 04:49:31 $
+#'  $Revision: 1.14 $ $Date: 2021/09/09 10:02:00 $
 
 
 local({
   if(FULLTEST) {
-    A <- runifrect(6, nsim=2)
+    #' cases not covered in examples
     A <- runifdisc(6, nsim=2)
     A <- runifpoispp(5, nsim=2)
     A <- runifpoispp(0, nsim=2)
     A <- rSSI(0.05, 6, nsim=2)
     A <- rSSI(0.05, 10, win=square(c(-0.5, 1.5)), x.init=A[[1]], nsim=2)  
     A <- rstrat(nx=4, nsim=2)
-    A <- rsyst(nx=4, nsim=2)
+    A <- rcell(square(1), nx=5, nsim=2)
   }
   if(ALWAYS) { # involves C code etc
     A <- rthin(cells, P=0.5, nsim=2)
     A <- rthin(cells, runif(42))
     A <- rthin(cells[FALSE], P=0.5, nsim=2)
-  }
-  if(FULLTEST) {
-    A <- rjitter(cells, nsim=2, retry=FALSE)
-    A <- rjitter(cells[FALSE])
-    A <- rcell(square(1), nx=5, nsim=2)
   }
   f <- function(x,y) { 10*x }
   Z <- as.im(f, square(1))

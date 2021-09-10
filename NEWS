@@ -1,10 +1,12 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.014
+        CHANGES IN spatstat.core VERSION 2.3-0.015
 
 OVERVIEW
 
     o Covariates in ppm and mppm may be functions that depend on the marks
     as well as the spatial coordinates.
+
+    o Random perturbation of line segments.
     
     o Minor extensions, performance improvements, and bug fixes.
 
@@ -13,6 +15,10 @@ NEW FUNCTIONS
     o coef<-.fii
     Changes the coefficients of a fitted interaction
     (a method for the generic "coef<-")
+
+    o rjitter.psp
+    Random perturbation of a spatial pattern of line segments.
+    A method for 'rjitter' for class 'psp'.
     
 SIGNIFICANT USER-VISIBLE CHANGES
 

@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.184 $ $Date: 2021/09/08 06:19:58 $
+# $Revision: 1.185 $ $Date: 2021/09/09 00:19:24 $
 #
 
 
@@ -214,6 +214,7 @@ kppmMinCon <- function(X, Xname, po, clusters, control, statistic, statargs,
               StatName  = fitinfo$StatName,
               FitFun    = fitinfo$FitFun,
               statargs  = statargs,
+              pspace    = fitinfo$pspace,
               mcfit     = mcfit,
               maxlogcl  = NULL)
   # results
@@ -448,7 +449,8 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                 StatName  = StatName,
                 modelname  = info$modelabbrev,
                 isPCP      = isPCP,
-                lambda     = lambda)
+                lambda     = lambda,
+                pspace     = pspace)
   attr(mcfit, "info") <- extra
   if(verbose) splat("Returning from clusterfit")
   return(mcfit)
@@ -640,7 +642,8 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                 rmax      = rmax,
                 objfun    = obj,
                 objargs   = objargs,
-                maxlogcl  = opt$value)
+                maxlogcl  = opt$value,
+                pspace    = pspace)
     # pack up
     clusters <- update(clusters, as.list(opt$par))
     result <- list(Xname      = Xname,
@@ -676,7 +679,8 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
               rmax      = rmax,
               objfun    = obj,
               objargs   = objargs,
-              maxlogcl  = opt$value)
+              maxlogcl  = opt$value,
+              pspace    = pspace)
   # pack up
   result <- list(Xname      = Xname,
                  X          = X,
@@ -883,7 +887,8 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
                 rmax      = rmax,
                 objfun    = obj,
                 objargs   = objargs,
-                maxlogcl  = opt$value)
+                maxlogcl  = opt$value,
+                pspace    = pspace)
     # pack up
     clusters <- update(clusters, as.list(optpar))
     result <- list(Xname      = Xname,
@@ -918,7 +923,8 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
               rmax      = rmax,
               objfun    = obj,
               objargs   = objargs,
-              maxlogcl  = opt$value)
+              maxlogcl  = opt$value,
+              pspace    = pspace)
   # pack up
   result <- list(Xname      = Xname,
                  X          = X,

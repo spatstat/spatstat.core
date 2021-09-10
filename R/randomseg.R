@@ -1,7 +1,7 @@
 #
 # randomseg.R
 #
-# $Revision: 1.13 $ $Date: 2020/11/30 07:58:27 $
+# $Revision: 1.16 $ $Date: 2021/09/10 08:10:54 $
 #
 
 
@@ -49,5 +49,28 @@ rpoisline <- function(lambda, win=owin()) {
   attr(X, "lines") <- L
   attr(X, "linemap") <- linemap
   return(X)
+}
+
+rjitter.psp <- function(X, radius, ..., clip=TRUE, nsim=1, drop=TRUE) {
+  if(nsegments(X) == 0) {
+    result <- rep(list(X), nsim)
+    result <- simulationresult(result, nsim, drop)
+    return(result)
+  }
+  Xfrom <- endpoints.psp(X, "first")
+  Xto   <- endpoints.psp(X, "second")
+  if(clip) 
+    Window(Xfrom) <- Window(Xto) <- grow.rectangle(Frame(X), radius)
+  result <- vector(mode="list", length=nsim)
+  for(isim in seq_len(nsim)) {
+    Xfrom <- rjitter(Xfrom, radius)
+    Xto   <- rjitter(Xto, radius)
+    Y <- as.psp(from=Xfrom, to=Xto)
+    if(clip)
+      Y <- Y[Window(X), clip=TRUE]
+    result[[isim]] <- Y
+  }
+  result <- simulationresult(result, nsim, drop)
+  return(result)
 }
 

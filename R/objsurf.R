@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.14 $ $Date: 2021/07/07 01:41:47 $
+#  $Revision: 1.15 $ $Date: 2021/09/09 00:53:27 $
 #
 
 
@@ -42,7 +42,6 @@ objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
                           ngrid=ngrid, ratio=ratio, verbose=verbose)
   return(result)
 }
-
 
 objsurfEngine <- function(objfun, optpar, objargs, 
                           ...,
