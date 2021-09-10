@@ -509,7 +509,7 @@ bw.relrisk <- function(X, method="likelihood",
 }
 
 which.max.im <- function(x) {
-  .Deprecated("im.apply", "spatstat",
+  .Deprecated("im.apply", "spatstat.geom",
               "which.max.im(x) is deprecated: use im.apply(x, which.max)")
   ans <- im.apply(x, which.max)
   return(ans)

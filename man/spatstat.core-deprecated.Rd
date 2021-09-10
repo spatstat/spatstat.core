@@ -19,6 +19,9 @@ which.max.im(x)
 
   \code{circumradius} is replaced by the more appropriately named
   \code{boundingradius}.
+
+  \code{rjitterlpp} is replaced by \code{rjitter.lpp}, a method for the
+  generic \code{rjitter}.
 }
 \value{
 \code{which.max.im} returns an integer.
