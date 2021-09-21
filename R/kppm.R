@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.185 $ $Date: 2021/09/09 00:19:24 $
+# $Revision: 1.187 $ $Date: 2021/09/21 08:10:42 $
 #
 
 
@@ -1575,11 +1575,10 @@ labels.kppm <- labels.dppm <- function(object, ...) {
 }
 
 
-update.kppm <- function(object, ..., evaluate=TRUE) {
+update.kppm <- function(object, ..., evaluate=TRUE, envir=environment(terms(object))) {
   argh <- list(...)
   nama <- names(argh)
   callframe <- object$callframe
-  envir <- environment(terms(object))
   #' look for a formula argument
   fmla <- formula(object)
   jf <- integer(0)

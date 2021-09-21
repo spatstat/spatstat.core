@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.015
+        CHANGES IN spatstat.core VERSION 2.3-0.016
 
 OVERVIEW
 
@@ -46,6 +46,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Now prints a message indicating whether the data were recomputed
     or reloaded from file.
     New argument 'verbose'.
+
+    o update.kppm
+    New argument 'envir'.
     
     o clusterfit
     Minor changes to the argument list.

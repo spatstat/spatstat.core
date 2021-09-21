@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.15 $ $Date: 2021/09/09 00:53:27 $
+#  $Revision: 1.16 $ $Date: 2021/09/12 01:44:47 $
 #
 
 

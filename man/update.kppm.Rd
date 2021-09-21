@@ -5,7 +5,8 @@
   \code{update} method for class \code{"kppm"}.
 }
 \usage{
- \method{update}{kppm}(object, \dots, evaluate=TRUE)
+ \method{update}{kppm}(object, \dots, evaluate=TRUE,
+                       envir=environment(terms(object)))
 }
 \arguments{
   \item{object}{
@@ -20,6 +21,9 @@
     Logical value indicating whether to return the updated fitted model
     (\code{evaluate=TRUE}, the default) or just the updated call to \code{kppm}
     (\code{evaluate=FALSE}).
+  }
+  \item{envir}{
+    Environment in which to re-evaluate the call to \code{\link{ppm}}.
   }
 }
 \details{
