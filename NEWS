@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.016
+        CHANGES IN spatstat.core VERSION 2.3-0.017
 
 OVERVIEW
 
@@ -74,6 +74,11 @@ BUG FIXES
     compared to the size of the window 'B', due to discretisation error.
     Fixed.
 
+    o segregation.test
+    The test statistic was calculated as the mean, rather than the sum,
+    of discrepancies between probabilities. (The p-value was not affected.)
+    Fixed.
+    
     o collapse.fv
     Crashed if 'length(same) > 1'.
     Fixed.

@@ -3,7 +3,7 @@
 #'
 #'   Monte Carlo test of segregation for multitype patterns
 #'
-#'    $Revision: 1.4 $ $Date: 2020/12/14 00:12:14 $
+#'    $Revision: 1.5 $ $Date: 2021/09/26 08:59:09 $
 #'
 
 segregation.test <- function(X, ...) {
@@ -28,8 +28,8 @@ segregation.test.ppp <- function(X, ..., nsim=19, permute=TRUE,
   nt <- length(pbar)
   pbar <- matrix(pbar, byrow=TRUE, nrow=np, ncol=nt)
   if(verbose) cat("Computing observed value... ")
-  phat <- relrisk(X, at="points", ...)
-  obs <- mean((phat-pbar)^2)
+  phat <- relrisk(X, at="points", ..., casecontrol=FALSE)
+  obs <- sum((phat-pbar)^2)
   if(verbose) {
     cat(paste("Done.\nComputing", nsim, "simulated values... "))
     pstate <- list()
@@ -37,13 +37,13 @@ segregation.test.ppp <- function(X, ..., nsim=19, permute=TRUE,
   sim <- numeric(nsim)
   for(i in 1:nsim) {
     Xsim <- rlabel(X, permute=permute)
-    phatsim <- relrisk(Xsim, at="points", ...)
+    phatsim <- relrisk(Xsim, at="points", ..., casecontrol=FALSE)
     if(permute) pbarsim <- pbar else {
       lamsim <- intensity(Xsim)
       pbarsim <- lamsim/sum(lamsim)
       pbarsim <- matrix(pbarsim, byrow=TRUE, nrow=np, ncol=nt)
     }
-    sim[i] <- mean((phatsim - pbarsim)^2)
+    sim[i] <- sum((phatsim - pbarsim)^2)
     if(verbose) pstate <- progressreport(i, nsim, state=pstate)
   }
   if(verbose) cat("Done.\n")

@@ -87,13 +87,8 @@ segregation.test(X, \dots)
 
   if(interactive()) segregation.test(hyytiala, hmin=0.05) 
 }
-\author{\adrian
-  
-  
-  \rolf
-  
-  and \ege
-  
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}
 \keyword{htest}
