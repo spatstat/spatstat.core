@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.017
+        CHANGES IN spatstat.core VERSION 2.3-0.018
 
 OVERVIEW
 
@@ -55,6 +55,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o mincontrast
     Minor changes to the argument list.
+
+    o mincontrast
+    Improved algorithm for handlingg NA, NaN or infinite values.
 
     o varcount
     Argument B has a sensible default.

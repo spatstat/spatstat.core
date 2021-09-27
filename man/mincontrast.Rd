@@ -43,13 +43,8 @@ mincontrast(observed, theoretical, startpar, \dots,
   }
   \item{action.bad.values}{
     String (partially matched) specifying what to do if
-    values of the summary statistic are \code{NA}, \code{NaN} or infinite.
-    If \code{action.bad.values="stop"}, or if all of the values are bad,
-    then a fatal error occurs.
-    Otherwise, the domain of the summary function is shortened
-    to avoid the bad values. A warning is issued if
-    \code{action.bad.values="warn"} (the default)
-    and no warning is issued if \code{action.bad.values="silent"}.
+    values of the summary statistic are \code{NA}, \code{NaN} or
+    infinite. See Details.
   }
   \item{pspace}{
     For internal use by the package only.
@@ -63,7 +58,7 @@ mincontrast(observed, theoretical, startpar, \dots,
   \code{\link{lgcp.estK}}.  If you want to fit the \Matern cluster
   process, see \code{\link{matclust.estK}}.
 
-  The Method of Minimum Contrast (Diggle and Gratton, 1984)
+  The Method of Minimum Contrast (Pfanzagl, 1969; Diggle and Gratton, 1984)
   is a general technique for fitting
   a point process model to point pattern data. First a summary function
   (typically the \eqn{K} function) is computed from the data point
@@ -112,6 +107,16 @@ mincontrast(observed, theoretical, startpar, \dots,
   difference between the fourth roots of the two functions
   (Waagepetersen, 2007).
 
+  The argument \code{action.bad.values} specifies what to do if
+  some of the values of the summary statistic are \code{NA}, \code{NaN} or
+  infinite. If \code{action.bad.values="stop"}, or if all of the values are bad,
+  then a fatal error occurs. Otherwise, the domain of the summary
+  function is shortened to avoid the bad values. The shortened domain is the
+  longest interval on which the function values are finite 
+  (provided this interval is at least half the length of the original
+  domain). A warning is issued if \code{action.bad.values="warn"} (the default)
+  and no warning is issued if \code{action.bad.values="silent"}.
+
   The other arguments just make things print nicely.
   The argument \code{fvlab} contains labels for the component
   \code{fit} of the return value.
@@ -147,6 +152,10 @@ mincontrast(observed, theoretical, startpar, \dots,
   \Moller, J. and Waagepetersen, R. (2003).
   Statistical Inference and Simulation for Spatial Point Processes.
   Chapman and Hall/CRC, Boca Raton.
+
+  Pfanzagl, J. (1969).
+  On the measurability and consistency of minimum contrast estimates.
+  \emph{Metrika} \bold{14}, 249--276.
 
   Waagepetersen, R. (2007).
   An estimating function approach to inference for

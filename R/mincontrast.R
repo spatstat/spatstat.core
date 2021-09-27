@@ -114,10 +114,25 @@ mincontrast <- local({
       if(doomed || action.bad.values == "stop")
         stop(whinge, call.=FALSE)
       ## trim each end of domain
-      iMAX <- max(which(ok))
-      iMIN <- min(which(!ok)) + 1
-      if(iMAX > iMIN && all(ok[iMIN:iMAX])) {
-        ## success - accept trimmed domain
+      ra <- range(which(ok))
+      iMIN <- ra[1]
+      iMAX <- ra[2]
+      success <- all(ok[iMIN:iMAX])
+      if(!success) {
+        ## Finite and non-finite values are interspersed;
+        ## find the longest run of finite values
+        z <- rle(ok)
+        k <- which.max(z$lengths * z$values)
+        ## Run must be at least half of the data
+        if(2 * z$lengths[k] > length(ok)) {
+          csl <- cumsum(z$lengths)
+          iMAX <- csl[k]
+          iMIN <- 1L + if(k == 1) 0 else csl[k-1]
+          success <- TRUE
+        }
+      }
+      if(success) {
+        ## accept trimmed domain
         rmin <- rvals[iMIN]
         rmax <- rvals[iMAX]
         obs   <- obs[iMIN:iMAX]
