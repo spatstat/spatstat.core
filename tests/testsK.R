@@ -326,7 +326,7 @@ reset.spatstat.options()
 #
 # tests/kppm.R
 #
-# $Revision: 1.36 $ $Date: 2021/07/05 04:20:57 $
+# $Revision: 1.37 $ $Date: 2021/09/27 04:11:22 $
 #
 # Test functionality of kppm that depends on RandomFields
 # Test update.kppm for old style kppm objects
@@ -469,10 +469,12 @@ local({
   hut <- kppm(redwood ~ x, method="palm", weightfun=NULL)
   mut <- kppm(redwood)
   nut <- update(mut, Y)
-  #' Bug in rLGCP spotted by Tilman Davies
-  X <- rLGCP("matern", function(x,y) { 1 - 0.4* y },
-             var=2, scale=0.7, nu=0.5, win = square(10),
-             dimyx=c(32,64))
+  if(require(RandomFields)) {
+    #' Bug in rLGCP spotted by Tilman Davies
+    X <- rLGCP("matern", function(x,y) { 1 - 0.4* y },
+               var=2, scale=0.7, nu=0.5, win = square(10),
+               dimyx=c(32,64))
+  }
 })
 }
 
