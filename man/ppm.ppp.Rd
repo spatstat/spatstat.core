@@ -689,8 +689,10 @@
       of dummy points. A relative error greater than 10 percent
       indicates a major problem with the input data: in this case,
       extract the quadrature scheme by applying \code{\link{quad.ppm}}
-      to the fitted model, and inspect it. The usual explanation is that
-      the spatial coordinates of the original data were not handled correctly.
+      to the fitted model, and inspect it. 
+      (The most likely cause of this problem is that the spatial coordinates
+      of the original data were not handled correctly, for example,
+      coordinates of the locations and the window boundary were incompatible.)
     }
     \item{\dQuote{Model is unidentifiable}}{
       It is not possible to estimate all the model parameters

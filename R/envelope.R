@@ -3,7 +3,7 @@
 #
 #   computes simulation envelopes 
 #
-#   $Revision: 2.109 $  $Date: 2021/06/29 03:23:49 $
+#   $Revision: 2.110 $  $Date: 2021/10/09 10:42:18 $
 #
 
 envelope <- function(Y, fun, ...) {
@@ -1993,6 +1993,7 @@ pool.envelope <- local({
       stop("Envelopes are not compatible")
     ## ... reconcile parameters in different envelopes .......
     eilist <- lapply(Elist, attr, which="einfo")
+    nrank  <- resolveEinfo(eilist, "nrank", 1)
     global    <- resolveEinfo(eilist, "global",   FALSE)
     ginterval    <- resolveEinfo(eilist, "ginterval", NULL, atomic=FALSE)
     VARIANCE  <- resolveEinfo(eilist, "VARIANCE", FALSE)
@@ -2055,6 +2056,7 @@ pool.envelope <- local({
              result <- envelope(SFmatrix, funX=Elist[[1L]],
                                 type=type, alternative=alternative,
                                 clamp=clamp,
+                                nrank=nrank,
                                 csr=csr, use.theory=use.theory,
                                 Yname=Yname, weights=weights,
                                 savefuns=savefuns)
@@ -2070,6 +2072,7 @@ pool.envelope <- local({
                                 type=type, alternative=alternative,
                                 scale=scale, clamp=clamp,
                                 csr=csr, use.theory=use.theory,
+                                nrank=nrank,
                                 ginterval=ginterval,
                                 Yname=Yname, weights=weights,
                                 savefuns=savefuns)

@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.021
+        CHANGES IN spatstat.core VERSION 2.3-0.022
 
 OVERVIEW
 
@@ -72,6 +72,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o varcount
     Argument B has a sensible default.
 
+    o pool.envelope
+    Now uses the value of 'nrank' which was used in the original envelopes.
+    
     o Kmulti
     New argument 'rmax'.
     
