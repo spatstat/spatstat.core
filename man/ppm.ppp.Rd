@@ -671,6 +671,27 @@
       are correct, and are correctly registered in their spatial relation to
       the observation window.
     }
+    \item{\dQuote{Some tiles with positive area do not contain any
+	quadrature points: relative error = X\%}}{
+      A problem has arisen when creating the quadrature scheme
+      used to fit the model. In the default rule for computing the
+      quadrature weights, space is divided into rectangular tiles,
+      and the number of quadrature points (data and dummy points) in
+      each tile is counted. It is possible for a tile with non-zero area
+      to contain no quadrature points; in this case, the quadrature
+      scheme will contribute a bias to the model-fitting procedure.
+      \bold{A small relative error (less than 2 percent) is not	important.}
+      Relative errors of a few percent can occur because of the shape of
+      the window.
+      If the relative error is greater than about 5 percent, we
+      recommend trying different parameters for the quadrature scheme,
+      perhaps setting a larger value of \code{nd} to increase the number
+      of dummy points. A relative error greater than 10 percent
+      indicates a major problem with the input data: in this case,
+      extract the quadrature scheme by applying \code{\link{quad.ppm}}
+      to the fitted model, and inspect it. The usual explanation is that
+      the spatial coordinates of the original data were not handled correctly.
+    }
     \item{\dQuote{Model is unidentifiable}}{
       It is not possible to estimate all the model parameters
       from this dataset. The error message gives a further explanation,

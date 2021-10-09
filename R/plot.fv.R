@@ -1,7 +1,7 @@
 #
 #       plot.fv.R   (was: conspire.S)
 #
-#  $Revision: 1.131 $    $Date: 2020/11/17 03:47:24 $
+#  $Revision: 1.132 $    $Date: 2021/10/03 01:49:22 $
 #
 #
 
@@ -652,17 +652,16 @@ assemble.plot.objects <- function(xlim, ylim, ..., lines=NULL, polygon=NULL) {
 }
 
 findbestlegendpos <- local({
-  # Given a list of geometrical objects, find the best position
-  # to avoid them.
-  thefunction <- function(objects, show=FALSE, aspect=1, bdryok=TRUE,
-                          preference="float", verbose=FALSE,
-                          legendspec=NULL) {
-    # find bounding box
+  ## Given a list of geometrical objects, find the best position
+  ## to avoid them.
+  bestlegendpos <- function(objects, show=FALSE, aspect=1, bdryok=TRUE,
+                            preference="float", verbose=FALSE,
+                            legendspec=NULL) {
+    ## find bounding box
     W <- do.call(boundingbox, lapply(objects, as.rectangle))
-    # convert to common box
+    ## convert to common box
     objects <- lapply(objects, rebound, rect=W)
-    # comp
-    # rescale x and y axes so that bounding box has aspect ratio 'aspect'
+    ## rescale x and y axes so that bounding box has aspect ratio 'aspect'
     aspectW <- with(W, diff(yrange)/diff(xrange))
     s <- aspect/aspectW
     mat <- diag(c(1, s))
@@ -673,15 +672,17 @@ findbestlegendpos <- local({
       cat("Scaled space:\n")
       print(scaledW)
     }
-    # pixellate the scaled objects
+    ## reinstate common box
+    scaled.objects <- lapply(scaled.objects, rebound, rect=scaledW)
+    ## pixellate the scaled objects
     pix.scal.objects <- lapply(scaled.objects, asma)
-    # apply distance transforms in scaled space
+    ## apply distance transforms in scaled space
     D1 <- distmap(pix.scal.objects[[1]])
     Dlist <- lapply(pix.scal.objects, distmap, xy=list(x=D1$xcol, y=D1$yrow))
-    # distance transform of superposition
+    ## distance transform of superposition
     D <- im.apply(Dlist, min)
     if(!bdryok) {
-      # include distance to boundary
+      ## include distance to boundary
       B <- attr(D1, "bdry")
       D <- eval.im(pmin.int(D, B))
     }
@@ -690,24 +691,24 @@ findbestlegendpos <- local({
       lapply(lapply(scaled.objects, affine, mat=invmat), plot, add=TRUE)
     }
     if(preference != "float") {
-      # evaluate preferred location (check for collision)
+      ## evaluate preferred location (check for collision)
       if(!is.null(legendspec)) {
-        # pretend to plot the legend as specified
+        ## pretend to plot the legend as specified
         legout <- do.call(graphics::legend,
                           append(legendspec, list(plot=FALSE)))
-        # determine bounding box
+        ## determine bounding box
         legbox <- with(legout$rect, owin(c(left, left+w), c(top-h, top)))
         scaledlegbox <- affine(legbox, mat=mat)
-        # check for collision 
+        ## check for collision 
         Dmin <- min(D[scaledlegbox])
         if(Dmin >= 0.02) {
-          # no collision: stay at preferred location. Exit.
+          ## no collision: stay at preferred location. Exit.
           return(list(x=preference))
         }
-        # collision occurred! 
+        ## collision occurred! 
       } else {
-        # no legend information.
-        # Pretend legend is 15% of plot width and height
+        ## no legend information.
+        ## Pretend legend is 15% of plot width and height
         xr <- scaledW$xrange
         yr <- scaledW$yrange
         testloc <- switch(preference,
@@ -722,35 +723,35 @@ findbestlegendpos <- local({
                           center      = c(mean(xr), mean(yr)),
                           NULL)
         if(!is.null(testloc)) {
-          # look up distance value at preferred location
+          ## look up distance value at preferred location
           testpat <- ppp(x=testloc[1], y=testloc[2], xr, yr, check=FALSE)
           val <- safelookup(D, testpat)
           crit <- 0.15 * min(diff(xr), diff(yr))
           if(verbose)
             cat(paste("val=",val, ", crit=", crit, "\n"))
           if(val > crit) {
-            # no collision: stay at preferred location. Exit.
+            ## no collision: stay at preferred location. Exit.
             return(list(x=preference))
           }
-        # collision occurred! 
+        ## collision occurred! 
         }
       }
-      # collision occurred! 
+      ## collision occurred! 
     }
-    # find location of max
+    ## find location of max
     locmax <- which(D$v == max(D), arr.ind=TRUE)
     locmax <- unname(locmax[1,])
     pos <- list(x=D$xcol[locmax[2]], y=D$yrow[locmax[1]])
     pos <- affinexy(pos, mat=invmat)
     if(show) 
       points(pos)
-    # determine justification of legend relative to this point
-    # to avoid crossing edges of plot
+    ## determine justification of legend relative to this point
+    ## to avoid crossing edges of plot
     xrel <- (pos$x - W$xrange[1])/diff(W$xrange)
     yrel <- (pos$y - W$yrange[1])/diff(W$yrange)
     xjust <- if(xrel < 0.1) 0 else if(xrel > 0.9) 1 else 0.5 
     yjust <- if(yrel < 0.1) 0 else if(yrel > 0.9) 1 else 0.5
-    #
+    ##
     out <- list(x=pos, xjust=xjust, yjust=yjust)
     return(out)
   }
@@ -759,7 +760,7 @@ findbestlegendpos <- local({
                         if(is.psp(z)) as.mask.psp(z) else NULL }
   
   callit <- function(...) {
-    rslt <- try(thefunction(...))
+    rslt <- try(bestlegendpos(...))
     if(!inherits(rslt, "try-error"))
       return(rslt)
     return(list())

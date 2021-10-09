@@ -1,7 +1,7 @@
 #
 #	Kest.R		Estimation of K function
 #
-#	$Revision: 5.131 $	$Date: 2021/07/30 02:15:30 $
+#	$Revision: 5.132 $	$Date: 2021/10/09 01:56:06 $
 #
 #
 # -------- functions ----------------------------------------
@@ -72,16 +72,17 @@ function(X, ..., r=NULL, rmax=NULL, breaks=NULL,
   lambda2 <- (npts * (npts - 1))/(areaW^2)
 
   if(!is.null(domain)) {
-    # estimate based on contributions from a subdomain
+    ## estimate based on contributions from a subdomain
     domain <- as.owin(domain)
     if(!is.subset.owin(domain, W))
       stop(paste(dQuote("domain"),
                  "is not a subset of the window of X"))
-    # trick Kdot() into doing it
+    ## use code in Kdot/Kmulti
     indom <- factor(inside.owin(X$x, X$y, domain), levels=c(FALSE,TRUE))
     Kd <- Kdot(X %mark% indom, i="TRUE",
                r=r, breaks=breaks, correction=correction,
-               ratio=ratio)
+               ratio=ratio, rmax=rmax,
+               domainI=domain)
     # relabel and exit
     Kd <- rebadge.fv(Kd, quote(K(r)), "K")
     return(Kd)

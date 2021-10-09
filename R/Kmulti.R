@@ -4,7 +4,7 @@
 #	Compute estimates of cross-type K functions
 #	for multitype point patterns
 #
-#	$Revision: 5.53 $	$Date: 2020/12/19 05:25:06 $
+#	$Revision: 5.55 $	$Date: 2021/10/09 02:04:59 $
 #
 #
 # -------- functions ----------------------------------------
@@ -151,13 +151,19 @@ function(X, i, r=NULL, breaks=NULL,
 "Kmulti"<-
 function(X, I, J, r=NULL, breaks=NULL,
          correction = c("border", "isotropic", "Ripley", "translate") , ...,
-         ratio=FALSE)
+         rmax=NULL, ratio=FALSE)
 {
   verifyclass(X, "ppp")
 
   npts <- npoints(X)
   W <- X$window
   areaW <- area(W)
+
+  dotargs <- list(...)
+  domainI <- resolve.1.default("domainI", dotargs) %orifnull% W
+  domainJ <- resolve.1.default("domainJ", dotargs) %orifnull% W
+  areaI <- area(domainI)
+  areaJ <- area(domainJ)
 
   correction.given <- !missing(correction) && !is.null(correction)
   if(is.null(correction))
@@ -187,11 +193,11 @@ function(X, I, J, r=NULL, breaks=NULL,
 		
   nI <- sum(I)
   nJ <- sum(J)
-  lambdaI <- nI/areaW
-  lambdaJ <- nJ/areaW
+  lambdaI <- nI/areaI
+  lambdaJ <- nJ/areaJ
 
   # r values 
-  rmaxdefault <- rmax.rule("K", W, lambdaJ)
+  rmaxdefault <- rmax %orifnull% rmax.rule("K", W, lambdaJ)
   breaks <- handle.r.b.args(r, breaks, W, rmaxdefault=rmaxdefault)
   r <- breaks$r
   rmax <- breaks$max
@@ -210,7 +216,7 @@ function(X, I, J, r=NULL, breaks=NULL,
   
   # save numerator and denominator?
   if(ratio) {
-    denom <- lambdaI * lambdaJ * areaW
+    denom <- lambdaI * lambdaJ * areaI
     numK <- eval.fv(denom * K)
     denK <- eval.fv(denom + K * 0)
     attributes(numK) <- attributes(denK) <- attributes(K)
@@ -249,7 +255,7 @@ function(X, I, J, r=NULL, breaks=NULL,
     # uncorrected! 
     wh <- whist(dcloseIJ, breaks$val)  # no weights
     numKun <- cumsum(wh)
-    denKun <- lambdaI * lambdaJ * areaW
+    denKun <- lambdaI * lambdaJ * areaI
     Kun <- numKun/denKun
     K <- bind.fv(K, data.frame(un=Kun), "{hat(%s)[%s]^{un}}(r)",
                  "uncorrected estimate of %s",
@@ -317,7 +323,7 @@ function(X, I, J, r=NULL, breaks=NULL,
     edgewt <- edge.Trans(XI[icloseI], XJ[jcloseJ], paired=TRUE)
     wh <- whist(dcloseIJ, breaks$val, edgewt)
     numKtrans <- cumsum(wh)
-    denKtrans <- lambdaI * lambdaJ * areaW
+    denKtrans <- lambdaI * lambdaJ * areaI
     Ktrans <- numKtrans/denKtrans
     rmax <- diameter(W)/2
     Ktrans[r >= rmax] <- NA
@@ -340,7 +346,7 @@ function(X, I, J, r=NULL, breaks=NULL,
     edgewt <- edge.Ripley(XI[icloseI], matrix(dcloseIJ, ncol=1))
     wh <- whist(dcloseIJ, breaks$val, edgewt)
     numKiso <- cumsum(wh)
-    denKiso <- lambdaI * lambdaJ * areaW
+    denKiso <- lambdaI * lambdaJ * areaI
     Kiso <- numKiso/denKiso
     rmax <- diameter(W)/2
     Kiso[r >= rmax] <- NA

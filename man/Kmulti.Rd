@@ -10,7 +10,7 @@ which counts the expected number of points of subset \eqn{J}
 within a given distance from a typical point in subset \code{I}.
 }
 \usage{
-Kmulti(X, I, J, r=NULL, breaks=NULL, correction, \dots, ratio=FALSE)
+Kmulti(X, I, J, r=NULL, breaks=NULL, correction, \dots, rmax=NULL, ratio=FALSE)
 }
 \arguments{
   \item{X}{The observed point pattern, 
@@ -31,6 +31,7 @@ Kmulti(X, I, J, r=NULL, breaks=NULL, correction, \dots, ratio=FALSE)
     There is a sensible default.
     First-time users are strongly advised not to specify this argument.
     See below for important conditions on \eqn{r}.
+    If necessary, specify \code{rmax}.
   }
   \item{breaks}{
 	This argument is for internal use only.
@@ -45,6 +46,9 @@ Kmulti(X, I, J, r=NULL, breaks=NULL, correction, \dots, ratio=FALSE)
     Alternatively \code{correction="all"} selects all options.
   }
   \item{\dots}{Ignored.}
+  \item{rmax}{
+    Optional. Maximum desired value of the argument \eqn{r}.
+  }
   \item{ratio}{
     Logical. 
     If \code{TRUE}, the numerator and denominator of

@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.020
+        CHANGES IN spatstat.core VERSION 2.3-0.021
 
 OVERVIEW
 
@@ -17,7 +17,7 @@ NEW FUNCTIONS
     to a binary predictor.
     
     o coef<-.fii
-    Changes the coefficients of a fitted interaction
+    Changes the coefficients of a fitted interaction object
     (a method for the generic "coef<-")
 
     o rjitter.psp
@@ -40,11 +40,17 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o distcdf
     Improved regularisation algorithm.
     Argument 'nr=NULL' is now accepted.
-    New argument 'delta' allows the result to be interpolated onto a finer grid.
+    New argument 'delta' allows the result to be interpolated
+    onto a finer grid.
 
     o collapse.fv
     Columns identified by the arguments 'same' and 'different'
     may now be absent from some of the 'fv' objects that will be collapsed.
+
+    o Kest
+    When the argument 'domain' is given, the calculation of estimates of K(r)
+    has changed slightly, to adhere more closely to the description in
+    the help file.
     
     o reload.or.compute
     Now prints a message indicating whether the data were recomputed
@@ -61,10 +67,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Minor changes to the argument list.
 
     o mincontrast
-    Improved algorithm for handlingg NA, NaN or infinite values.
+    Improved algorithm for handling NA, NaN or infinite values.
 
     o varcount
     Argument B has a sensible default.
+
+    o Kmulti
+    New argument 'rmax'.
     
 BUG FIXES
 
@@ -84,6 +93,15 @@ BUG FIXES
     o segregation.test
     The test statistic was calculated as the mean, rather than the sum,
     of discrepancies between probabilities. (The p-value was not affected.)
+    Fixed.
+
+    o Kest
+    If 'domain' was specified, 'rmax' was ignored.
+    Fixed.
+
+    o plot.fv, plot.envelope
+    Crashed when trying to display a significance band of width zero
+    around a constant function.
     Fixed.
     
     o collapse.fv
