@@ -65,6 +65,7 @@ static const R_CMethodDef CEntries[] = {
     {"RcallG3cen",       (DL_FUNC) &RcallG3cen,       19},
     {"RcallK3",          (DL_FUNC) &RcallK3,          17},
     {"Rcallpcf3",        (DL_FUNC) &Rcallpcf3,        18},
+    {"ripboxDebug",      (DL_FUNC) &ripboxDebug,      11},
     {"ripleybox",        (DL_FUNC) &ripleybox,        11},
     {"ripleypoly",       (DL_FUNC) &ripleypoly,       12},
     {"rippolDebug",      (DL_FUNC) &rippolDebug,      12},

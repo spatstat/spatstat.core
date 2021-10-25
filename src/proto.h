@@ -38,6 +38,7 @@ void Ediggra(int *, double *, double *, int *, int *, double *, double *, int *,
 void ESdiggra(int *, double *, double *, int *, int *, double *, double *, int *, double *, double *, double *, int *);
 void Ediggatsti(int *, double *, double *, int *, int *, double *, double *, int *, double *, double *);
 void ripleybox(int *, double *, double *, double *, int *, double *, double *, double *, double *, double *, double *); 
+void ripboxDebug(int *, double *, double *, double *, int *, double *, double *, double *, double *, double *, double *); 
 void ripleypoly(int *, double *, double *, double *, int *, double *, int *, double *, double *, double *, double *, double *); 
 void rippolDebug(int *, double *, double *, double *, int *, double *, int *, double *, double *, double *, double *, double *);
 void RcallK3(double *, double *, double *, int *, double *, double *, double *, double *, double *, double *, double *, double *, int *, double *, double *, double *, int *); 

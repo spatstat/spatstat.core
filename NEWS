@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.022
+        CHANGES IN spatstat.core VERSION 2.3-0.023
 
 OVERVIEW
 
@@ -100,6 +100,14 @@ BUG FIXES
 
     o Kest
     If 'domain' was specified, 'rmax' was ignored.
+    Fixed.
+
+    o edge.Ripley
+    Value was incorrect for a point lying exactly on a corner.
+    Fixed.
+
+    o edge.Ripley
+    Crashed when method="interpreted", if a point lay exactly on a corner.
     Fixed.
 
     o plot.fv, plot.envelope

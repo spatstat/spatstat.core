@@ -1,7 +1,7 @@
 #
 #        edgeRipley.R
 #
-#    $Revision: 1.19 $    $Date: 2021/01/07 03:08:41 $
+#    $Revision: 1.20 $    $Date: 2021/10/25 10:26:05 $
 #
 #    Ripley isotropic edge correction weights
 #
@@ -118,7 +118,8 @@ edge.Ripley <- local({
 
              # total exterior angle
              ext <- cL + cR + cU + cD
-
+	     ext <- matrix(ext, Nr, Nc)
+	     
              # add pi/2 for corners 
              if(any(corner))
                ext[corner,] <- ext[corner,] + pi/2
@@ -131,19 +132,35 @@ edge.Ripley <- local({
              ############ C code #############################
              switch(W$type,
                     rectangle={
-                      z <- .C(SC_ripleybox,
-                              nx=as.integer(n),
-                              x=as.double(x),
-                              y=as.double(y),
-                              rmat=as.double(r),
-                              nr=as.integer(Nc), #sic
-                              xmin=as.double(W$xrange[1L]),
-                              ymin=as.double(W$yrange[1L]),
-                              xmax=as.double(W$xrange[2L]),
-                              ymax=as.double(W$yrange[2L]),
-                              epsilon=as.double(.Machine$double.eps),
-                              out=as.double(numeric(Nr * Nc)),
-                              PACKAGE="spatstat.core")
+		      if(!debug) {
+                        z <- .C(SC_ripleybox,
+                                nx=as.integer(n),
+                                x=as.double(x),
+                                y=as.double(y),
+                                rmat=as.double(r),
+                                nr=as.integer(Nc), #sic
+                                xmin=as.double(W$xrange[1L]),
+                                ymin=as.double(W$yrange[1L]),
+                                xmax=as.double(W$xrange[2L]),
+                                ymax=as.double(W$yrange[2L]),
+                                epsilon=as.double(.Machine$double.eps),
+                                out=as.double(numeric(Nr * Nc)),
+                                PACKAGE="spatstat.core")
+		        } else {
+                        z <- .C(SC_ripboxDebug,
+                                nx=as.integer(n),
+                                x=as.double(x),
+                                y=as.double(y),
+                                rmat=as.double(r),
+                                nr=as.integer(Nc), #sic
+                                xmin=as.double(W$xrange[1L]),
+                                ymin=as.double(W$yrange[1L]),
+                                xmax=as.double(W$xrange[2L]),
+                                ymax=as.double(W$yrange[2L]),
+                                epsilon=as.double(.Machine$double.eps),
+                                out=as.double(numeric(Nr * Nc)),
+                                PACKAGE="spatstat.core")
+	              }
                       weight <- matrix(z$out, nrow=Nr, ncol=Nc)
                     },
                     polygonal={

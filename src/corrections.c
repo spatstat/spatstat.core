@@ -4,7 +4,7 @@
 
   Edge corrections
 
-  $Revision: 1.15 $     $Date: 2019/03/30 01:15:48 $
+  $Revision: 1.17 $     $Date: 2021/10/25 10:18:31 $
 
   Copyright (C) Adrian Baddeley, Ege Rubak and Rolf Turner 2001-2018
   Licence: GNU Public Licence >= 2
@@ -19,9 +19,6 @@
 #include "chunkloop.h"
 #include "yesno.h"
 #include "constants.h"
-
-#undef DEBUG
-
 
 /* This constant is defined in Rmath.h */
 #define TWOPI M_2PI
@@ -40,120 +37,19 @@
   (BETWEEN(X,X0,X1) && UNDERNEATH(X, Y, X0, Y0, X1, Y1))
 
 
-void ripleybox(nx, x, y, rmat, nr, xmin, ymin, xmax, ymax,  epsilon, out)
-     /* inputs */
-     int *nx, *nr;  /* dimensions */
-     double *x, *y; /* coordinate vectors of length nx */
-     double *rmat;  /* matrix nx by nr  */
-     double *xmin, *ymin, *xmax, *ymax;  /* box dimensions */
-     double *epsilon; /* threshold for proximity to corner */
-     /* output */
-     double *out;  /* output matrix nx by nr */
-{
-  int i, j, n, m, ijpos, ncor, maxchunk;
-  double xx, yy, x0, y0, x1, y1, dL, dR, dU, dD, aL, aU, aD, aR, rij;
-  double cL, cU, cD, cR, bLU, bLD, bRU, bRD, bUL, bUR, bDL, bDR;
-  double corner, extang;
-  double eps;
 
-  n  = *nx;
-  m  = *nr;
-  x0 = *xmin;
-  y0 = *ymin;
-  x1 = *xmax;
-  y1 = *ymax;
-  eps = *epsilon;
+/* C function ripleybox */
+#undef DEBUGBOX
+#define RIPLEYFUN ripleybox
+#include "ripleybox.h"
+#undef RIPLEYFUN
 
-  OUTERCHUNKLOOP(i, n, maxchunk, 16384) {
-    R_CheckUserInterrupt();
-    INNERCHUNKLOOP(i, n, maxchunk, 16384) {
-      xx = x[i];
-      yy = y[i];
-      /* 
-	 perpendicular distance from point to each edge of rectangle
-	 L = left, R = right, D = down, U = up
-      */
-      dL = xx - x0;
-      dR = x1 - xx;
-      dD = yy - y0;
-      dU = y1 - yy;
-
-      /*
-	test for corner of the rectangle
-      */
-#define ABS(X) (((X) >= 0) ? (X) : (-X))
-#define SMALL(X) ((ABS(X) < eps) ? 1 : 0)
-
-      ncor = SMALL(dL) + SMALL(dR) + SMALL(dD) + SMALL(dU);
-      corner = (ncor >= 2) ? YES : NO;
-  
-      /* 
-	 angle between 
-	 - perpendicular to edge of rectangle
-	 and 
-	 - line from point to corner of rectangle
-
-      */
-      bLU = atan2(dU, dL);
-      bLD = atan2(dD, dL);
-      bRU = atan2(dU, dR);
-      bRD = atan2(dD, dR);
-      bUL = atan2(dL, dU);
-      bUR = atan2(dR, dU);
-      bDL = atan2(dL, dD);
-      bDR = atan2(dR, dD);
-
-      for(j = 0; j < m; j++) {
-	ijpos = j * n + i;
-	rij = rmat[ijpos];
-#ifdef DEBUG
-	Rprintf("rij = %lf\n", rij);
-#endif
-	/*
-	  half the angle subtended by the intersection between
-	  the circle of radius r[i,j] centred on point i
-	  and each edge of the rectangle (prolonged to an infinite line)
-	*/
-	aL = (dL < rij) ? acos(dL/rij) : 0.0;
-	aR = (dR < rij) ? acos(dR/rij) : 0.0;
-	aD = (dD < rij) ? acos(dD/rij) : 0.0;
-	aU = (dU < rij) ? acos(dU/rij) : 0.0;
-#ifdef DEBUG
-	Rprintf("aL = %lf\n", aL);
-	Rprintf("aR = %lf\n", aR);
-	Rprintf("aD = %lf\n", aD);
-	Rprintf("aU = %lf\n", aU);
-#endif
-	/* apply maxima */
-
-	cL = MIN(aL, bLU) + MIN(aL, bLD);
-	cR = MIN(aR, bRU) + MIN(aR, bRD);
-	cU = MIN(aU, bUL) + MIN(aU, bUR);
-	cD = MIN(aD, bDL) + MIN(aD, bDR);
-#ifdef DEBUG
-	Rprintf("cL = %lf\n", cL);
-	Rprintf("cR = %lf\n", cR);
-	Rprintf("cD = %lf\n", cD);
-	Rprintf("cU = %lf\n", cU);
-#endif
-
-	/* total exterior angle over 2 pi */
-	extang = (cL + cR + cU + cD)/TWOPI;
-
-	/* add pi/2 for corners */
-	if(corner) 
-	  extang += 1/4;
-
-#ifdef DEBUG
-	Rprintf("extang = %lf\n", extang);
-#endif
-	/* OK, now compute weight */
-	out[ijpos] = 1 / (1 - extang);
-      }
-    }
-  }
-}
-
+/* C function ripboxDebug */
+#define DEBUGBOX
+#define RIPLEYFUN ripboxDebug
+#include "ripleybox.h"
+#undef RIPLEYFUN
+#undef DEBUGBOX
 
 /* C function ripleypoly */
 #undef DEBUGPOLY
@@ -162,8 +58,8 @@ void ripleybox(nx, x, y, rmat, nr, xmin, ymin, xmax, ymax,  epsilon, out)
 #undef RIPLEYFUN
 
 /* C function rippolDebug */
-#define RIPLEYFUN rippolDebug
 #define DEBUGPOLY
+#define RIPLEYFUN rippolDebug
 #include "ripleypoly.h"
 #undef RIPLEYFUN
 #undef DEBUGPOLY
