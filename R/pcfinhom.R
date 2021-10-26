@@ -1,7 +1,7 @@
 #
 #   pcfinhom.R
 #
-#   $Revision: 1.23 $   $Date: 2019/05/24 10:24:48 $
+#   $Revision: 1.24 $   $Date: 2021/10/26 07:12:24 $
 #
 #   inhomogeneous pair correlation function of point pattern 
 #
@@ -19,7 +19,6 @@ pcfinhom <- function(X, lambda=NULL, ..., r=NULL,
 {
   verifyclass(X, "ppp")
 #  r.override <- !is.null(r)
-  miss.update <- missing(update)
   
   win <- X$window
   areaW <- area(win)
@@ -103,11 +102,6 @@ pcfinhom <- function(X, lambda=NULL, ..., r=NULL,
           lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
         }
         danger <- FALSE
-        if(miss.update) 
-          warn.once(key="pcfinhom.update",
-                    "The behaviour of pcfinhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-0 and later).",
-                    "See help(pcfinhom)")
       }
     } else if(is.function(lambda)) 
       lambda <- lambda(X$x, X$y)

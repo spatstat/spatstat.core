@@ -1,7 +1,7 @@
 #
 #	Kinhom.S	Estimation of K function for inhomogeneous patterns
 #
-#	$Revision: 1.99 $	$Date: 2019/10/16 03:26:26 $
+#	$Revision: 1.100 $	$Date: 2021/10/26 07:12:00 $
 #
 #	Kinhom()	compute estimate of K_inhom
 #
@@ -74,7 +74,6 @@
     verifyclass(X, "ppp")
     nlarge.given <- !missing(nlarge)
     rfixed <- !missing(r) || !missing(breaks)
-    miss.update <- missing(update)
     
     # determine basic parameters
     W <- X$window
@@ -183,11 +182,6 @@
               lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
             }
             danger <- FALSE
-            if(miss.update) 
-              warn.once(key="Kinhom.update",
-                        "The behaviour of Kinhom when lambda is a ppm object",
-                        "has changed (in spatstat 1.37-0 and later).",
-                        "See help(Kinhom)")
           }
         } else if(is.function(lambda)) 
           lambda <- lambda(X$x, X$y)

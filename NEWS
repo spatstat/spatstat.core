@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.023
+        CHANGES IN spatstat.core VERSION 2.3-0.024
 
 OVERVIEW
 
@@ -77,6 +77,14 @@ SIGNIFICANT USER-VISIBLE CHANGES
     
     o Kmulti
     New argument 'rmax'.
+
+    o Kinhom
+    No longer issues a warning about changed behaviour in the case where
+    'lambda' is a fitted model.
+    
+    o pcfinhom
+    No longer issues a warning about changed behaviour in the case where
+    'lambda' is a fitted model.
     
 BUG FIXES
 
