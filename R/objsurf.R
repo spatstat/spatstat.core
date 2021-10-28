@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.16 $ $Date: 2021/09/12 01:44:47 $
+#  $Revision: 1.28 $ $Date: 2021/10/28 04:26:50 $
 #
 
 
@@ -15,7 +15,7 @@ objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TR
   Fit <- x$Fit
   switch(Fit$method,
          mincon = {
-           result <- objsurf(Fit$mcfit, ...,
+           result <- objsurf(Fit$mcfit, ..., 
                              ngrid=ngrid, ratio=ratio, verbose=verbose)
          },
          palm = ,
@@ -24,6 +24,7 @@ objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TR
            objfun  <- Fit$objfun
            objargs <- Fit$objargs
            result  <- objsurfEngine(objfun, optpar, objargs, ...,
+                                    objname = "log composite likelihood",
                                     ngrid=ngrid, ratio=ratio, verbose=verbose)
          },
          stop(paste("Unrecognised fitting method", dQuote(Fit$method)),
@@ -38,6 +39,7 @@ objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
   objargs <- x$objargs
   dotargs <- x$dotargs
   result <- objsurfEngine(objfun, optpar, objargs, ...,
+                          objname = "contrast",
                           dotargs=dotargs,
                           ngrid=ngrid, ratio=ratio, verbose=verbose)
   return(result)
@@ -54,22 +56,22 @@ objsurfEngine <- function(objfun, optpar, objargs,
   npar    <- length(optpar)
   if(npar != 2)
     stop("Only implemented for functions of 2 arguments")
-  # create grid of parameter values
+  ## create grid of values of (possibly transformed) parameters  
   ratio <- ensure2vector(ratio)
   ngrid <- ensure2vector(ngrid)
   stopifnot(all(ratio > 1))
-  xgrid <- seq(optpar[1]/ratio[1], optpar[1] * ratio[1], length=ngrid[1])
-  ygrid <- seq(optpar[2]/ratio[2], optpar[2] * ratio[2], length=ngrid[2])
-  pargrid <- expand.grid(xgrid, ygrid)
-  colnames(pargrid) <- names(optpar)
-  # evaluate
+    xgrid <- seq(optpar[1]/ratio[1], optpar[1] * ratio[1], length=ngrid[1])
+    ygrid <- seq(optpar[2]/ratio[2], optpar[2] * ratio[2], length=ngrid[2])
+    pargrid <- expand.grid(xgrid, ygrid)
+    colnames(pargrid) <- names(optpar)
+  # evaluate objective function
   if(verbose) cat(paste("Evaluating", nrow(pargrid), "function values..."))
   values <- do.call(apply,
                     append(list(pargrid, 1, objfun, objargs=objargs), dotargs))
   if(verbose) cat("Done.\n")
   result <- list(x=xgrid, y=ygrid, z=matrix(values, ngrid[1], ngrid[2]))
   attr(result, "optpar") <- optpar
-  attr(result, "objname") <- "contrast"
+  attr(result, "objname") <- objname
   class(result) <- "objsurf"
   return(result)
 }

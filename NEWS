@@ -1,11 +1,13 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-0.024
+        CHANGES IN spatstat.core VERSION 2.3-1
 
 OVERVIEW
 
     o Covariates in ppm and mppm may be functions that depend on the marks
     as well as the spatial coordinates.
 
+    o Automatic selection of threshold for defining a binary predictor.
+    
     o Random perturbation of line segments.
     
     o Minor extensions, performance improvements, and bug fixes.

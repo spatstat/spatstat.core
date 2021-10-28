@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.187 $ $Date: 2021/09/21 08:10:42 $
+# $Revision: 1.188 $ $Date: 2021/10/28 04:26:26 $
 #
 
 
@@ -175,6 +175,7 @@ kppm.ppp <- kppm.quad <-
     out <- do.call(improve.kppm,
                    append(list(object = out, type = improve.type),
                           improve.args))
+  
 
   attr(out, "h") <- h
   return(out)

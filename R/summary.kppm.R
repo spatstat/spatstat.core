@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.23 $  $Date: 2021/08/13 02:15:22 $
+#'   $Revision: 1.27 $  $Date: 2021/10/27 09:56:30 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
@@ -185,14 +185,14 @@ print.summary.kppm <- function(x, ...) {
     parbreak()
     splat("----------- cluster strength indices ---------- ")
     if(!is.null(psi)) {
-      psi <- signif(psi, 4)
+      psi <- signif(psi, digits)
       if(isTRUE(x$stationary)) {
         splat("Sibling probability", psi)
       } else splat("Mean sibling probability", psi)
     }
     if(!is.null(odi))
       splat("Count overdispersion index (on original window):",
-            signif(odi, 3))
+            signif(odi, digits))
   }
   
 
