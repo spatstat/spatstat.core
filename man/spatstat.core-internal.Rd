@@ -180,6 +180,7 @@
 \alias{logi.engine}
 \alias{logLik.vblogit}
 \alias{lookup2DkernelInfo}
+\alias{LurkEngine}
 \alias{makefvlabel}
 \alias{maskLaslett}
 \alias{match2DkernelName}
@@ -652,6 +653,16 @@ logi.engine(Q, trend, interaction, \dots,
             VB)
 \method{logLik}{vblogit}(object, \dots)
 lookup2DkernelInfo(kernel)
+LurkEngine(object, type, cumulative, plot.sd, 
+           quadpoints, wts, Z, subQset, 
+           covvalues, resvalues, 
+           clip, clipwindow, cov.is.im, covrange, 
+           typename, covname,
+           cl, clenv,
+           oldstyle, check,
+           verbose, nx, splineargs,
+           envelope, nsim, nrank, Xsim,
+           internal, checklength)
 makefvlabel(op, accent, fname, sub, argname)
 maskLaslett(X, \dots, eps, dimyx, xy, oldX, verbose, plotit)
 match.kernel(kernel)

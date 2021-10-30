@@ -1,9 +1,27 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.001
+        CHANGES IN spatstat.core VERSION 2.3-1.002
 
 OVERVIEW
 
-    o Internal changes
+    o More diagnostics for spatial logistic regression models
+
+NEW FUNCTIONS
+
+    o lurking.slrm
+    Lurking variable plot for spatial logistic regression models.
+
+    o eem.slrm
+    Exponential energy marks for spatial logistic regression models.
+
+    o eem.ppm
+    Exponential energy marks for Gibbs and Poisson point process models.
+
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o eem
+    The function 'eem' is now generic, with methods for 'ppm' and 'slrm'.
+
 
         CHANGES IN spatstat.core VERSION 2.3-1
 

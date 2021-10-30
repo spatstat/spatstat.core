@@ -1,5 +1,7 @@
 \name{eem}
 \alias{eem}
+\alias{eem.ppm}
+\alias{eem.slrm}
 \title{
   Exponential Energy Marks
 }
@@ -9,7 +11,11 @@
   for the data points. 
 }
 \usage{
-  eem(fit, check=TRUE)
+  eem(fit, \dots)
+
+  \method{eem}{ppm}(fit, check=TRUE, \dots)
+
+  \method{eem}{slrm}(fit, check=TRUE, \dots)
 }
 \arguments{
   \item{fit}{
@@ -22,6 +28,7 @@
     the environment where it was originally computed, set
     \code{check=TRUE}. 
   }
+  \item{\dots}{Ignored.}
 }
 \value{
   A vector containing the values of the exponential energy mark
@@ -40,8 +47,9 @@
   area of \eqn{B}.
   
   The argument \code{fit} must be a fitted point process model
-  (object of class \code{"ppm"}). Such objects are produced by the maximum
-  pseudolikelihood fitting algorithm \code{\link{ppm}}).
+  (object of class \code{"ppm"} or \code{"slrm"}).
+  Such objects are produced by the fitting algorithms \code{\link{ppm}})
+  and \code{\link{slrm}}.
   This fitted model object contains complete
   information about the original data pattern and the model that was
   fitted to it.
@@ -50,7 +58,7 @@
   of weights \eqn{m[i]}{m_i} associated with the points \eqn{x[i]}{x_i}
   of the original data pattern. The original data pattern
   (in corresponding order) can be
-  extracted from \code{fit} using \code{\link{data.ppm}}.
+  extracted from \code{fit} using \code{\link{response}}.
   
   The function \code{\link{diagnose.ppm}}
   produces a set of sensible diagnostic plots based on these weights.
@@ -70,7 +78,7 @@
 }
 \examples{
     data(cells)
-    fit <- ppm(cells, ~x, Strauss(r=0.15))
+    fit <- ppm(cells ~x, Strauss(r=0.15))
     ee <- eem(fit)
     sum(ee)/area(Window(cells)) # should be about 1 if model is correct
     Y <- setmarks(cells, ee)
