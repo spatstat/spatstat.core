@@ -1,7 +1,7 @@
 # Lurking variable plot for arbitrary covariate.
 #
 #
-# $Revision: 1.65 $ $Date: 2020/12/19 05:25:06 $
+# $Revision: 1.71 $ $Date: 2021/10/30 01:42:37 $
 #
 
 lurking <- function(object, ...) {
@@ -30,7 +30,8 @@ lurking.ppp <- lurking.ppm <- local({
                           splineargs=list(spar=0.5),
                           internal=NULL) {
     cl <- match.call()
-
+    clenv <- parent.frame()
+    
     ## validate object
     if(is.ppp(object)) {
       X <- object
@@ -45,18 +46,10 @@ lurking.ppp <- lurking.ppm <- local({
                  if(is.expression(co)) format(co[[1]]) else NULL
     }
 
-    ## handle secret data
-    internal <- resolve.defaults(internal,
-                                 list(saveworking=FALSE,
-                                      Fisher=NULL,
-                                      covrange=NULL))
-    saveworking <- internal$saveworking
-    Fisher      <- internal$Fisher  # possibly from a larger model
-    covrange    <- internal$covrange
     
+    Xsim <- NULL
     if(!identical(envelope, FALSE)) {
       ## compute simulation envelope
-      Xsim <- NULL
       if(!identical(envelope, TRUE)) {
         ## some kind of object
         Y <- envelope
@@ -110,23 +103,26 @@ lurking.ppp <- lurking.ppm <- local({
     
     if(is.im(covariate)) {
       covvalues <- covariate[quadpoints, drop=FALSE]
-      covrange <- covrange %orifnull% range(covariate, finite=TRUE)
+      covrange <- internal$covrange %orifnull% range(covariate, finite=TRUE)
     } else if(is.vector(covariate) && is.numeric(covariate)) {
       covvalues <- covariate
-      covrange <- covrange %orifnull% range(covariate, finite=TRUE)
+      covrange <- internal$covrange %orifnull% range(covariate, finite=TRUE)
       if(length(covvalues) != quadpoints$n)
         stop("Length of covariate vector,", length(covvalues), "!=",
              quadpoints$n, ", number of quadrature points")
     } else if(is.expression(covariate)) {
       ## Expression involving covariates in the model
       glmdata <- getglmdata(object)
-      ## Fix special cases
       if(is.null(glmdata)) {
         ## default 
         glmdata <- data.frame(x=quadpoints$x, y=quadpoints$y)
         if(is.marked(quadpoints))
           glmdata$marks <- marks(quadpoints)
+      } else {
+        ## validate
+        #///////////
       }
+      
       ## ensure x and y are in data frame 
       if(!all(c("x","y") %in% names(glmdata))) {
         glmdata$x <- quadpoints$x
@@ -145,7 +141,7 @@ lurking.ppp <- lurking.ppm <- local({
       ## Evaluate expression
       sp <- parent.frame()
       covvalues <- eval(covariate, envir= glmdata, enclos=sp)
-      covrange <- covrange %orifnull% range(covvalues, finite=TRUE)
+      covrange <- internal$covrange %orifnull% range(covvalues, finite=TRUE)
       if(!is.numeric(covvalues))
         stop("The evaluated covariate is not numeric")
     } else 
@@ -160,56 +156,21 @@ lurking.ppp <- lurking.ppm <- local({
     #################################################################
     ## Validate covariate values
 
-    nbg <- is.na(covvalues)
-    if(any(offending <- nbg & subQset)) {
-      if(is.im(covariate))
-        warning(paste(sum(offending), "out of", length(offending),
-                      "quadrature points discarded because",
-                      ngettext(sum(offending), "it lies", "they lie"),
-                      "outside the domain of the covariate image"))
-      else
-        warning(paste(sum(offending), "out of", length(offending),
-                      "covariate values discarded because",
-                      ngettext(sum(offending), "it is NA", "they are NA")))
-    }
-    ## remove points
-    ok <- !nbg & subQset
-    Q <- Q[ok]
-    covvalues <- covvalues[ok]
-    quadpoints <- quadpoints[ok]
-    ## adjust
-    Z <- is.data(Q)
-    wts <- w.quad(Q)
-    if(any(is.infinite(covvalues) | is.nan(covvalues)))
-      stop("covariate contains Inf or NaN values")
-
-    ## Quadrature points marked by covariate value
-    covq <- quadpoints %mark% as.numeric(covvalues)
-
     ################################################################
     ## Residuals/marks attached to appropriate locations.
     ## Stoyan-Grabarnik weights are attached to the data points only.
     ## Others (residuals) are attached to all quadrature points.
-
     resvalues <- 
       if(!is.null(rv)) rv
       else if(type=="eem") eem(object, check=check)
       else residuals.ppm(object, type=type, check=check)
-  
+
     if(inherits(resvalues, "msr")) {
-      ## signed or vector-valued measure
+      ## signed or vector-valued measure; extract increment masses
       resvalues <- resvalues$val
       if(ncol(as.matrix(resvalues)) > 1)
         stop("Not implemented for vector measures; use [.msr to split into separate components")
     }
-
-    if(type != "eem")
-      resvalues <- resvalues[ok]
-
-    res <- (if(type == "eem") datapoints else quadpoints) %mark% as.numeric(resvalues)
-
-    ## ... and the same locations marked by the covariate
-    covres <- if(type == "eem") covq[Z] else covq
 
     ## NAMES OF THINGS
     ## name of the covariate
@@ -218,21 +179,142 @@ lurking.ppp <- lurking.ppm <- local({
     ## type of residual/mark
     if(missing(typename)) 
       typename <- if(!is.null(rv)) "rv" else ""
-    
-    #######################################################################
-    ## START ANALYSIS
-    ## Clip to subwindow if needed
+
     clip <-
       (!is.poisson.ppm(object) || !missing(clipwindow)) &&
       !is.null(clipwindow)
+
+    ## CALCULATE
+    stuff <- LurkEngine(object=object,
+                        type=type, cumulative=cumulative, plot.sd=plot.sd,
+                        quadpoints=quadpoints,
+                        wts=wts,
+                        Z=Z,
+                        subQset=subQset,
+                        covvalues=covvalues,
+                        resvalues=resvalues,
+                        clip=clip,
+                        clipwindow=clipwindow,
+                        cov.is.im=is.im(covariate),
+                        covrange=covrange,
+                        typename=typename,
+                        covname=covname,
+                        cl=cl, clenv=clenv,
+                        oldstyle=oldstyle, check=check, verbose=verbose,
+                        nx=nx, splineargs=splineargs,
+                        envelope=envelope, nsim=nsim, nrank=nrank, Xsim=Xsim,
+                        internal=internal)
+    
+    ## ---------------  PLOT THEM  ----------------------------------
+    if(plot.it) {
+      plot(stuff, ...)
+      return(invisible(stuff))
+    } else {
+      return(stuff)
+    }
+  }
+
+  #######################################################################
+
+  LurkEngine <- function(object, type, cumulative=TRUE, plot.sd=TRUE, 
+                         quadpoints, wts, Z, subQset, 
+                         covvalues, resvalues, 
+                         clip, clipwindow, cov.is.im=FALSE, covrange, 
+                         typename, covname,
+                         cl, clenv,
+                         oldstyle=FALSE, check=TRUE,
+                         verbose=FALSE, nx, splineargs,
+                         envelope=FALSE, nsim=39, nrank=1, Xsim=list(),
+                         internal=list(), checklength=TRUE) {
+    stopifnot(is.ppm(object) || is.slrm(object))
+    ## validate covariate values
+    covvalues <- as.numeric(covvalues)
+    resvalues <- as.numeric(resvalues)
+    if(checklength) {
+      nqu <- npoints(quadpoints)
+      nco <- length(covvalues)
+      nre <- length(resvalues)
+      nwt <- length(wts)
+      nZ  <- length(Z)
+      should <- if(type == "eem") c(nco, nwt, nZ) else c(nco, nwt, nZ, nre) 
+      if(!all(should == nqu)) {
+        typeblurb <- paste("type =", sQuote(type))
+        typeblurb <- paren(typeblurb, "[")
+        gripe1 <- paste("Failed initial data check",
+                        paste0(typeblurb, ":"))
+        gripe2 <- paste("!=", nqu, "= npoints(quadpoints)")
+        if(nco != nqu)
+          stop(paste(gripe1, "length(covvalues) =", nco, gripe2))
+        if(nwt != nqu)
+          stop(paste(gripe1, "length(wts) =", nwt, gripe2))
+        if(nZ != nqu)
+          stop(paste(gripe1, "length(Z) =", nZ, gripe2))
+      }
+      if(type == "eem" && nre != sum(Z)) 
+        stop(paste("Failed initial data check [type='eem']: ",
+                   "length(resvalues) =", nre, 
+                   "!=", sum(Z), "= sum(Z)"))
+    }
+    ###
+    nbg <- is.na(covvalues)
+    if(any(offending <- nbg & subQset)) {
+      if(cov.is.im) {
+        warning(paste(sum(offending), "out of", length(offending),
+                      "quadrature points discarded because",
+                      ngettext(sum(offending), "it lies", "they lie"),
+                      "outside the domain of the covariate image"))
+      } else {
+        warning(paste(sum(offending), "out of", length(offending),
+                      "covariate values discarded because",
+                      ngettext(sum(offending), "it is NA", "they are NA")))
+      }
+    }
+    ## remove data with invalid covariate values
+    ok <- !nbg & subQset
+    if(!(allok <- all(ok))) {
+      quadpoints <- quadpoints[ok]
+      covvalues <- covvalues[ok]
+      okdata <- ok[Z]   # which original data points are retained
+      Zok    <- Z & ok  # which original quadrature pts are retained as data pts
+      Z      <- Z[ok]   # which of the retained quad pts are data pts
+      wts    <- wts[ok]
+      resvalues <- resvalues[if(type == "eem") okdata else ok]
+    } 
+    if(any(is.infinite(covvalues) | is.nan(covvalues)))
+      stop("covariate contains Inf or NaN values")
+
+    ## now determine the data points
+    datapoints <- quadpoints[Z]
+
+    ## Quadrature points marked by covariate value
+    covq <- quadpoints %mark% as.numeric(covvalues)
+
+    if(type == "eem") {
+      ## data points marked by residuals and covariate
+      res <- datapoints %mark% as.numeric(resvalues)
+      covres <- datapoints %mark% (as.numeric(covvalues)[Z])
+    } else {
+      ## quadrature points marked by residuals and covariate
+      res <- quadpoints %mark% as.numeric(resvalues)
+      covres <- quadpoints %mark% as.numeric(covvalues)
+    }
+
+    ## Clip to subwindow if needed
     if(clip) {
       covq <- covq[clipwindow]
       res <- res[clipwindow]
       covres <- covres[clipwindow]
-      clipquad <- inside.owin(quadpoints$x, quadpoints$y, clipwindow)
+      clipquad <- inside.owin(quadpoints, w=clipwindow)
       wts <- wts[ clipquad ]
+      Z  <- Z[ clipquad ]
     }
 
+    ## handle internal data
+    saveworking <- isTRUE(internal$saveworking)
+    Fisher      <- internal$Fisher  # possibly from a larger model
+    covrange    <- internal$covrange
+
+    ## >>>>>>>>>>>>  START ANALYSIS <<<<<<<<<<<<<<<<<<<<<<<<
     ## -----------------------------------------------------------------------
     ## (A) EMPIRICAL CUMULATIVE FUNCTION
     ## based on data points if type="eem", otherwise on quadrature points
@@ -311,20 +393,30 @@ lurking.ppp <- lurking.ppm <- local({
     ## (currently implemented only for Poisson)
     ## (currently implemented only for cumulative case)
 
-    if(plot.sd && !is.poisson.ppm(object))
+    if(plot.sd && !is.poisson(object))
       warning(paste("standard deviation is calculated for Poisson model;",
                     "not valid for this model"))
 
     if(plot.sd && cumulative) {
-      ## Fitted intensity at quadrature points
-      lambda <- fitted.ppm(object, type="trend", check=check)
-      lambda <- lambda[ok]
-      ## Fisher information for coefficients
-      asymp <- vcov(object,what="internals")
-      Fisher <- Fisher %orifnull% asymp$fisher
-      ## Local sufficient statistic at quadrature points
-      suff <- asymp$suff
-      suff <- suff[ok, ,drop=FALSE]
+      if(is.ppm(object)) {
+        ## Fitted intensity at quadrature points
+        lambda <- fitted(object, type="trend", check=check)
+        if(!allok) lambda <- lambda[ok]
+        ## Fisher information for coefficients
+        asymp <- vcov(object,what="internals")
+        Fisher <- Fisher %orifnull% asymp$fisher
+        ## Local sufficient statistic at quadrature points
+        suff <- asymp$suff
+        if(!allok) suff <- suff[ok, , drop=FALSE]
+      } else if(is.slrm(object)) {
+        ## Fitted intensity at quadrature points
+        lambda <- predict(object, type="intensity")[quadpoints, drop=FALSE]
+        ## Fisher information for coefficients
+        Fisher <- Fisher %orifnull% vcov(object, what="Fisher")
+        ## Sufficient statistic at quadrature points
+        suff <- model.matrix(object)
+        if(!allok) suff <- suff[ok, , drop=FALSE]
+      }
       ## Clip if required
       if(clip) {
         lambda <- lambda[clipquad]
@@ -433,8 +525,9 @@ lurking.ppp <- lurking.ppm <- local({
         state <- list()
       }
       for(i in seq_len(nsim)) {
+        ## evaluate lurking variable plot for simulated pattern
         cl$object <- update(object, Xsim[[i]])
-        result.i <- eval(cl, parent.frame())
+        result.i <- eval(cl, clenv)
         ## interpolate empirical values onto common sequence
         f.i <- with(result.i$empirical,
                     approxfun(covariate, value, rule=2))
@@ -458,13 +551,7 @@ lurking.ppp <- lurking.ppm <- local({
                                 oldstyle=oldstyle)
     if(saveworking) attr(stuff, "working") <- working
     class(stuff) <- "lurk"
-    ## ---------------  PLOT THEM  ----------------------------------
-    if(plot.it) {
-      plot(stuff, ...)
-      return(invisible(stuff))
-    } else {
-      return(stuff)
-    }
+    return(stuff)
   }
 
   Lurking.ppm

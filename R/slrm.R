@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.54 $   $Date: 2021/07/04 14:51:41 $
+#  $Revision: 1.55 $   $Date: 2021/10/28 08:32:49 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -38,6 +38,8 @@ slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
     stop("Internal error: failed to extract RHS of formula")
 
   varnames <- unique(variablesinformula(trend))
+  if(isTRUE(CallInfo$dotargs$save.all.vars))
+    varnames <- union(varnames, names(data))
   specials <- c("x", "y", "logpixelarea")
   covnames <- varnames[!(varnames %in% specials)]
 
