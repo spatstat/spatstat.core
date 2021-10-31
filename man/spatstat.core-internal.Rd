@@ -698,7 +698,7 @@ nndcumfun(X, \dots, r)
 no.trend.ppm(x)
 objsurfEngine(objfun, optpar, objargs,
               \dots, dotargs, objname,
-              ngrid, ratio, verbose)
+              ngrid, xlim, ylim, ratio, verbose)
 optimConverged(x)
 optimStatus(x, call)
 optimNsteps(x)

@@ -14,11 +14,11 @@
 \usage{
 objsurf(x, \dots)
 
-\method{objsurf}{dppm}(x, ..., ngrid = 32, ratio = 1.5, verbose = TRUE)
+\method{objsurf}{dppm}(x, ..., ngrid = 32, xlim=NULL, ylim=NULL, ratio = 1.5, verbose = TRUE)
 
-\method{objsurf}{kppm}(x, ..., ngrid = 32, ratio = 1.5, verbose = TRUE)
+\method{objsurf}{kppm}(x, ..., ngrid = 32, xlim=NULL, ylim=NULL, ratio = 1.5, verbose = TRUE)
 
-\method{objsurf}{minconfit}(x, ..., ngrid = 32, ratio = 1.5, verbose = TRUE)
+\method{objsurf}{minconfit}(x, ..., ngrid = 32, xlim=NULL, ylim=NULL, ratio = 1.5, verbose = TRUE)
 }
 \arguments{
   \item{x}{
@@ -34,9 +34,14 @@ objsurf(x, \dots)
     Either a single integer, or a pair of integers.
     For example \code{ngrid=32} would mean a \code{32 * 32} grid.
   }
+  \item{xlim,ylim}{
+    Optional. Numeric vectors of length 2, specifying the range
+    of parameter values to be considered.
+  }
   \item{ratio}{
     Number greater than 1 determining the range of parameter values
-    to be considered. If the optimal parameter value is \code{opt}
+    to be considered, if \code{xlim} and \code{ylim} are not specified.
+    If the optimal parameter value is \code{opt}
     then the objective function will be evaluated for
     values between \code{opt/ratio} and \code{opt * ratio}.
   }

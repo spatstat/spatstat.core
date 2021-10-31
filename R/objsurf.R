@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.28 $ $Date: 2021/10/28 04:26:50 $
+#  $Revision: 1.30 $ $Date: 2021/10/31 07:56:36 $
 #
 
 
@@ -11,12 +11,15 @@ objsurf <- function(x, ...) {
   UseMethod("objsurf")
 }
 
-objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
+objsurf.kppm <- objsurf.dppm <- function(x, ...,
+                                         ngrid=32, xlim=NULL, ylim=NULL,
+                                         ratio=1.5, verbose=TRUE) {
   Fit <- x$Fit
   switch(Fit$method,
          mincon = {
            result <- objsurf(Fit$mcfit, ..., 
-                             ngrid=ngrid, ratio=ratio, verbose=verbose)
+                             ngrid=ngrid, xlim=xlim, ylim=ylim, ratio=ratio,
+                             verbose=verbose)
          },
          palm = ,
          clik2 = {
@@ -25,7 +28,8 @@ objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TR
            objargs <- Fit$objargs
            result  <- objsurfEngine(objfun, optpar, objargs, ...,
                                     objname = "log composite likelihood",
-                                    ngrid=ngrid, ratio=ratio, verbose=verbose)
+                                    ngrid=ngrid, xlim=xlim, ylim=ylim,
+                                    ratio=ratio, verbose=verbose)
          },
          stop(paste("Unrecognised fitting method", dQuote(Fit$method)),
               call.=FALSE)
@@ -33,7 +37,8 @@ objsurf.kppm <- objsurf.dppm <- function(x, ..., ngrid=32, ratio=1.5, verbose=TR
   return(result)
 }
 
-objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
+objsurf.minconfit <- function(x, ..., ngrid=32, xlim=NULL, ylim=NULL,
+                              ratio=1.5, verbose=TRUE) {
   optpar  <- x$par
   objfun  <- x$objfun
   objargs <- x$objargs
@@ -41,7 +46,8 @@ objsurf.minconfit <- function(x, ..., ngrid=32, ratio=1.5, verbose=TRUE) {
   result <- objsurfEngine(objfun, optpar, objargs, ...,
                           objname = "contrast",
                           dotargs=dotargs,
-                          ngrid=ngrid, ratio=ratio, verbose=verbose)
+                          ngrid=ngrid, xlim=xlim, ylim=ylim, ratio=ratio,
+                          verbose=verbose)
   return(result)
 }
 
@@ -49,7 +55,9 @@ objsurfEngine <- function(objfun, optpar, objargs,
                           ...,
                           dotargs=list(),
                           objname="objective", 
-                          ngrid=32, ratio=1.5, verbose=TRUE) {
+                          ngrid=32,
+                          xlim=NULL, ylim=NULL,
+                          ratio=1.5, verbose=TRUE) {
   trap.extra.arguments(...)
   if(!is.function(objfun))
     stop("Object is in an outdated format and needs to be re-fitted")
@@ -60,8 +68,10 @@ objsurfEngine <- function(objfun, optpar, objargs,
   ratio <- ensure2vector(ratio)
   ngrid <- ensure2vector(ngrid)
   stopifnot(all(ratio > 1))
-    xgrid <- seq(optpar[1]/ratio[1], optpar[1] * ratio[1], length=ngrid[1])
-    ygrid <- seq(optpar[2]/ratio[2], optpar[2] * ratio[2], length=ngrid[2])
+    if(is.null(xlim)) xlim <- optpar[1] * c(1/ratio[1], ratio[1])
+    if(is.null(ylim)) ylim <- optpar[2] * c(1/ratio[2], ratio[2])
+    xgrid <- seq(xlim[1], xlim[2], length=ngrid[1])
+    ygrid <- seq(ylim[1], ylim[2], length=ngrid[2])
     pargrid <- expand.grid(xgrid, ygrid)
     colnames(pargrid) <- names(optpar)
   # evaluate objective function

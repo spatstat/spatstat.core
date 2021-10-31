@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.003
+        CHANGES IN spatstat.core VERSION 2.3-1.004
 
 OVERVIEW
 
@@ -25,6 +25,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
     The function 'eem' is now generic, with methods for 'ppm' and 'slrm'.
     The function previously named 'eem' is now called 'eem.ppm'.
 
+    o objsurf.dppm, objsurf.kppm, objsurf.mincontrast
+    New arguments 'xlim', 'ylim' determine the range of parameter values
+    to be considered.
+    
 BUG FIXES
 
     o edge.Ripley
