@@ -13,7 +13,7 @@
   *CHUNKLOOP     defined in chunkloop.h
   TWOPI          defined in Rmath.h
 
-  $Revision: 1.1 $     $Date: 2021/10/25 10:17:03 $
+  $Revision: 1.3 $     $Date: 2021/10/31 06:40:58 $
 
   Copyright (C) Adrian Baddeley, Ege Rubak and Rolf Turner 2001-2019
   Licence: GNU Public Licence >= 2
@@ -89,51 +89,57 @@ void RIPLEYFUN(nx, x, y, rmat, nr, xmin, ymin, xmax, ymax,  epsilon, out)
 #ifdef DEBUGBOX
 	Rprintf("rij = %lf\n", rij);
 #endif
-	/*
-	  half the angle subtended by the intersection between
-	  the circle of radius r[i,j] centred on point i
-	  and each edge of the rectangle (prolonged to an infinite line)
-	*/
-	aL = (dL < rij) ? acos(dL/rij) : 0.0;
-	aR = (dR < rij) ? acos(dR/rij) : 0.0;
-	aD = (dD < rij) ? acos(dD/rij) : 0.0;
-	aU = (dU < rij) ? acos(dU/rij) : 0.0;
+	if(rij == 0.0) {
+	  /* Circle of radius 0 */
+	  out[ijpos] = 1.0;
+	} else {
+	  /*
+	    Fraction of circle
+	    Compute half the angle subtended by the intersection between
+	    the circle of radius r[i,j] centred on point i
+	    and each edge of the rectangle (prolonged to an infinite line)
+	  */
+	  aL = (dL < rij) ? acos(dL/rij) : 0.0;
+	  aR = (dR < rij) ? acos(dR/rij) : 0.0;
+	  aD = (dD < rij) ? acos(dD/rij) : 0.0;
+	  aU = (dU < rij) ? acos(dU/rij) : 0.0;
 #ifdef DEBUGBOX
-	Rprintf("aL = %lf\n", aL);
-	Rprintf("aR = %lf\n", aR);
-	Rprintf("aD = %lf\n", aD);
-	Rprintf("aU = %lf\n", aU);
+	  Rprintf("aL = %lf\n", aL);
+	  Rprintf("aR = %lf\n", aR);
+	  Rprintf("aD = %lf\n", aD);
+	  Rprintf("aU = %lf\n", aU);
 #endif
-	/* apply maxima */
+	  /* apply maxima */
 
-	cL = MIN(aL, bLU) + MIN(aL, bLD);
-	cR = MIN(aR, bRU) + MIN(aR, bRD);
-	cU = MIN(aU, bUL) + MIN(aU, bUR);
-	cD = MIN(aD, bDL) + MIN(aD, bDR);
+	  cL = MIN(aL, bLU) + MIN(aL, bLD);
+	  cR = MIN(aR, bRU) + MIN(aR, bRD);
+	  cU = MIN(aU, bUL) + MIN(aU, bUR);
+	  cD = MIN(aD, bDL) + MIN(aD, bDR);
 #ifdef DEBUGBOX
-	Rprintf("cL = %lf\n", cL);
-	Rprintf("cR = %lf\n", cR);
-	Rprintf("cD = %lf\n", cD);
-	Rprintf("cU = %lf\n", cU);
-#endif
-
-	/* total exterior angle over 2 pi */
-	extang = (cL + cR + cU + cD)/TWOPI;
-
-#ifdef DEBUGBOX
-	Rprintf("extang = %lf\n", extang);
+	  Rprintf("cL = %lf\n", cL);
+	  Rprintf("cR = %lf\n", cR);
+	  Rprintf("cD = %lf\n", cD);
+	  Rprintf("cU = %lf\n", cU);
 #endif
 
-	/* add pi/2 for corners */
-	if(corner) {
-	  extang += 1.0/4.0;
+	  /* total exterior angle over 2 pi */
+	  extang = (cL + cR + cU + cD)/TWOPI;
+
 #ifdef DEBUGBOX
-	Rprintf("extang = %lf\n", extang);
+	  Rprintf("extang = %lf\n", extang);
 #endif
-	}
+
+	  /* add pi/2 for corners */
+	  if(corner) {
+	    extang += 1.0/4.0;
+#ifdef DEBUGBOX
+	    Rprintf("extang = %lf\n", extang);
+#endif
+	  }
 	
-	/* OK, now compute weight */
-	out[ijpos] = 1 / (1 - extang);
+	  /* OK, now compute weight */
+	  out[ijpos] = 1 / (1 - extang);
+	}
       }
     }
   }

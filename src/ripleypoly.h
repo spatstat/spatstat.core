@@ -14,7 +14,7 @@
   *CHUNKLOOP     defined in chunkloop.h
   TWOPI          defined in Rmath.h
 
-  $Revision: 1.20 $     $Date: 2019/09/25 05:58:56 $
+  $Revision: 1.21 $     $Date: 2021/10/31 06:43:56 $
 
   Copyright (C) Adrian Baddeley, Ege Rubak and Rolf Turner 2001-2019
   Licence: GNU Public Licence >= 2
@@ -88,7 +88,7 @@ void RIPLEYFUN(nc, xc, yc, bd, nr, rmat, nseg, x0, y0, x1, y1, out)
 #elif (DEBUGLEVEL >= 2)	
 	Rprintf("radius[%d]\n", j);
 #endif
-	if(bdisti > radius) {
+	if(bdisti > radius || radius == 0.0) {
 	  /* no crossings */
 	  total = TWOPI;
 #if (DEBUGLEVEL >= 2)	

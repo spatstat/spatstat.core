@@ -1,9 +1,11 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.002
+        CHANGES IN spatstat.core VERSION 2.3-1.003
 
 OVERVIEW
 
-    o More diagnostics for spatial logistic regression models
+    o More diagnostics for spatial logistic regression models.
+
+    o Minor improvements and bug fixes.
 
 NEW FUNCTIONS
 
@@ -21,7 +23,14 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o eem
     The function 'eem' is now generic, with methods for 'ppm' and 'slrm'.
+    The function previously named 'eem' is now called 'eem.ppm'.
 
+BUG FIXES
+
+    o edge.Ripley
+    Results were incorrect for data points lying exactly at the corners
+    of a rectangle.
+    Fixed.
 
         CHANGES IN spatstat.core VERSION 2.3-1
 
