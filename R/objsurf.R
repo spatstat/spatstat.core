@@ -3,7 +3,7 @@
 #
 #  surface of the objective function for an M-estimator
 #
-#  $Revision: 1.30 $ $Date: 2021/10/31 07:56:36 $
+#  $Revision: 1.32 $ $Date: 2021/10/31 08:52:52 $
 #
 
 
@@ -12,8 +12,10 @@ objsurf <- function(x, ...) {
 }
 
 objsurf.kppm <- objsurf.dppm <- function(x, ...,
-                                         ngrid=32, xlim=NULL, ylim=NULL,
-                                         ratio=1.5, verbose=TRUE) {
+                                         ngrid=32,
+                                         xlim=NULL, ylim=NULL,
+                                         ratio=1.5,
+                                         verbose=TRUE) {
   Fit <- x$Fit
   switch(Fit$method,
          mincon = {
