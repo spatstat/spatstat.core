@@ -335,7 +335,8 @@
 \alias{rpoint.multi}
 \alias{runifpoispp}          
 \alias{runifpoisppOnLines}          
-\alias{safevalue}
+\alias{safeFiniteValue}
+\alias{safePositiveValue}
 \alias{scalardilate.msr}
 \alias{scanmeasure}
 \alias{scanmeasure.ppp}
@@ -879,7 +880,8 @@ rocModel(lambda, nullmodel, \dots, high)
 rpoint.multi(n, f, fmax, marks, win, giveup, verbose, warn, nsim, drop)
 runifpoispp(lambda, win, \dots, nsim, drop)
 runifpoisppOnLines(lambda, L, nsim, drop)
-safevalue(x, default)
+safeFiniteValue(x, default)
+safePositiveValue(x, default)
 \method{scalardilate}{msr}(X, f, \dots)
 scanmeasure(X, \dots)
 \method{scanmeasure}{ppp}(X, r, \dots, method) 

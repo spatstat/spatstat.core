@@ -1,14 +1,16 @@
-#
-#  mincontrast.R
-#
-#  Functions for estimation by minimum contrast
-#
+#'
+#'  mincontrast.R
+#'
+#'  Functions for estimation by minimum contrast
+#'
+#'  $Revision: 1.112 $ $Date: 2021/11/08 05:15:33 $
+#' 
 
 
 ##################  base ################################
 
-safevalue <- function(x, default=0) {
-  ## ensure x is finite and acceptable to C routines
+safePositiveValue <- function(x, default=.Machine$double.eps) {
+  ## ensure x is finite, positive, and acceptable to C routines
   ifelse(is.finite(x),
          pmin(.Machine$double.xmax,
               pmax(.Machine$double.eps,
@@ -16,13 +18,33 @@ safevalue <- function(x, default=0) {
          default)
 }
 
+safeFiniteValue <- function(x, default=0) {
+  ## ensure x is finite and acceptable to C routines
+  biggest <- .Machine$double.xmax
+  ifelse(is.finite(x),
+         pmin(biggest,
+              pmax(-biggest,
+                   x)),
+         default)
+}
+
 bigvaluerule <- function(objfun, objargs, startpar, ...) {
-  ## evaluate objective at starting parameter vector
+  ## Determine suitable large number to replace Inf values of objective
+  ## Evaluate objective at starting parameter vector
   startval <- do.call(objfun,  list(par=startpar, objargs=objargs, ...))
-  ## determine suitable large number to replace Inf values of objective
-  bigvalue <- min(max(1, 10 * abs(startval)),
-                  with(.Machine, sqrt(double.xmax) * double.eps))
-  return(bigvalue)
+  ## check 
+  with(.Machine, {
+    hugeval <- sqrt(double.xmax) * double.eps
+    if(abs(startval) > hugeval) {
+      warning(paste("Internal error: objective function returns huge value",
+                    paren(startval),
+                    "which may cause numerical problems"),
+              call.=FALSE)
+      return(sqrt(double.xmax))
+    }
+    bigvalue <- min(hugeval, max(sqrt(hugeval), 1024 * startval))
+    return(bigvalue)
+  })
 }
 
 mincontrast <- local({
@@ -41,7 +63,7 @@ mincontrast <- local({
       discrep <- (abs(theo^qq - obsq))^pp
       ## protect C code from weird values
       bigvalue <- BIGVALUE + sqrt(sum(par^2))
-      discrep <- safevalue(discrep, default=bigvalue)
+      discrep <- safePositiveValue(discrep, default=bigvalue)
       ## rescaled integral of discrepancy
       value <- mean(discrep)
       
@@ -107,17 +129,31 @@ mincontrast <- local({
     ## sanity clause
     if(!all(ok <- is.finite(obs))) {
       doomed <- !any(ok)
-      whinge <- paste(if(doomed) "All" else "Some",
-                      "values of the empirical function",
-                      sQuote(explain$fname),
-                      "were infinite, NA or NaN.")
-      if(doomed || action.bad.values == "stop")
-        stop(whinge, call.=FALSE)
-      ## trim each end of domain
-      ra <- range(which(ok))
-      iMIN <- ra[1]
-      iMAX <- ra[2]
-      success <- all(ok[iMIN:iMAX])
+      if(!doomed && all(ok[-1])) {
+        ## common case: all finite except the value for r=0
+        whinge <- paste("The value of the empirical function",
+                        sQuote(explain$fname),
+                        "for r=", rvals[1],
+                        "was", paste0(obs[1], "."))
+        if(action.bad.values == "stop")
+          stop(whinge, call.=FALSE)
+        iMIN <- 2
+        iMAX <- length(obs)
+        success <- TRUE
+      } else {
+        ## general case: some non-finite values
+        whinge <- paste(if(doomed) "All" else "Some",
+                        "values of the empirical function",
+                        sQuote(explain$fname),
+                        "were infinite, NA or NaN.")
+        if(doomed || action.bad.values == "stop")
+          stop(whinge, call.=FALSE)
+        ## trim each end of domain
+        ra <- range(which(ok))
+        iMIN <- ra[1]
+        iMAX <- ra[2]
+        success <- all(ok[iMIN:iMAX])
+      }
       if(!success) {
         ## Finite and non-finite values are interspersed;
         ## find the longest run of finite values

@@ -1,10 +1,12 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.007
+        CHANGES IN spatstat.core VERSION 2.3-1.010
 
 OVERVIEW
 
     o More diagnostics for spatial logistic regression models.
 
+    o Important bug fix in kppm
+    
     o Minor improvements and bug fixes.
 
 NEW FUNCTIONS
@@ -18,7 +20,6 @@ NEW FUNCTIONS
     o eem.ppm
     Exponential energy marks for Gibbs and Poisson point process models.
 
-
 SIGNIFICANT USER-VISIBLE CHANGES
 
     o eem
@@ -30,6 +31,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
     to be considered.
 
 BUG FIXES
+
+    o kppm
+    Results were sometimes incorrect for method='clik2' and method='palm'
+    because the log composite likelihood was erroneously truncated to
+    positive values. Any fitted model for which logLik(model) = 2.2e-16
+    should be suspected of being incorrect.
+    Fixed.
 
     o edge.Ripley
     Results were incorrect for data points lying exactly at the corners
