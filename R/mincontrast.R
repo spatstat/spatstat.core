@@ -3,7 +3,7 @@
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.112 $ $Date: 2021/11/08 05:15:33 $
+#'  $Revision: 1.113 $ $Date: 2021/11/08 08:17:22 $
 #' 
 
 
@@ -42,7 +42,7 @@ bigvaluerule <- function(objfun, objargs, startpar, ...) {
               call.=FALSE)
       return(sqrt(double.xmax))
     }
-    bigvalue <- min(hugeval, max(sqrt(hugeval), 1024 * startval))
+    bigvalue <- min(hugeval, max(sqrt(hugeval), 1024 * abs(startval)))
     return(bigvalue)
   })
 }

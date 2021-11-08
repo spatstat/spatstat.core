@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.011
+        CHANGES IN spatstat.core VERSION 2.3-1.012
 
 OVERVIEW
 
@@ -30,6 +30,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     New arguments 'xlim', 'ylim' determine the range of parameter values
     to be considered.
 
+    o Hybrid
+    Printed output from hybrid models has been improved slightly.
+    
 BUG FIXES
 
     o kppm
