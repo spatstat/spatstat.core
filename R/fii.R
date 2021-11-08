@@ -132,10 +132,8 @@ print.summary.fii <- local({
       if(!is.null(x$printable)) {
         nvalues <- length(x$printable)
         nheader <- length(x$header)
-        if(nvalues == 1) {
-          splat(paste(paste0(x$header, ":\t"), x$printable))
-        } else if(nvalues == nheader) {
-          for(i in 1:nheader) {
+        if(nvalues == 1 || nvalues == nheader) {
+          for(i in 1:nvalues) {
             hdi <- x$header[i]
             xpi <- x$printable[[i]]
             if(!is.list(xpi) && length(xpi) == 1) {

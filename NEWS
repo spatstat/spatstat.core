@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.010
+        CHANGES IN spatstat.core VERSION 2.3-1.011
 
 OVERVIEW
 
@@ -42,6 +42,10 @@ BUG FIXES
     o edge.Ripley
     Results were incorrect for data points lying exactly at the corners
     of a rectangle.
+    Fixed.
+
+    o MultiHard
+    A hybrid of 'MultiHard' with another multitype interaction caused an error.
     Fixed.
 
         CHANGES IN spatstat.core VERSION 2.3-1

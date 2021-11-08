@@ -2,7 +2,7 @@
 #
 #    multihard.R
 #
-#    $Revision: 1.18 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 1.20 $	$Date: 2021/11/08 07:07:48 $
 #
 #    The Hard core process
 #
@@ -84,7 +84,7 @@ MultiHard <- local({
          z[Xsub, Qsub, ucode[i]] <- value[Xsub, Qsub]
        }
      }
-     attr(z, "IsOffset") <- TRUE
+     attr(z, "IsOffset") <- rep.int(TRUE, npairs)
      return(z)
    }
    #### end of 'pot' function ####
