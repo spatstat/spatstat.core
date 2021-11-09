@@ -32,6 +32,7 @@
        improve.args = list(),
        weightfun=NULL,
        control=list(),
+       stabilize=TRUE,
        algorithm,
        statistic="K",
        statargs=list(),
@@ -53,6 +54,7 @@
        improve.args = list(),
        weightfun=NULL,
        control=list(),
+       stabilize=TRUE,
        algorithm,
        statistic="K",
        statargs=list(),
@@ -130,6 +132,11 @@
   \item{control}{
     List of control parameters passed to the optimization function
     \code{\link[stats]{optim}}.
+  }
+  \item{stabilize}{
+    Logical value specifying whether to numerically stabilize
+    the optimization algorithm, by specifying suitable default values of
+    \code{control$fnscale} and \code{control$parscale}.
   }
   \item{algorithm}{
     Character string determining the mathematical algorithm

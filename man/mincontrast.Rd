@@ -11,6 +11,7 @@ mincontrast(observed, theoretical, startpar, \dots,
           fvlab=list(label=NULL, desc="minimum contrast fit"),
           explain=list(dataname=NULL, modelname=NULL, fname=NULL),
           action.bad.values=c("warn", "stop", "silent"),
+          control=list(), stabilize=TRUE,
           pspace=NULL)
 }
 \arguments{
@@ -45,6 +46,15 @@ mincontrast(observed, theoretical, startpar, \dots,
     String (partially matched) specifying what to do if
     values of the summary statistic are \code{NA}, \code{NaN} or
     infinite. See Details.
+  }
+  \item{control}{
+    Optional. Argument passed to \code{\link[stats]{optim}}.
+    A list of parameters which control the behaviour of the optimization algorithm.
+  }
+  \item{stabilize}{
+    Logical value specifying whether to numerically stabilize
+    the optimization algorithm, by specifying suitable default values of
+    \code{control$fnscale} and \code{control$parscale}.
   }
   \item{pspace}{
     For internal use by the package only.
@@ -139,8 +149,8 @@ mincontrast(observed, theoretical, startpar, \dots,
     (\code{observed}) and the theoretical values of the summary
     statistic computed from the fitted model parameters.
   }
-  \item{opt }{The return value from the optimizer \code{\link{optim}}.}
-  \item{crtl }{The control parameters of the algorithm.}
+  \item{opt }{The object returned from the optimizer \code{\link{optim}}.}
+  \item{crtl }{List of parameters determining the contrast objective.}
   \item{info }{List of explanatory strings.}
 }
 \references{

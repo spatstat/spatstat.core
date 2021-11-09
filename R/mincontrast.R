@@ -3,7 +3,7 @@
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.113 $ $Date: 2021/11/08 08:17:22 $
+#'  $Revision: 1.115 $ $Date: 2021/11/09 07:32:58 $
 #' 
 
 
@@ -80,6 +80,7 @@ mincontrast <- local({
                           explain=list(dataname=NULL,
                                        modelname=NULL, fname=NULL),
                           action.bad.values=c("warn", "stop", "silent"),
+                          control=list(), stabilize=TRUE, 
                           pspace=NULL) {
     verifyclass(observed, "fv")
     action.bad.values <- match.arg(action.bad.values)
@@ -203,8 +204,25 @@ mincontrast <- local({
                                      startpar, ...)
     
 
-    ## .  .  .  .  O  P  T  I  M  I  Z  E  .  .  .  .
-    minimum <- optim(startpar, fn=contrast.objective, objargs=objargs, ...)
+    ## ................... optimization algorithm control parameters .......................
+    if(stabilize) {
+      ## Numerical stabilisation 
+      ## evaluate objective at starting state
+      startval <- contrast.objective(startpar, objargs, ...)
+      ## use to determine appropriate global scale
+      smallscale <- sqrt(.Machine$double.eps)
+      fnscale <- max(abs(startval), smallscale)
+      parscale <- pmax(abs(startpar), smallscale)
+      scaling <- list(fnscale=fnscale, parscale=parscale)
+    } else {
+      scaling <- list() 
+    }
+    control <- resolve.defaults(control, scaling, list(trace=0))
+
+    ## .....................................................................................
+    ## >>>>>>>>>>>>>>>>>  .  .  .  .  O  P  T  I  M  I  Z  E  .  .  .  .  <<<<<<<<<<<<<<<<<<
+    minimum <- optim(startpar, fn=contrast.objective, objargs=objargs, ..., control=control)
+    ## .....................................................................................
     
     ## if convergence failed, issue a warning 
     signalStatus(optimStatus(minimum), errors.only=TRUE)

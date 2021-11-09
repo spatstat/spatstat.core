@@ -626,11 +626,11 @@ Kpcf.kppm(model, what)
 \method{Kmodel}{slrm}(model, \dots)
 killinteraction(model)
 km.rs.opt(o, cc, d, breaks, KM, RS)
-kppmComLik(X, Xname, po, clusters, control, weightfun, rmax,
+kppmComLik(X, Xname, po, clusters, control, stabilize, weightfun, rmax,
            algorithm, DPP, \dots, pspace)
-kppmMinCon(X, Xname, po, clusters, control, statistic, statargs,
+kppmMinCon(X, Xname, po, clusters, control, stabilize, statistic, statargs,
            algorithm, DPP, \dots)
-kppmPalmLik(X, Xname, po, clusters, control, weightfun, rmax, 
+kppmPalmLik(X, Xname, po, clusters, control, stabilize, weightfun, rmax, 
            algorithm, DPP, \dots, pspace)
 kppmCLadap(X, Xname, po, clusters, control, weightfun, 
            rmax, epsilon, DPP, algorithm, \dots,

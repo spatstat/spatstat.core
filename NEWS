@@ -1,11 +1,13 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.012
+        CHANGES IN spatstat.core VERSION 2.3-1.013
 
 OVERVIEW
 
     o More diagnostics for spatial logistic regression models.
 
-    o Important bug fix in kppm
+    o Important bug fix in kppm.
+
+    o Increased numerical stability in kppm.
     
     o Minor improvements and bug fixes.
 
@@ -32,6 +34,12 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o Hybrid
     Printed output from hybrid models has been improved slightly.
+
+    o kppm
+    New default settings ensure greater numerical stability of the optimization algorithm
+    against the effects of the scale of the spatial coordinates.
+    New argument 'stabilize' specifies whether the optimization algorithm should be
+    numerically stabilized. 
     
 BUG FIXES
 

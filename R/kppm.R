@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.190 $ $Date: 2021/11/08 05:15:23 $
+# $Revision: 1.194 $ $Date: 2021/11/09 07:40:06 $
 #
 
 
@@ -71,6 +71,7 @@ kppm.ppp <- kppm.quad <-
            improve.args = list(),
            weightfun=NULL,
            control=list(),
+           stabilize=TRUE,
            algorithm,
            statistic="K",
            statargs=list(),
@@ -98,6 +99,7 @@ kppm.ppp <- kppm.quad <-
                       improve.args = improve.args,
                       weightfun=weightfun,
                       control=control,
+                      stabilize=stabilize,
                       algorithm=algorithm,
                       statistic=statistic,
                       statargs=statargs,
@@ -146,14 +148,17 @@ kppm.ppp <- kppm.quad <-
   ## fit
   out <- switch(method,
          mincon = kppmMinCon(X=XX, Xname=Xname, po=po, clusters=clusters,
-                             control=control, statistic=statistic,
+                             control=control, stabilize=stabilize,
+                             statistic=statistic,
                              statargs=statargs, rmax=rmax,
                              algorithm=algorithm, ...),
          clik2   = kppmComLik(X=XX, Xname=Xname, po=po, clusters=clusters,
-                             control=control, weightfun=weightfun, 
+                             control=control, stabilize=stabilize,
+                             weightfun=weightfun, 
                              rmax=rmax, algorithm=algorithm, ...),
          palm   = kppmPalmLik(X=XX, Xname=Xname, po=po, clusters=clusters,
-                             control=control, weightfun=weightfun, 
+                             control=control, stabilize=stabilize,
+                             weightfun=weightfun, 
                              rmax=rmax, algorithm=algorithm, ...),
          adapcl   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, epsilon=epsilon, 
@@ -181,7 +186,7 @@ kppm.ppp <- kppm.quad <-
   return(out)
 }
 
-kppmMinCon <- function(X, Xname, po, clusters, control, statistic, statargs,
+kppmMinCon <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, statistic, statargs,
                        algorithm="Nelder-Mead", DPP=NULL, ...) {
   # Minimum contrast fit
   stationary <- is.stationary(po)
@@ -202,7 +207,7 @@ kppmMinCon <- function(X, Xname, po, clusters, control, statistic, statargs,
     po <- tmp$po
   }
   mcfit <- clusterfit(X, clusters, lambda = lambda,
-                      dataname = Xname, control = control,
+                      dataname = Xname, control = control,  stabilize=stabilize,
                       statistic = statistic, statargs = statargs,
                       algorithm=algorithm, ...)
   fitinfo <- attr(mcfit, "info")
@@ -458,7 +463,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
 }
 
 
-kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
+kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, weightfun, rmax,
                        algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
@@ -606,11 +611,30 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   }
-  #' .........................................................
-  ## arguments for optimization
-  ctrl <- resolve.defaults(list(fnscale=-1), control, list(trace=0))
-  optargs <- list(par=startpar, fn=obj, objargs=objargs, control=ctrl, method=algorithm)
-  ## DPP resolving algorithm and checking startpar
+
+  ## ......................  Optimization settings  ........................
+
+  if(stabilize) {
+    ## Numerical stabilisation 
+    ## evaluate objective at starting state
+    startval <- obj(startpar, objargs)
+    ## use to determine appropriate global scale
+    smallscale <- sqrt(.Machine$double.eps)
+    fnscale <- -max(abs(startval), smallscale)
+    parscale <- pmax(abs(startpar), smallscale)
+    scaling <- list(fnscale=fnscale, parscale=parscale)
+  } else {
+    scaling <- list(fnscale=-1)
+  }
+
+  ## Update list of algorithm control arguments
+  control.updated <- resolve.defaults(control, scaling, list(trace=0))
+
+  ## Initialise list of all arguments to 'optim'
+  optargs <- list(par=startpar, fn=obj, objargs=objargs,
+                  control=control.updated, method=algorithm)
+
+  ## DPP case: check startpar and modify algorithm
   changealgorithm <- length(startpar)==1 && algorithm=="Nelder-Mead"
   if(isDPP){
     alg <- dppmFixAlgorithm(algorithm, changealgorithm, clusters,
@@ -621,6 +645,8 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
       optargs$upper <- alg$upper
     }
   }
+  
+  
   ## ..........   optimize it ..............................
   opt <- do.call(optim, optargs)
 
@@ -704,7 +730,7 @@ kppmComLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
 }
 
 
-kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
+kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, weightfun, rmax,
                         algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
@@ -855,11 +881,30 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
     ## determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   }
-  # arguments for optimization
-  ctrl <- resolve.defaults(list(fnscale=-1), control, list(trace=0))
+
+  ## ......................  Optimization settings  ........................
+
+  if(stabilize) {
+    ## Numerical stabilisation 
+    ## evaluate objective at starting state
+    startval <- obj(startpar, objargs)
+    ## use to determine appropriate global scale
+    smallscale <- sqrt(.Machine$double.eps)
+    fnscale <- -max(abs(startval), smallscale)
+    parscale <- pmax(abs(startpar), smallscale)
+    scaling <- list(fnscale=fnscale, parscale=parscale)
+  } else {
+    scaling <- list(fnscale=-1)
+  }
+
+  ## Update list of algorithm control arguments
+  control.updated <- resolve.defaults(control, scaling, list(trace=0))
+
+  ## Initialise list of all arguments to 'optim'
   optargs <- list(par=startpar, fn=obj, objargs=objargs,
-                  control=ctrl, method=algorithm)
-  ## DPP resolving algorithm and checking startpar
+                  control=control.updated, method=algorithm)
+
+  ## DPP case: check startpar and modify algorithm
   changealgorithm <- length(startpar)==1 && algorithm=="Nelder-Mead"
   if(isDPP){
     alg <- dppmFixAlgorithm(algorithm, changealgorithm, clusters,
@@ -870,6 +915,9 @@ kppmPalmLik <- function(X, Xname, po, clusters, control, weightfun, rmax,
       optargs$upper <- alg$upper
     }
   }
+
+  ## .......................................................................
+  
 
   # optimize it
   opt <- do.call(optim, optargs)
