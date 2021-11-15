@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.013
+        CHANGES IN spatstat.core VERSION 2.3-1.014
 
 OVERVIEW
 
@@ -36,10 +36,13 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Printed output from hybrid models has been improved slightly.
 
     o kppm
-    New default settings ensure greater numerical stability of the optimization algorithm
-    against the effects of the scale of the spatial coordinates.
-    New argument 'stabilize' specifies whether the optimization algorithm should be
-    numerically stabilized. 
+    New default settings ensure greater numerical stability of the
+    optimization algorithm against the effects of the scale of the
+    spatial coordinates.  New argument 'stabilize' specifies whether
+    the optimization algorithm should be numerically stabilized.
+
+    o pcf
+    Improved error message
     
 BUG FIXES
 

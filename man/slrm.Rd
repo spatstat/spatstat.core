@@ -163,7 +163,7 @@ slrm(formula, ..., data = NULL, offset = TRUE, link = "logit",
   for spatial Poisson point processes.
   \emph{Electronic Journal of Statistics}
   \bold{4}, 1151--1201.
-  {doi: 10.1214/10-EJS581}
+  \code{DOI: 10.1214/10-EJS581}
 
   Tukey, J.W. (1972)
   Discussion of paper by F.P. Agterberg and S.C. Robinson.

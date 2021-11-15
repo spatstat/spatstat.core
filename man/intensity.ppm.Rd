@@ -64,7 +64,7 @@
   Baddeley, A. and Nair, G. (2012b)
   Approximating the moments of a spatial point process.
   \emph{Stat} \bold{1}, 1, 18--30.
-  doi: 10.1002/sta4.5
+  \code{DOI: 10.1002/sta4.5}
 
   Baddeley, A. and Nair, G. (2016)
   Poisson-saddlepoint approximation for spatial point processes

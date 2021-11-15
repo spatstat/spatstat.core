@@ -1,7 +1,7 @@
 #
 #   pcf.R
 #
-#   $Revision: 1.68 $   $Date: 2019/02/13 07:21:23 $
+#   $Revision: 1.69 $   $Date: 2021/11/13 01:08:49 $
 #
 #
 #   calculate pair correlation function
@@ -291,12 +291,16 @@ sewpcf <- function(d, w, denargs, lambda2area, divisor=c("r","d")) {
     w <- w/d
     if(!all(good <- is.finite(w))) {
       nbad <- sum(!good)
-      warning(paste(nbad, "infinite or NA",
+      warning(paste(nbad, "infinite, NA or NaN",
                     ngettext(nbad, "contribution was", "contributions were"),
-                    "deleted from pcf estimate"))
+                    "deleted from pcf estimate with divisor='d'.",
+                    "Fraction deleted: ",
+                    paste0(round(100 * nbad/length(w), 2), "%")),
+              call.=FALSE)
       d <- d[good]
       w <- w[good]
     }
+    nw <- length(w)
   }
   if(nw == 1) {
     #' weights are equal

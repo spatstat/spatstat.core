@@ -66,7 +66,7 @@ Hybrid(...)
   Baddeley, A., Turner, R., Mateu, J. and Bevan, A. (2013)
   Hybrids of Gibbs point process models and their implementation.
   \emph{Journal of Statistical Software} \bold{55}:11, 1--43.
-  \doi{10.18637/jss.v055.i11}
+  \code{DOI: 10.18637/jss.v055.i11}
 }
 \seealso{
   \code{\link{ppm}}

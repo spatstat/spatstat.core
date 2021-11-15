@@ -99,7 +99,7 @@
   for spatial Poisson point processes.
   \emph{Electronic Journal of Statistics}
   \bold{4}, 1151--1201.
-  {doi: 10.1214/10-EJS581}
+  \code{DOI: 10.1214/10-EJS581}
 }
 \keyword{spatial}
 \keyword{methods}
