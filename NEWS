@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.014
+        CHANGES IN spatstat.core VERSION 2.3-1.015
 
 OVERVIEW
 
@@ -10,6 +10,8 @@ OVERVIEW
     o Increased numerical stability in kppm.
     
     o Minor improvements and bug fixes.
+
+    o We thank Jonas Brehmer for contributions.
 
 NEW FUNCTIONS
 
@@ -62,6 +64,10 @@ BUG FIXES
     A hybrid of 'MultiHard' with another multitype interaction caused an error.
     Fixed.
 
+    o simulate.dppm, simulate.detpointprocfamily
+    Crashed, rarely, with error message 'The dimension differs from the number of columns in index'.
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.3-1
 
 OVERVIEW

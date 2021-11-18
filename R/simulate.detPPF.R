@@ -1,5 +1,5 @@
 ##   simulate.detPPF.R
-##            $Revision: 1.7 $  $Date: 2019/01/29 05:21:22 $
+##            $Revision: 1.9 $  $Date: 2021/11/18 01:28:27 $
 ##
 ## This file contains functions to simulate DPP models.
 ## Two simulation functions are visible:
@@ -210,7 +210,7 @@ rdpp <- function(eig, index, basis = "fourierbasis",
   window2d <- NULL
   if (is.owin(window)) 
     window2d <- window
-  sampleindex <- as.matrix(index[rbinom(nrow(index), 1, eig)==1, ])
+  sampleindex <- as.matrix(index[rbinom(nrow(index), 1, eig)==1, , drop=FALSE])
   X <- rdppp(sampleindex, basis=basis, window=window, reject_max=reject_max, progress=progress, debug=debug, ...)
   if(!is.null(window2d))
     X <- X[window2d]
@@ -297,7 +297,11 @@ simulate.detpointprocfamily <- function(object, nsim = 1, seed = NULL, ..., W = 
   trunc <- tmp$trunc
   prec <- tmp$prec
   n <- length(tmp$eig)
-  indexlist <- replicate(nsim, {x <- as.matrix(tmp$index[rbinom(n, 1, tmp$eig)==1, ]); gc(); x}, simplify = FALSE)
+  indexlist <- replicate(nsim, {
+    x <- as.matrix(tmp$index[rbinom(n, 1, tmp$eig)==1, , drop=FALSE]);
+    gc();
+    x
+  }, simplify = FALSE)
   rm(tmp)
   gc()
   onesim <- function(i, win=NULL){

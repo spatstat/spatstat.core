@@ -703,7 +703,7 @@ local({
 #'
 #'    Tests for determinantal point process models
 #' 
-#'    $Revision: 1.7 $ $Date: 2020/04/28 12:58:26 $
+#'    $Revision: 1.8 $ $Date: 2021/11/18 01:38:31 $
 
 local({
   if(ALWAYS) {
@@ -724,6 +724,9 @@ local({
     lam <- intensity(fit)
     arr <- reach(fit)
     pah <- parameters(fit)
+    #' a user bug report - matrix dimension error
+    set.seed(256)
+    dat <- simulate( dppGauss(lambda = 8.5, alpha = 0.1, d = 2), nsim = 1)
   }
   #' dppeigen code blocks
   if(ALWAYS) {

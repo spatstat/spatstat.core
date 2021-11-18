@@ -376,18 +376,18 @@
   dppm(jpines ~ 1, dppGauss, method="p")
   dppm(jpines ~ 1, dppGauss, method="a")
 
-  # Fixing the intensity to lambda=2 rather than the Poisson MLE 2.04:
-  dppm(jpines ~ 1, dppGauss(lambda=2))
-
   if(interactive()) {
-   # The following is quite slow (using K-function)
-   dppm(jpines ~ x, dppMatern)
+     # Fixing the intensity at lambda=2 rather than the Poisson MLE 2.04:
+     dppm(jpines ~ 1, dppGauss(lambda=2))
+
+     # The following is quite slow (using K-function)
+     dppm(jpines ~ x, dppMatern)
   }
 
    # much faster using pair correlation function
   dppm(jpines ~ x, dppMatern, statistic="pcf", statargs=list(stoyan=0.2))
 
-  # Fixing the Matern shape parameter to nu=2 rather than estimating it:
+  # Fixing the Matern shape parameter at nu=2 rather than estimating it:
   dppm(jpines ~ x, dppMatern(nu=2))
 }
 \author{
