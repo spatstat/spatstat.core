@@ -13,6 +13,6 @@ sub-packages. It contains all the main user-level functions that perform
 statistical analysis and modelling of spatial data,
 with the exception of data on linear networks.
 
-The reorganisation of `spatstat` into a family of package is described
+The reorganisation of `spatstat` into a family of packages is described
 on the GitHub repository
 [spatstat/spatstat](https://github.com/spatstat/spatstat).
