@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.015
+        CHANGES IN spatstat.core VERSION 2.3-1.016
 
 OVERVIEW
 
@@ -60,6 +60,10 @@ BUG FIXES
     of a rectangle.
     Fixed.
 
+    o as.fv.kppm, as.fv.dppm
+    The default plot labels in 'as.fv(x)' implied that the model 'x' was inhomogeneous.
+    Fixed.
+    
     o MultiHard
     A hybrid of 'MultiHard' with another multitype interaction caused an error.
     Fixed.

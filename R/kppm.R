@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.194 $ $Date: 2021/11/09 07:40:06 $
+# $Revision: 1.195 $ $Date: 2021/11/22 00:39:32 $
 #
 
 
@@ -1753,7 +1753,7 @@ unitname.kppm <- unitname.dppm <- function(x) {
 as.fv.kppm <- as.fv.dppm <- function(x) {
   if(x$Fit$method == "mincon")
     return(as.fv(x$Fit$mcfit))
-  gobs <- pcfinhom(x$X, lambda=x, correction="good", update=FALSE)
+  gobs <- if(is.stationary(x)) pcf(x$X, correction="good") else pcfinhom(x$X, lambda=x, correction="good", update=FALSE)
   gfit <- (pcfmodel(x))(gobs$r)
   g <- bind.fv(gobs,
                data.frame(fit=gfit), 
