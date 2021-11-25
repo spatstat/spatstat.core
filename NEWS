@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-1.016
+        CHANGES IN spatstat.core VERSION 2.3-2
 
 OVERVIEW
 
@@ -22,7 +22,8 @@ NEW FUNCTIONS
     Exponential energy marks for spatial logistic regression models.
 
     o eem.ppm
-    Exponential energy marks for Gibbs and Poisson point process models.
+    Exponential energy marks for Gibbs and Poisson point process models
+    (this function was previously called 'eem').
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -60,16 +61,16 @@ BUG FIXES
     of a rectangle.
     Fixed.
 
-    o as.fv.kppm, as.fv.dppm
-    The default plot labels in 'as.fv(x)' implied that the model 'x' was inhomogeneous.
-    Fixed.
-    
     o MultiHard
     A hybrid of 'MultiHard' with another multitype interaction caused an error.
     Fixed.
 
     o simulate.dppm, simulate.detpointprocfamily
     Crashed, rarely, with error message 'The dimension differs from the number of columns in index'.
+    Fixed.
+    
+    o as.fv.kppm, as.fv.dppm
+    The default plot labels in 'as.fv(x)' implied that the model 'x' was inhomogeneous.
     Fixed.
     
         CHANGES IN spatstat.core VERSION 2.3-1
