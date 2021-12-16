@@ -143,10 +143,12 @@
     to be used to solve the fitting problem.
     If \code{method="mincon", "clik2"} or \code{"palm"} this argument
     is passed to the generic optimization function
-    \code{\link[stats]{optim}} (renamed as the argument \code{method})
+    \code{\link[stats]{optim}}
+    (renamed as the argument \code{method} to \code{\link[stats]{optim}})
     with default \code{"Nelder-Mead"}.
     If \code{method="adapcl"}) the argument is passed to the
-    equation solver \code{\link[nleqslv]{nleqslv}},
+    equation solver \code{\link[nleqslv]{nleqslv}}
+    (renamed as the argument \code{method} to \code{\link[nleqslv]{nleqslv}})
     with default \code{"Bryden"}.
   }
   \item{statistic}{
@@ -363,21 +365,52 @@
   (\code{method="mincon", "clik2"} and \code{"palm"}), 
   the optimisation is performed by the generic
   optimisation algorithm \code{\link[stats]{optim}}.
-  The behaviour of this algorithm can be modified using the
-  arguments \code{control} and \code{algorithm}.
-  Useful control arguments include
-  \code{trace}, \code{maxit} and \code{abstol}
-  (documented in the help for \code{\link[stats]{optim}}).
+  The behaviour of this algorithm can be controlled
+  by the following arguments to \code{kppm}:
+  \itemize{
+    \item
+    \code{startpar} determines the initial estimates of the cluster parameters.
+    \item
+    \code{algorithm} determines the particular optimization
+    method. This argument is passed to \code{\link[stats]{optim}} as the
+    argument \code{method}. Options are listed in the help for
+    \code{\link[stats]{optim}}. The default is the Nelder-Mead
+    simplex method.
+    \item
+    \code{control} is a named list of control parameters,
+    documented in the help for \code{\link[stats]{optim}}.
+    Useful control arguments include
+    \code{trace}, \code{maxit} and \code{abstol}.
+    \item
+    \code{lower} and \code{upper} specify bounds for the
+    cluster parameters, when \code{algorithm="L-BFGS-B"} or
+    \code{algorithm="Brent"}, as described in the help for \code{\link[stats]{optim}}. 
+  }
 
   For \code{method="adapcl"}, the estimating equation is solved
   using the nonlinear equation solver \code{\link[nleqslv]{nleqslv}}
   from the package \pkg{nleqslv}. 
-  Arguments available for controlling the solver are
-  documented in the help for   
-  \code{\link[nleqslv]{nleqslv}}; they include \code{control}, 
-  \code{globStrat}, \code{startparm} for the initial estimates and 
-  \code{algorithm} for the method. 
-  The package \pkg{nleqslv} must be installed in order to use this option.
+  The package \pkg{nleqslv} must be installed in order to use this
+  option.
+  The behaviour of this algorithm can be controlled
+  by the following arguments to \code{kppm}:
+  \itemize{
+    \item
+    \code{startpar} determines the initial estimates of the cluster parameters.
+    \item
+    \code{algorithm} determines the method for solving
+    the equation. This argument is passed to \code{\link[nleqslv]{nleqslv}} as the
+    argument \code{method}. Options are listed in the help for
+    \code{\link[nleqslv]{nleqslv}}.
+    \item
+    \code{globStrat} determines the global strategy
+    to be applied. This argument is is passed to \code{\link[nleqslv]{nleqslv}}
+    as the argument \code{global}. Options are listed in the help for
+    \code{\link[nleqslv]{nleqslv}}.
+    \item
+    \code{control} is a named list of control parameters,
+    documented in the help for \code{\link[nleqslv]{nleqslv}}.
+  }
 }
 \section{Log-Gaussian Cox Models}{
   To fit a log-Gaussian Cox model with non-exponential covariance,
