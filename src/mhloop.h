@@ -22,7 +22,7 @@
    
    MH_SNOOP     whether to run visual debugger
 
-   $Revision: 1.23 $  $Date: 2018/12/18 02:43:11 $ 
+   $Revision: 1.24 $  $Date: 2021/12/24 04:27:36 $ 
 
   Copyright (C) Adrian Baddeley, Ege Rubak and Rolf Turner 2001-2018
   Licence: GNU Public Licence >= 2
@@ -50,10 +50,10 @@ if(thinstart && nfree > 0) {
 #endif
 #if MH_DEBUG
 #if MH_MARKED
-    Rprintf("check legality of point %d = (%lf, %lf) with mark %d\n", 
+    Rprintf("[mhloop]\t check legality of point %d = (%lf, %lf) with mark %d\n", 
 	    ix, deathprop.u, deathprop.v, deathprop.mrk);
 #else
-    Rprintf("check legality of point %d = (%lf, %lf)\n", 
+    Rprintf("[mhloop]\t check legality of point %d = (%lf, %lf)\n", 
 	    ix, deathprop.u, deathprop.v);
 #endif
 #endif
@@ -70,12 +70,12 @@ if(thinstart && nfree > 0) {
     adenom = pow(adenom, invtemp);
 #endif
 #if MH_DEBUG
-    Rprintf("cif = %lf\n", adenom);
+    Rprintf("[mhloop]\t cif = %lf\n", adenom);
 #endif
     /* accept/reject */
     if(unif_rand() >= adenom) {
 #if MH_DEBUG
-      Rprintf("deleting illegal/improbable point\n");
+      Rprintf("[mhloop]\t deleting illegal/improbable point\n");
 #endif
       /* delete point x[ix], y[ix] */
       if(mustupdate) {
@@ -92,8 +92,8 @@ if(thinstart && nfree > 0) {
       state.npts--;
       nfree--;
 #if MH_DEBUG
-      Rprintf("deleting point %d\n", ix);
-      Rprintf("\tnpts=%d\n", state.npts);
+      Rprintf("[mhloop]\t deleting point %d\n", ix);
+      Rprintf("\t\tnpts=%d\n", state.npts);
 #endif
       if(ix < state.npts) {
 	for(j = ix; j < state.npts; j++) {
@@ -118,7 +118,7 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
   INNERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 
 #if MH_DEBUG
-    Rprintf("iteration %d\n", irep);
+    Rprintf("\n\n\n [mhloop] >>>>>>>>>>> iteration %d <<<<<<<<<<<<<<< \n", irep);
 #endif
 
     if(verb) {
@@ -136,7 +136,7 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
     /* Shift or birth/death: */
     if(unif_rand() > algo.p) {
 #if MH_DEBUG
-      Rprintf("propose birth or death\n");
+      Rprintf("[mhloop]\t propose birth or death\n");
 #endif
       /* Birth/death: */
       if(unif_rand() > algo.q) {
@@ -148,10 +148,10 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 #endif
 #if MH_DEBUG
 #if MH_MARKED
-	Rprintf("propose birth at (%lf, %lf) with mark %d\n", 
+	Rprintf("[mhloop]\t propose birth at (%lf, %lf) with mark %d\n", 
 		birthprop.u, birthprop.v, birthprop.mrk);
 #else
-	Rprintf("propose birth at (%lf, %lf)\n", birthprop.u, birthprop.v);
+	Rprintf("[mhloop]\t propose birth at (%lf, %lf)\n", birthprop.u, birthprop.v);
 #endif
 #endif
 	/* evaluate conditional intensity */
@@ -174,21 +174,31 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 	adenom = qnodds*(nfree+1);
 
 #if MH_DEBUG
-	Rprintf("cif = %lf, Hastings ratio = %lf\n", anumer, anumer/adenom);
+	Rprintf("[mhloop]\t cif = %lf, Hastings ratio = %lf\n", anumer, anumer/adenom);
 #endif
 
 	/* accept/reject */
 	if(unif_rand() * adenom < anumer) {
-#if MH_DEBUG
-	  Rprintf("accepted birth\n");
-#endif
 	  itype = BIRTH;  /* Birth proposal accepted. */
+#if MH_DEBUG
+	  Rprintf("[mhloop]\t accept birth\n");
+	} else {
+	  Rprintf("[mhloop]\t reject birth\n");	  
+#endif
 	}
+	
 #if MH_SNOOP
-	/* visual debug */
+	/* visual debugger */
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Entering visual debugger with birth proposal\n");
+#endif
 	mhsnoop(&snooper, irep, &algo, &state, &birthprop, 
 		anumer, adenom, &itype);
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Exited visual debugger with itype=%d\n", itype);
 #endif
+#endif
+	
 #if MH_TRACKING
 	/* save transition history */
 	if(irep < history.nmax) {
@@ -215,10 +225,10 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 #endif
 #if MH_DEBUG
 #if MH_MARKED
-	Rprintf("propose death of point %d = (%lf, %lf) with mark %d\n", 
+	Rprintf("[mhloop]\t propose death of point %d = (%lf, %lf) with mark %d\n", 
 		ix, deathprop.u, deathprop.v, deathprop.mrk);
 #else
-	Rprintf("propose death of point %d = (%lf, %lf)\n", 
+	Rprintf("[mhloop]\t propose death of point %d = (%lf, %lf)\n", 
 		ix, deathprop.u, deathprop.v);
 #endif
 #endif
@@ -241,20 +251,29 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 
 	anumer = qnodds * nfree;
 #if MH_DEBUG
-	Rprintf("cif = %lf, Hastings ratio = %lf\n", adenom, anumer/adenom);
+	Rprintf("[mhloop]\t cif = %lf, Hastings ratio = %lf\n", adenom, anumer/adenom);
 #endif
 	/* accept/reject */
 	if(unif_rand() * adenom < anumer) {
-#if MH_DEBUG
-	  Rprintf("accepted death\n");
-#endif
 	  itype = DEATH; /* Death proposal accepted. */
+#if MH_DEBUG
+	  Rprintf("[mhloop]\t accept death\n");
+	} else {
+	  Rprintf("[mhloop]\t reject death\n");
+#endif
 	}
 #if MH_SNOOP
 	/* visual debug */
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Entering visual debugger with death proposal\n");
+#endif
 	mhsnoop(&snooper, irep, &algo, &state, &deathprop, 
 		anumer, adenom, &itype);
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Exited visual debugger with itype=%d\n", itype);
 #endif
+#endif
+	
 #if MH_TRACKING
 	/* save transition history */
 	if(irep < history.nmax) {
@@ -267,6 +286,10 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 #endif
 	}
 #endif
+#if MH_DEBUG
+      } else {
+	Rprintf("[mhloop] death proposal selected, but no points to delete\n");
+#endif	  
       }
     } else if(nfree > 0) {
       /* Propose shift: */
@@ -293,11 +316,11 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 
 #if MH_DEBUG
 #if MH_MARKED
-      Rprintf("propose shift of point %d = (%lf, %lf)[mark %d] to (%lf, %lf)[mark %d]\n", 
+      Rprintf("[mhloop]\t propose shift of point %d = (%lf, %lf)[mark %d] to (%lf, %lf)[mark %d]\n", 
 	      ix, deathprop.u, deathprop.v, deathprop.mrk, 
 	      shiftprop.u, shiftprop.v, shiftprop.mrk);
 #else
-      Rprintf("propose shift of point %d = (%lf, %lf) to (%lf, %lf)\n", 
+      Rprintf("[mhloop]\t propose shift of point %d = (%lf, %lf) to (%lf, %lf)\n", 
 	      ix, deathprop.u, deathprop.v, shiftprop.u, shiftprop.v);
 #endif
 #endif
@@ -336,29 +359,38 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 #endif
 
 #if MH_DEBUG
-	Rprintf("cif[old] = %lf, cif[new] = %lf, Hastings ratio = %lf\n", 
+	Rprintf("[mhloop]\t cif[old] = %lf, cif[new] = %lf, Hastings ratio = %lf\n", 
 		cvd, cvn, cvn/cvd);
 #endif
 	/* accept/reject */
 	if(unif_rand() * cvd < cvn) {
-#if MH_DEBUG
-	  Rprintf("accepted shift\n");
-#endif
 	  itype = SHIFT;          /* Shift proposal accepted . */
+#if MH_DEBUG
+	  Rprintf("[mhloop]\t accept shift\n");
+	} else {
+	  Rprintf("[mhloop]\t reject shift\n");
+#endif
 	}
       } else {
 	cvn = 0.0;
 	cvd = 1.0;
 #if MH_DEBUG
-	Rprintf("Forbidden shift");
+	Rprintf("[mhloop]\t Forbidden shift");
 #endif
       }
 
 #if MH_SNOOP
 	/* visual debug */
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Entering visual debugger with shift proposal\n");
+#endif
 	mhsnoop(&snooper, irep, &algo, &state, &shiftprop, 
 		cvn, cvd, &itype);
+#if MH_DEBUG
+	Rprintf("[mhloop]\t Exited visual debugger with itype=%d\n", itype);
 #endif
+#endif
+	
 #if MH_TRACKING
       /* save transition history */
       if(irep < history.nmax) {
@@ -380,10 +412,10 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 	/* add point at (u,v) */
 #if MH_DEBUG
 #if MH_MARKED
-	Rprintf("implementing birth at (%lf, %lf) with mark %d\n", 
+	Rprintf("[mhloop]\t implementing birth at (%lf, %lf) with mark %d\n", 
 		birthprop.u, birthprop.v, birthprop.mrk);
 #else
-	Rprintf("implementing birth at (%lf, %lf)\n", 
+	Rprintf("[mhloop]\t implementing birth at (%lf, %lf)\n", 
 		birthprop.u, birthprop.v);
 #endif
 #endif
@@ -441,7 +473,7 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 #endif
 	state.npts     = state.npts + 1;
 #if MH_DEBUG
-	Rprintf("\tnpts=%d\n", state.npts);
+	Rprintf("[mhloop]\t \tnpts=%d\n", state.npts);
 #endif
       } else if(itype==DEATH) { 
 	/* Death transition */
@@ -460,8 +492,8 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 	ix = deathprop.ix;
 	state.npts = state.npts - 1;
 #if MH_DEBUG
-	Rprintf("implementing death of point %d\n", ix);
-	Rprintf("\tnpts=%d\n", state.npts);
+	Rprintf("[mhloop]\t implementing death of point %d\n", ix);
+	Rprintf("[mhloop]\t\tnpts=%d\n", state.npts);
 #endif
 	if(ix < state.npts) {
 	  for(j = ix; j < state.npts; j++) {
@@ -477,14 +509,14 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
 	/* Shift (x[ix], y[ix]) to (u,v) */
 #if MH_DEBUG
 #if MH_MARKED
-	Rprintf("implementing shift from %d = (%lf, %lf)[%d] to (%lf, %lf)[%d]\n", 
+	Rprintf("[mhloop]\t implementing shift from %d = (%lf, %lf)[%d] to (%lf, %lf)[%d]\n", 
 		deathprop.ix, deathprop.u, deathprop.v, deathprop.mrk,
 		shiftprop.u, shiftprop.v, shiftprop.mrk);
 #else
-	Rprintf("implementing shift from %d = (%lf, %lf) to (%lf, %lf)\n", 
+	Rprintf("[mhloop]\t implementing shift from %d = (%lf, %lf) to (%lf, %lf)\n", 
 		deathprop.ix, deathprop.u, deathprop.v,
 		shiftprop.u, shiftprop.v);
-	Rprintf("\tnpts=%d\n", state.npts);
+	Rprintf("[mhloop]\t\tnpts=%d\n", state.npts);
 #endif
 #endif
 	if(mustupdate) {
@@ -507,7 +539,7 @@ OUTERCHUNKLOOP(irep, algo.nrep, maxchunk, 1024) {
       }
 #if MH_DEBUG
     } else {
-      Rprintf("rejected\n");
+      Rprintf("[mhloop]\t No transition\n");
 #endif
     }
   }

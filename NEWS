@@ -1,10 +1,24 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.002
+        CHANGES IN spatstat.core VERSION 2.3-2.004
 
 OVERVIEW
 
+    o We thank Dominic Schuhmacher for contributions.
+    
     o Minor improvements and bug fixes.
 
+BUG FIXES
+
+    o rmh
+    The visual debugger did not display accepted births and deaths correctly.
+    [Spotted by Dominic Schuhmacher.]
+    Fixed.
+
+    o rmh
+    The visual debugger exited prematurely sometimes,
+    if the current state was the empty point pattern.
+    [Spotted by Dominic Schuhmacher.]
+    Fixed.
 
         CHANGES IN spatstat.core VERSION 2.3-2
 

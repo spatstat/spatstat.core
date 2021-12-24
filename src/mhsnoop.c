@@ -8,7 +8,7 @@
 /*
   mhsnoop.c
 
-  $Revision: 1.9 $  $Date: 2018/12/18 02:43:11 $
+  $Revision: 1.11 $  $Date: 2021/12/24 04:28:15 $
 
   support for visual debugger in RMH
 
@@ -17,8 +17,12 @@
 
 */
 
-/* To switch on debugging code, 
+/* 
+   To switch on debugging code, 
    insert the line: #define MH_DEBUG YES
+
+   To switch off debugging code, 
+   insert the line: #define MH_DEBUG NO
 */
 #ifndef MH_DEBUG
 #define MH_DEBUG NO
@@ -47,7 +51,7 @@ void mhsnoop(Snoop *s,
 	     int *itype) 
 {
   SEXP e;
-  int npts, j;
+  int npts, j, proptype, accepted, fateMH, fateUser;
   /* passed from C to R before debugger */
   SEXP Sirep, Sx, Sy, Sm, Sproptype, Sproplocn, Spropmark, Spropindx;
   SEXP Snumer, Sdenom, Sitype;
@@ -67,11 +71,19 @@ void mhsnoop(Snoop *s,
 #endif
 
   /* 
-     execute when the simulation reaches the next stopping time:
-     a specified iteration number 'nextstop'
-     or a specified proposal type 'nexttype'
+     execute when the simulation reaches the next stopping time
  */
-  if(irep != s->nextstop && prop->itype != s->nexttype) return;
+
+  if(s->nextstop >= 0) {
+    /*  specified iteration number 'nextstop' or later */
+    if(irep < s->nextstop) return;
+  } else if(s->nexttype >= 0) {
+    /*  specified proposal type 'nexttype' */
+    if(prop->itype != s->nexttype) return;
+  } else {
+    /* no stopping rule - skip all */
+    return;
+  }
 
 #if MH_DEBUG
   Rprintf("debug triggered\n");
@@ -112,7 +124,7 @@ void mhsnoop(Snoop *s,
   }
   /* proposal type */
   PROTECT(Sproptype = NEW_INTEGER(1));
-  *(INTEGER_POINTER(Sproptype)) = prop->itype;
+  *(INTEGER_POINTER(Sproptype)) = proptype = prop->itype;
   setVar(install("proptype"), Sproptype, e);
   UNPROTECT(1);
   /* proposal coordinates */
@@ -142,28 +154,48 @@ void mhsnoop(Snoop *s,
   setVar(install("numerator"), Snumer, e);
   setVar(install("denominator"), Sdenom, e);
   UNPROTECT(2);
-  /* tentative outcome of proposal */
+  /* tentative outcome of proposal (0 = reject, other=accept) */
   PROTECT(Sitype = NEW_INTEGER(1));
-  *(INTEGER_POINTER(Sitype)) = *itype;
+  *(INTEGER_POINTER(Sitype)) = fateMH = *itype;
   setVar(install("itype"), Sitype, e);
   UNPROTECT(1);
 
   /* ..... call visual debugger */
 
 #if MH_DEBUG
-  Rprintf("executing callback\n");
+  Rprintf("executing [callback]\n");
 #endif
 
   eval(s->expr, s->env);
+  
+#if MH_DEBUG
+  Rprintf("exited [callback]\n");
+#endif
 
   /* update outcome of proposal */
   SitypeUser = findVar(install("itype"), e);
-  *itype = *(INTEGER_POINTER(SitypeUser));
+  fateUser = *(INTEGER_POINTER(SitypeUser));
+  if(fateUser != fateMH)
+    *itype = fateUser;
 
 #if MH_DEBUG
-  Rprintf("Assigning itype = %d\n", *itype);
+  Rprintf("Returned itype = %d\n", fateUser);
+  if(fateUser == fateMH) {
+    if(fateMH == REJECT) {
+      Rprintf("Confirmed: Proposal rejected\n");
+    } else {
+      Rprintf("Confirmed: Proposal accepted\n");
+    }
+  } else {
+    if(fateUser == REJECT) {
+      Rprintf("User changed fate of proposal to REJECTED\n");
+    } else {
+      Rprintf("User changed fate of proposal to ACCEPTED\n");
+    }
+  }
+  Rprintf("Assigned itype = %d\n", *itype);
 #endif
-
+    
   /* update stopping time */
   Sinxt = findVar(install("inxt"), e);
   s->nextstop = *(INTEGER_POINTER(Sinxt));
@@ -181,6 +213,7 @@ void mhsnoop(Snoop *s,
     if(s->nexttype == SHIFT) 
       Rprintf("Next stop: first shift proposal\n");
   }
+  Rprintf("Exiting mhsnoop\n");
 #endif
 
   return;

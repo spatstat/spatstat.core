@@ -3,7 +3,7 @@
 #
 #   visual debug mechanism for rmh
 #
-#   $Revision: 1.33 $  $Date: 2020/01/07 09:14:59 $
+#   $Revision: 1.34 $  $Date: 2021/12/24 04:30:06 $
 #
 #   When rmh is called in visual debug mode (snooping = TRUE),
 #   it calls e <- rmhSnoopEnv(...) to create an R environment 'e'
@@ -92,7 +92,7 @@ rmhSnoopEnv <- function(Xinit, Wclip, R) {
                        denominator=denominator)
       inxt <- rslt$inxt
       tnxt <- rslt$tnxt
-      itype <- if(rslt$accepted) rslt$itype else 0
+      itype <- if(rslt$accepted) proptype else 0
       storage.mode(tnxt) <-
         storage.mode(inxt) <- storage.mode(itype) <- "integer"
 })

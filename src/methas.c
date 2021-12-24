@@ -8,8 +8,12 @@
 void fexitc(const char *msg);
 
 
-/* To switch on debugging code, 
+/* 
+   To switch on debugging code, 
    insert the line: #define MH_DEBUG YES
+   
+   To switch off debugging code, 
+   insert the line: #define MH_DEBUG NO
 */
 #ifndef MH_DEBUG
 #define MH_DEBUG NO
