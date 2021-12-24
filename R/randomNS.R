@@ -3,7 +3,7 @@
 ##
 ##   simulating from Neyman-Scott processes
 ##
-##   $Revision: 1.27 $  $Date: 2020/09/01 10:10:26 $
+##   $Revision: 1.28 $  $Date: 2021/12/23 04:48:50 $
 ##
 ##    Original code for rCauchy and rVarGamma by Abdollah Jalilian
 ##    Other code and modifications by Adrian Baddeley
@@ -84,6 +84,7 @@ rNeymanScott <-
       ## no parents - empty pattern
       result <- ppp(numeric(0), numeric(0), window=win)
       parentid <- integer(0)
+      noff <- 0
     } else {
       if(!nonempty) {
         ## cluster sizes are Poisson
@@ -132,6 +133,7 @@ rNeymanScott <-
       attr(result, "parents") <- parents
       attr(result, "parentid") <- parentid
       attr(result, "expand") <- expand
+      attr(result, "cost") <- np + noff
     }
     
     resultlist[[i]] <- result
@@ -147,12 +149,16 @@ fakeNeyScot <- function(Y, lambda, win, saveLambda, saveparents) {
   ## when the process is degenerately close to Poisson.
   if(saveLambda || saveparents) {
     if(saveLambda && !is.im(lambda)) lambda <- as.im(lambda, W=win)
-    if(saveparents) parents <- ppp(window=win) # empty pattern
+    if(saveparents) emptyparents <- ppp(window=win) # empty pattern
     if(isSingle <- is.ppp(Y)) Y <- solist(Y)
     for(i in seq_along(Y)) {
       Yi <- Y[[i]]
       if(saveLambda) attr(Yi, "lambda") <- lambda
-      if(saveparents) attr(Yi, "parents") <- parents
+      if(saveparents) {
+        attr(Yi, "parents") <- emptyparents
+        attr(Yi, "parentid") <- integer(0)
+        attr(Yi, "cost") <- npoints(Yi)
+      }
       Y[[i]] <- Yi
     }
     if(isSingle) Y <- Y[[1L]]
