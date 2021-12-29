@@ -1,6 +1,6 @@
 #
 #
-#  $Revision: 1.54 $   $Date: 2021/08/31 06:40:35 $
+#  $Revision: 1.55 $   $Date: 2021/12/29 07:50:25 $
 #
 #
 
@@ -149,7 +149,7 @@ subfits.new <- local({
     fake.version <- list(major=spv$major,
                          minor=spv$minor,
                          release=spv$patchlevel,
-                         date="$Date: 2021/08/31 06:40:35 $")
+                         date="$Date: 2021/12/29 07:50:25 $")
     fake.call <- call("cannot.update", Q=NULL, trend=trend,
                       interaction=NULL, covariates=NULL,
                       correction=object$Info$correction,
@@ -241,7 +241,7 @@ subfits.new <- local({
 subfits <-
 subfits.old <- local({
     
-  subfits.old <- function(object, what="models", verbose=FALSE) {
+  subfits.old <- function(object, what="models", verbose=FALSE, new.coef=NULL) {
     stopifnot(inherits(object, "mppm"))
     what <- match.arg(what, c("models","interactions", "basicmodels"))
     ## extract stuff
@@ -268,7 +268,7 @@ subfits.old <- local({
     isfactor <- !sapply(levelslist, is.null)
     
     ## fitted parameters
-    coefs.full <- coef(object)
+    coefs.full <- new.coef %orifnull% coef(object)
     if(is.null(dim(coefs.full))) {
       ## fixed effects model: replicate vector to matrix
       coefs.names <- names(coefs.full)
@@ -301,7 +301,7 @@ subfits.old <- local({
     implcoef <- list()
     for(tag in itags) {
       announce(tag)
-      implcoef[[tag]] <- impliedcoefficients(object, tag)
+      implcoef[[tag]] <- impliedcoefficients(object, tag, new.coef=new.coef)
       announce(", ")
     }
     announce("done.\n")
@@ -322,7 +322,8 @@ subfits.old <- local({
     fisher <- varcov <- NULL
     if(what == "models") {
       announce("Fisher information...")
-      fisher   <- vcov(object, what="fisher", err="null")
+      fisher   <- vcov(object, what="fisher", err="null", new.coef=new.coef)
+      ## note vcov.mppm calls subfits(what="basicmodels") to avoid infinite loop
       varcov   <- try(solve(fisher), silent=TRUE)
       if(inherits(varcov, "try-error"))
         varcov <- NULL
@@ -568,4 +569,65 @@ subfits.old <- local({
 
 cannot.update <- function(...) {
   stop("This model cannot be updated")
+}
+
+mapInterVars <- function(object, subs=subfits(object), mom=model.matrix(object)) {
+  #' Map the canonical variables of each 'subs[[i]]' to those of 'object'
+  #' This is only needed for interaction variables.
+  #'
+  #' (1) Information about the full model
+  #'     Names of interaction variables
+  Vnamelist    <- object$Fit$Vnamelist
+  Isoffsetlist <- object$Fit$Isoffsetlist
+  #'     Dependence map of canonical variables on the original variables/interactions
+  md <- model.depends(object$Fit$FIT)
+  cnames <- rownames(md)
+  #' (2) Information about the fit on each row
+  #'     Identify the (unique) active interaction in each row
+  activeinter <- active.interactions(object)
+  #'     Determine which canonical variables of full model are active in each row
+  mats <- split.data.frame(mom, object$Fit$moadf$id)
+  activevars <- sapply(mats, function(df) { apply(df != 0, 2, any) })
+  activevars <- if(ncol(mom) > 1) t(activevars) else matrix(activevars, ncol=1)
+  if(ncol(activevars) != ncol(mom)) warning("Internal error: activevars columns do not match canonical variables")
+  if(nrow(activevars) != length(mats)) warning("Internal error: activevars rows do not match hyperframe rows")
+  #' (3) Process each submodel
+  n <- length(subs)
+  result <- rep(list(list()), n)
+  for(i in seq_len(n)) {
+    #' the submodel in this row
+    subi <- subs[[i]]
+    if(!is.poisson(subi)) {
+      cnames.i <- names(coef(subi))
+      #' the (unique) tag name of the interaction in this model
+      tagi <- colnames(activeinter)[activeinter[i,]]
+      #' the corresponding variable name(s) in glmdata and coef(subi)
+      vni <- Vnamelist[[tagi]]
+      iso <- Isoffsetlist[[tagi]]
+      #' ignore offset variables
+      vni <- vni[!iso]
+      if(length(vni)) {
+        #' retain only interaction variables
+        e <- cnames.i %in% vni
+        cnames.ie <- cnames.i[e]
+        #' which coefficients of the full model are active in this row
+        acti <- activevars[i,]
+        #' for each interaction variable name in the submodel,
+        #' find the coefficient(s) in the main model to which it contributes
+        nie <- length(cnames.ie)
+        cmap <- vector(mode="list", length=nie)
+        names(cmap) <- cnames.ie
+        for(j in seq_len(nie)) {
+          cj <- cnames.ie[j]
+          cmap[[j]] <- cnames[ md[,cj] & acti ]
+        }
+        #' The result 'cmap' is a named list of character vectors
+        #' where each name is an interaction variable in subs[[i]]
+        #' and the corresponding value is the vector of names of
+        #' corresponding canonical variables in the full model
+        result[[i]] <- cmap
+      }
+    }
+  }
+  return(result)
 }

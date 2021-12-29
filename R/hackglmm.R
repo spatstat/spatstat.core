@@ -103,3 +103,4 @@ function (fixed, random, family, data, correlation, weights,
     fit
 }
 
+family.glmmPQL <- function(object, ...) { object$family }

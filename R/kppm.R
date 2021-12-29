@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.195 $ $Date: 2021/11/22 00:39:32 $
+# $Revision: 1.196 $ $Date: 2021/12/25 21:54:32 $
 #
 
 
@@ -128,7 +128,8 @@ kppm.ppp <- kppm.quad <-
             covfunargs=covfunargs, use.gam=use.gam, nd=nd, eps=eps)
   XX <- if(isquad) X$data else X
   
-  ## set default weight function
+           
+  ## default weight function
   if(is.null(weightfun))
     switch(method,
            adapcl = {

@@ -1,7 +1,7 @@
 #
 #    predict.ppm.S
 #
-#	$Revision: 1.111 $	$Date: 2019/04/27 07:22:19 $
+#	$Revision: 1.114 $	$Date: 2021/12/29 03:02:47 $
 #
 #    predict.ppm()
 #	   From fitted model obtained by ppm(),	
@@ -722,9 +722,8 @@ model.se.image <- function(fit, W=as.owin(fit), ..., what="sd") {
 
 GLMpredict <- function(fit, data, coefs, changecoef=TRUE,
                        type=c("response", "link")) {
-  ok <- is.finite(coefs)
   type <- match.arg(type)
-  if(!changecoef && all(ok)) {
+  if(!changecoef && all(is.finite(unlist(coefs)))) {
     answer <- predict(fit, newdata=data, type=type)
   } else {
     if(inherits(fit, "gam"))

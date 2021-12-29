@@ -91,6 +91,7 @@
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
 \alias{fakeNeyScot}
+\alias{family.glmmPQL} 
 \alias{family.vblogit} 
 \alias{fasp}
 \alias{f3engine}
@@ -182,6 +183,7 @@
 \alias{lookup2DkernelInfo}
 \alias{LurkEngine}
 \alias{makefvlabel}
+\alias{mapInterVars}
 \alias{maskLaslett}
 \alias{match2DkernelName}
 \alias{match.kernel}
@@ -549,6 +551,7 @@ ExpSmoothLog(X, \dots, at, weights)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
 fakeNeyScot(Y, lambda, win, saveLambda, saveparents)
+\method{family}{glmmPQL}(object, \dots)
 \method{family}{vblogit}(object, \dots)
 fasp(fns, which, formulae, dataname, title, rowNames, colNames, checkfv)
 f3engine(x, y, z, box, vside, range, nval, correction)
@@ -595,7 +598,7 @@ ho.engine(model, \dots, nsim, nrmh, start, control, verb)
 illegal.iformula(ifmla, itags, dfvarnames)
 implemented.for.K(correction, windowtype, explicit)
 impliedpresence(tags, formula, df, extranames=character(0))
-impliedcoefficients(object, tag)
+impliedcoefficients(object, tag, new.coef)
 \method{influence}{ppmInfluence}(model, \dots)
 instantiate.interact(x, par)
 interactionfamilyname(x)
@@ -665,6 +668,7 @@ LurkEngine(object, type, cumulative, plot.sd,
            envelope, nsim, nrank, Xsim,
            internal, checklength)
 makefvlabel(op, accent, fname, sub, argname)
+mapInterVars(object, subs, mom)
 maskLaslett(X, \dots, eps, dimyx, xy, oldX, verbose, plotit)
 match.kernel(kernel)
 match2DkernelName(kernel)

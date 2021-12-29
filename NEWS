@@ -1,14 +1,39 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.004
+        CHANGES IN spatstat.core VERSION 2.3-2.006
 
 OVERVIEW
 
-    o We thank Dominic Schuhmacher for contributions.
-    
-    o Minor improvements and bug fixes.
+    o We thank Sriram Ramamurthy and Dominic Schuhmacher for contributions.
 
+    o Bug fixes in anova.mppm and vcov.mppm.
+
+    o Bug fixes in rmh visual debugger.
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o anova.mppm
+    Improved labelling of models in output.
+    
 BUG FIXES
 
+    o vcov.mppm
+    For Gibbs (non-Poisson) models, the variance matrix was
+    calculated incorrectly in some cases. 
+    Fixed.
+
+    o anova.mppm
+    Results were sometimes incorrect if the two models had different interactions
+    (e.g. Strauss vs Poisson).
+    Fixed.
+
+    o anova.mppm
+    Crashed for some models with a message about 'coefficient missing from new.coef'.
+    Fixed.
+    
+    o anova.mppm
+    Gave a warning for some models about "Internal error: unable to map submodels to full model".
+    Fixed.
+    
     o rmh
     The visual debugger did not display accepted births and deaths correctly.
     [Spotted by Dominic Schuhmacher.]

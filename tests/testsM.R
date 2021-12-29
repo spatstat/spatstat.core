@@ -119,7 +119,7 @@ local({
 #
 # Basic tests of mppm
 #
-# $Revision: 1.20 $ $Date: 2021/01/22 08:09:02 $
+# $Revision: 1.21 $ $Date: 2021/12/29 08:25:48 $
 # 
 
 if(!FULLTEST)
@@ -158,16 +158,27 @@ local({
   vcov(fit2)
 #  vcov(fit3)
 
+  if(FULLTEST) {
+    fit4 <- mppm(Points ~ group, simba, hyperframe(str=Strauss(0.1)), iformula=~str/group)
+    fit4
+    summary(fit4)
+    vcov(fit4)
+    fit0 <- mppm(Points ~ group, simba)
+    anova(fit0, fit4, test="Chi")
+  }
+  
   ## test subfits algorithm
   if(FULLTEST) {
     s1 <- subfits(fit1)
     s2 <- subfits(fit2)
     #  s3 <- subfits(fit3)
-  
+    s4 <- subfits(fit4)
+    
     ## validity of results of subfits()
     p1 <- solapply(s1, predict)
     p2 <- solapply(s2, predict)
     #  p3 <- solapply(s3, predict)
+    p4 <- solapply(s4, predict)
   }
 })
 

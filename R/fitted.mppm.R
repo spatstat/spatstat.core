@@ -3,7 +3,7 @@
 #
 # method for 'fitted' for mppm objects
 #
-#   $Revision: 1.3 $   $Date: 2020/01/01 04:43:21 $
+#   $Revision: 1.4 $   $Date: 2021/12/27 10:20:31 $
 # 
 
 fitted.mppm <- function(object, ...,
@@ -21,6 +21,11 @@ fitted.mppm <- function(object, ...,
   interacting <- (length(Vnames) > 0)
   # row identifier
   id <- glmdata$id
+
+  ## secret arguments
+  dotargs <- list(...)
+  new.coef <- dotargs$new.coef
+  dropcoef <- isTRUE(dotargs$dropcoef)
     
   # Modification of `glmdata' may be required
   if(interacting) 
@@ -36,9 +41,12 @@ fitted.mppm <- function(object, ...,
              glmdata <- glmdata[!forbid, ]
            })
 
+  # Possibly updated coefficients
+  coeffs <- adaptcoef(new.coef, coef(object), drop=dropcoef)
+  
   # Compute predicted [conditional] intensity values
-  values <- predict(glmfit, newdata=glmdata, type="response")
-  # Note: the `newdata' argument is necessary in order to obtain
+  values <- GLMpredict(glmfit, glmdata, coeffs, !is.null(new.coef), type="response")
+  # Note: the `glmdata' argument is necessary in order to obtain
   # predictions at all quadrature points. If it is omitted then
   # we would only get predictions at the quadrature points j
   # where glmdata$SUBSET[j]=TRUE.

@@ -3,7 +3,7 @@
 #
 # Works out which interaction is in force for a given point pattern
 #
-#  $Revision: 1.25 $  $Date: 2016/04/25 02:34:40 $
+#  $Revision: 1.26 $  $Date: 2021/12/29 00:24:51 $
 #
 #
 impliedpresence <- function(tags, formula, df, extranames=character(0)) {
@@ -93,7 +93,7 @@ active.interactions <- function(object) {
   return(answer)
 }
 
-impliedcoefficients <- function(object, tag) {
+impliedcoefficients <- function(object, tag, new.coef=NULL) {
   stopifnot(inherits(object, "mppm"))
   stopifnot(is.character(tag) && length(tag) == 1)
   fitobj      <- object$Fit$FIT
@@ -150,7 +150,7 @@ impliedcoefficients <- function(object, tag) {
                } else sort(unique(Moadf[[v]]))[1]
   }
   # (2) evaluate linear predictor
-  Coefs <- if(!has.random) coef(fitobj) else fixef(fitobj)
+  Coefs <- new.coef %orifnull% (if(!has.random) coef(fitobj) else fixef(fitobj))
   suppressWarnings({
 #  eta0 <- predict(fitobj, newdata=df, type="link")
     eta0 <- GLMpredict(fitobj, data=df, coefs=Coefs,

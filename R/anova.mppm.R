@@ -1,7 +1,7 @@
 #
 # anova.mppm.R
 #
-# $Revision: 1.21 $ $Date: 2020/11/04 02:45:48 $
+# $Revision: 1.23 $ $Date: 2021/12/29 08:18:13 $
 #
 
 anova.mppm <- local({
@@ -14,8 +14,22 @@ anova.mppm <- local({
   tests.Gibbs <- c("Chisq", "LRT")
   totalnquad <- function(fit) sum(sapply(quad.mppm(fit), n.quad))
   totalusedquad <- function(fit) with(fit$Fit$moadf, sum(.mpl.SUBSET))
-  fmlaString <- function(z) { paste(as.expression(formula(z))) }
-##  interString <- function(z) { as.interact(z)$creator }
+  fmlaString <- function(object) { paste(as.expression(formula(object))) }
+  creatorString <- function(inter) { inter$creator }
+  creatorStrings <- function(interlist) { unique(sapply(interlist, creatorString)) }
+  interString <- function(object) {
+    inter <- object$Inter$interaction
+    if(is.interact(inter)) {
+      z <- creatorString(inter)
+    } else if(is.hyperframe(inter)) {
+      acti <- active.interactions(object)
+      actinames <- colnames(acti)[apply(acti, 2, any)]
+      z <- unique(unlist(lapply(actinames, function(a, h=inter) { unique(creatorStrings(h[,a,drop=TRUE])) })))
+    } else {
+      z <- unique(object$Inter$processes)
+    }
+    paste(z, collapse=", ")
+  }
   
   anova.mppm <- function(object, ..., test=NULL, adjust=TRUE,
                          fine=FALSE, warn=TRUE) {
@@ -98,6 +112,10 @@ anova.mppm <- local({
                      "is not implemented for random effects models"))
         test <- TRUE
       }
+      if(adjust) {
+        warn.once("AnovaMppmLMEnoadjust", "adjust=TRUE was ignored; not supported for random-effects models")
+        adjust <- FALSE
+      }
     } else if(!is.null(test)) {
       test <- match.arg(test, tests.choices)
       if(!(test %in% tests.avail))
@@ -172,12 +190,12 @@ anova.mppm <- local({
         ## anova(mod1, mod2, ...)
         ## change names of models
         fmlae <- unlist(lapply(objex, fmlaString))
-#        intrx <- unlist(lapply(objex, interString))
+        intrx <- unlist(lapply(objex, interString))
         h[2L] <- paste("Model",
                       paste0(1L:length(objex), ":"),
                       fmlae,
-#                      "\t",
-#                      intrx,
+                      "\t",
+                      intrx,
                       collapse="\n")
       }
       ## Add explanation if we did the stepwise thing ourselves
@@ -237,12 +255,18 @@ anova.mppm <- local({
               if(df == 1) {
                 cfac[i] <- H[-injection,-injection]/G[-injection,-injection]
               } else {
-                Res <- lapply(subfits(bigger),
+                subs <- subfits(bigger, new.coef=thetaDot)
+                Res <- lapply(subs,
                               residuals,
                               type="score",
-                              drop=TRUE, 
-                              new.coef=thetaDot, dropcoef=TRUE)
-                U <- sumcompatible(lapply(Res, integral.msr), names(thetaDot))
+                              drop=TRUE,
+                              dropcoef=TRUE)
+                #' pseudoscore for each row
+                Ueach <- lapply(Res, integral.msr)
+                #' total pseudoscore
+                maps <- mapInterVars(bigger, subs)
+                U <- sumMapped(Ueach, maps, 0*thetaDot)
+                #' apply adjustment
                 Uo <- U[-injection]
                 Uo <- matrix(Uo, ncol=1)
                 Hinv <- solve(H)
@@ -276,10 +300,47 @@ anova.mppm <- local({
     return(result)
   }
 
+  sumMapped <- function(xlist, maps, initial) {
+    result <- initial
+    wantnames <- names(initial)
+    for(i in seq_along(xlist)) {
+      x <- xlist[[i]]
+      gotnames <- names(x)
+      unchanged <- gotnames %in% wantnames
+      if(any(unchanged)) {
+        unames <- gotnames[unchanged]
+        result[unames] <- result[unames] + x[unames]
+        x <- x[!unchanged]
+        gotnames <- names(x)
+      }
+      cmap <- maps[[i]]
+      mapinputs <- names(cmap)
+      for(j in seq_along(x)) {
+        inputname <- gotnames[j]
+        k <- match(inputname, mapinputs)
+        if(is.na(k)) {
+          warning("Internal error: cannot map variable", sQuote(inputname),
+                  "from submodel to full model")
+        } else {
+          targetnames <- cmap[[k]]
+          if(length(unknown <- setdiff(targetnames, wantnames)) > 0) {
+            warning("Internal error: unexpected target",
+                    ngettext(length(unknown), "variable", "variables"),
+                    commasep(sQuote(unknown)))
+            targetnames <- intersect(targetnames, wantnames)
+          }
+          result[targetnames] <- result[targetnames] + x[inputname]
+        }
+      }
+    }
+    result
+  }
+      
   sumcompatible <- function(xlist, required) {
     result <- numeric(length(required))
     names(result) <- required
-    for(x in xlist) {
+    for(i in seq_along(xlist)) {
+      x <- xlist[[i]]
       namx <- names(x)
       if(!all(ok <- (namx %in% required)))
         stop(paste("Internal error in sumcompatible:",

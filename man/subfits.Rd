@@ -9,8 +9,8 @@
   of fitted point process models for the individual point patterns.
 }
 \usage{
-   subfits(object, what="models", verbose=FALSE)
-   subfits.old(object, what="models", verbose=FALSE)
+   subfits(object, what="models", verbose=FALSE, new.coef=NULL)
+   subfits.old(object, what="models", verbose=FALSE, new.coef=NULL)
    subfits.new(object, what="models", verbose=FALSE)
 }
 \arguments{
@@ -25,6 +25,10 @@
   }
   \item{verbose}{
     Logical flag indicating whether to print progress reports.
+  }
+  \item{new.coef}{
+    Advanced use only. Numeric vector or matrix of coefficients
+    to replaced the fitted coefficients \code{coef(object)}.
   }
 }
 \details{

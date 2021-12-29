@@ -1,6 +1,6 @@
 #  Variance-covariance matrix for mppm objects
 #
-# $Revision: 1.21 $ $Date: 2020/03/04 05:25:20 $
+# $Revision: 1.23 $ $Date: 2021/12/29 07:50:32 $
 #
 #
 
@@ -22,15 +22,16 @@ vcov.mppm <- local({
     what <- match.arg(what,
                       c("vcov", "corr", "fisher", "Fisher", "internals", "all"))
     if(what == "Fisher") what <- "fisher"
-
-    if(is.poisson.mppm(object) && object$Fit$fitter == "glm") 
+    
+    if(is.poisson.mppm(object) && object$Fit$fitter == "glm")
       return(vcmPois(object, ..., what=what, err=err))
 
     return(vcmGibbs(object, ..., what=what, err=err))
   }
 
   vcmPois <- function(object, ..., what, err,
-                      nacoef.action=c("warn", "fatal", "silent")
+                      nacoef.action=c("warn", "fatal", "silent"),
+                      new.coef=NULL
                       ) {
     #' legacy algorithm for Poisson case
 
@@ -53,7 +54,6 @@ vcov.mppm <- local({
     gf <- object$Fit$FIT
     gd <- object$Fit$moadf
     wt <- gd$.mpl.W
-    fi <- fitted(gf)
 
     fo <- object$trend
     if(is.null(fo)) fo <- (~1)
@@ -61,6 +61,13 @@ vcov.mppm <- local({
     mof <- model.frame(fo, gd)
     mom <- model.matrix(fo, mof)
     momnames <- dimnames(mom)[[2]]
+
+    ## fitted intensity
+    if(!is.null(new.coef) && inherits(gf, c("gam", "lme"))) {
+      warn.once("vcovGAMnew", "'new.coef' is not supported by vcov.mppm for GAM or LME models; ignored")
+      new.coef <- NULL
+    }
+    fi <- if(is.null(new.coef)) fitted(gf) else GLMpredict(gf, gd, new.coef, changecoef=TRUE, type="response")
 
     fisher <- sumouter(mom, fi * wt)
     dimnames(fisher) <- list(momnames, momnames)
@@ -87,7 +94,8 @@ vcov.mppm <- local({
                        matrix.action=c("warn", "fatal", "silent"),
                        gam.action=c("warn", "fatal", "silent"),
                        logi.action=c("warn", "fatal", "silent"),
-                       nacoef.action=c("warn", "fatal", "silent")
+                       nacoef.action=c("warn", "fatal", "silent"),
+                       new.coef=NULL
                        ) {
     if(!missing(err)) {
       if(err == "null") err <- "silent" 
@@ -111,20 +119,42 @@ vcov.mppm <- local({
              silent = {})
       return(NULL)
     }
+    #' extract stuff from fitted model
+    Inter        <- object$Inter
+    interaction  <- Inter$interaction
+    itags        <- Inter$itags
+    Vnamelist    <- object$Fit$Vnamelist
+    Isoffsetlist <- object$Fit$Isoffsetlist
+    glmdata      <- object$Fit$moadf
+    fitter       <- object$Fit$fitter
+    fitobj       <- object$Fit$FIT
+    #' compute fitted intensity
+    if(is.null(new.coef)) {
+      fi <- fitted(fitobj)
+    } else if(fitter != "glm") {
+      warn.once("vcovMppmGAMnew", "'new.coef' is not supported by vcov.mppm for GAM or LME models; ignored")
+      new.coef <- NULL
+      fi <- fitted(fitobj)
+    } else {
+      fi <- GLMpredict(fitobj, glmdata, new.coef, changecoef=TRUE, type="response")
+    }
     #' initialise
     cnames <- names(fixed.effects(object))
     nc <- length(cnames)
     A2 <- A3 <- matrix(0, nc, nc, dimnames=list(cnames, cnames))    
     #' (1) Compute matrix A1 directly
-    glmdata <- object$Fit$moadf
     glmsub  <- glmdata$.mpl.SUBSET
     wt      <- glmdata$.mpl.W
     mom <- model.matrix(object)
-    lam <- unlist(fitted(object))
+    lam <- unlist(fitted(object, new.coef=new.coef))
     A1 <- sumouter(mom, lam * wt * glmsub)
-    #' (2) compute A2 and A3 matrices of submodels
-    subs <- subfits(object, what="basicmodels")
+    #' (2) compute matrices A2 and A3 for submodels
+    #' compute submodels 
+    subs <- subfits(object, what="basicmodels", new.coef=new.coef)
     n <- length(subs)
+    #' identify the (unique) active interaction in each row
+    activeinter <- active.interactions(object)
+    ## compute A2 and A3 for each submodel
     guts <- lapply(subs,
                    vcov,
                    what="internals",
@@ -135,25 +165,13 @@ vcov.mppm <- local({
                    ...)
     a2   <- lapply(guts, getElement, name="A2")
     a3   <- lapply(guts, getElement, name="A3")
-    #' (3) map into full model
-    #' Identify the (unique) active interaction in each row
-    activeinter <- active.interactions(object)
-    #' interaction names (in glmdata)
-    Vnamelist <- object$Fit$Vnamelist
-    Isoffsetlist <- object$Fit$Isoffsetlist
-    #' Each a2[[i]] and a3[[i]] refer to this interaction (eg 'str')
-    #' but may contribute to several coefficients of the full model
-    #' e.g.  'str' -> str:id -> 'str', 'str:id2'
-    #' Determine which canonical variables of full model are active in each row
-    mats <- split.data.frame(mom, glmdata$id)
-    activevars <- matrix(sapply(mats, notallzero), nrow=length(mats))
-    #' dependence map of canonical variables of full model
-    #'     on the original variables/interactions
-    md <- model.depends(object$Fit$FIT)
-    #' process each row, summing A2 and A3
+    #' (3) Determine map from interaction variables of subfits
+    #'     to canonical variables of 'object'
+    maps <- mapInterVars(object, subs, mom)
+    #' (4) Process each row, summing A2 and A3
     for(i in seq_len(n)) {
-      #' the submodel in this row
       subi <- subs[[i]]
+      cmap <- maps[[i]]
       #' contributes to second order terms only if non-Poisson
       if(!is.poisson(subi)) {
         cnames.i <- names(coef(subi))
@@ -161,44 +179,32 @@ vcov.mppm <- local({
         a3i <- a3[[i]]
         #' the (unique) tag name of the interaction in this model
         tagi <- colnames(activeinter)[activeinter[i,]]
-        #' the corresponding variable name(s) in glmdata and coef(subi)
+        #' the corresponding canonical variable name(s) for this interaction
         vni <- Vnamelist[[tagi]]
-        iso <- Isoffsetlist[[tagi]]
         #' ignore offset variables
+        iso <- Isoffsetlist[[tagi]]
         vni <- vni[!iso]
         if(length(vni)) {
           #' retain only interaction rows & columns (the rest are zero anyway)
           e <- cnames.i %in% vni
-          a2i <- a2i[e, e, drop=FALSE]
-          a3i <- a3i[e, e, drop=FALSE]
-          cnames.ie <- cnames.i[e]
-          #' which coefficients of the full model are active in this row
-          acti <- activevars[i,]
-          #' for each interaction variable name in the submodel,
-          #' find the coefficient(s) in the main model to which it contributes
-          nie <- length(cnames.ie)
-          cmap <- vector(mode="list", length=nie)
-          names(cmap) <- cnames.ie
-          for(j in seq_len(nie)) {
-            cj <- cnames.ie[j]
-            cmap[[j]] <- cnames[ md[,cj] & acti ]
-          }
+          a2ie <- a2i[e, e, drop=FALSE]
+          a3ie <- a3i[e, e, drop=FALSE]
           #' all possible mappings 
-          maps <- do.call(expand.grid,
-                          append(cmap, list(stringsAsFactors=FALSE)))
-          nmaps <- nrow(maps)
-          if(nmaps == 0) {
+          mappings <- do.call(expand.grid,
+                              append(cmap, list(stringsAsFactors=FALSE)))
+          nmappings <- nrow(mappings)
+          if(nmappings == 0) {
             warning("Internal error: Unable to map submodel to full model")
           } else {
-            for(irow in 1:nmaps) {
-              for(jcol in 1:nmaps) {
-                cmi <- as.character(maps[irow,])
-                cmj <- as.character(maps[jcol,])
+            for(irow in 1:nmappings) {
+              for(jcol in 1:nmappings) {
+                cmi <- as.character(mappings[irow,])
+                cmj <- as.character(mappings[jcol,])
                 if(anyDuplicated(cmi) || anyDuplicated(cmj)) {
                   warning("Internal error: duplicated labels in submodel map")
-                } else if(!is.null(a2i)) {
-                  A2[cmi,cmj] <- A2[cmi,cmj] + a2i
-                  A3[cmi,cmj] <- A3[cmi,cmj] + a2i
+                } else if(!is.null(a2ie)) {
+                  A2[cmi,cmj] <- A2[cmi,cmj] + a2ie
+                  A3[cmi,cmj] <- A3[cmi,cmj] + a2ie
                 }
               }
             }
@@ -206,6 +212,7 @@ vcov.mppm <- local({
         }
       }
     }
+    #' (5) pack up
     internals <- list(A1=A1, A2=A2, A3=A3)
     if(what %in% c("internals", "all"))
       internals <- c(internals, list(suff=mom))
@@ -278,7 +285,7 @@ vcov.mppm <- local({
     return(A)
   }
 
-  notallzero <- function(df) { apply(df != 0, 2, any) }
+##  notallzero <- function(df) { apply(df != 0, 2, any) }
   
   vcov.mppm
   
