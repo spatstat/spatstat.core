@@ -2,7 +2,7 @@
 #' 
 #'  Bias correction techniques
 #'
-#'  $Revision: 1.2 $ $Date: 2016/09/15 02:21:15 $
+#'  $Revision: 1.3 $ $Date: 2022/01/04 05:30:06 $
 
 bc <- function(fit, ...) {
   UseMethod("bc")

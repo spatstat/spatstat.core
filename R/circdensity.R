@@ -3,7 +3,7 @@
 #'
 #' Kernel smoothing for circular data
 #'
-#'   $Revision: 1.3 $ $Date: 2014/12/04 06:49:20 $
+#'   $Revision: 1.4 $ $Date: 2022/01/04 05:30:06 $
 
 circdensity <- function(x, sigma="nrd0", ..., bw=NULL,
                         weights=NULL,

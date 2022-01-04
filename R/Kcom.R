@@ -3,7 +3,7 @@
 #
 #   model compensated K-function
 #
-# $Revision: 1.16 $ $Date: 2018/10/19 03:20:51 $
+# $Revision: 1.17 $ $Date: 2022/01/04 05:30:06 $
 #
 
 Kcom <- local({

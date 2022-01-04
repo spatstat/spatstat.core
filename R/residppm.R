@@ -4,7 +4,7 @@
 # computes residuals for fitted point process model
 #
 #
-# $Revision: 1.25 $ $Date: 2017/12/07 03:03:48 $
+# $Revision: 1.26 $ $Date: 2022/01/04 05:30:06 $
 #
 
 residuals.ppm <-

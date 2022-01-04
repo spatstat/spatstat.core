@@ -1,7 +1,4 @@
 \name{clusterfield}
-\alias{clusterfield}
-\alias{clusterfield.character}
-\alias{clusterfield.function}
 \alias{clusterfield.kppm}
 \title{Field of clusters}
 \description{
@@ -9,11 +6,6 @@
   point pattern.
 }
 \usage{
-  clusterfield(model, locations = NULL, \dots)
-
-  \method{clusterfield}{character}(model, locations = NULL, \dots)
-
-  \method{clusterfield}{function}(model, locations = NULL, \dots, mu = NULL)
 
   \method{clusterfield}{kppm}(model, locations = NULL, \dots)
 }
@@ -29,21 +21,20 @@
     to the center of a unit square otherwise.
   }
   \item{\dots}{
-    Additional arguments passed to \code{\link{density.ppp}} or the
+    Additional arguments passed to \code{\link[spatstat.core]{density.ppp}} or the
     cluster kernel. See Details.
-  }
-  \item{mu}{
-     Mean number of offspring per cluster. 
-     A single number or a pixel image.
   }
 }
 \details{
-  The actual calculations are preformed by \code{\link{density.ppp}} and
+  The actual calculations are performed
+  by \code{\link[spatstat.core]{density.ppp}} and
   \code{\dots} arguments are passed thereto for control over the pixel
-  resolution etc. (These arguments are then passed on to \code{\link{pixellate.ppp}}
-  and \code{\link{as.mask}}.)
+  resolution etc.
+  (These arguments are then passed on to \code{\link[spatstat.geom]{pixellate.ppp}}
+  and \code{\link[spatstat.geom]{as.mask}}.)
 
-  For the function method the given kernel function should accept
+  For the method \code{clusterfield.function},
+  the given kernel function should accept
   vectors of x and y coordinates as its first two arguments. Any
   additional arguments may be passed through the \code{\dots}.
 
@@ -54,7 +45,9 @@
   \code{mu} is as explained in the simulation functions referenced in
   the See Also section below.
 
-  For the character method \code{model} must be one of:
+  For the method \code{clusterfield.character}, the
+  argument \code{model} must be one of
+  the following character strings:
   \code{model="Thomas"} for the Thomas process,
   \code{model="MatClust"} for the \Matern cluster process,
   \code{model="Cauchy"} for the Neyman-Scott cluster process with
@@ -66,15 +59,15 @@
   may also be passed through \code{\dots} and will be interpreted as
   explained above.
 
-  The kppm method extracts the relevant information from the fitted
+  The method \code{clusterfield.kppm} extracts the relevant information
+  from the fitted
   model (including \code{mu}) and calls \code{clusterfield.function}.
-  
 }
 \value{
   A pixel image (object of class \code{"im"}).
 }
 \seealso{
-  \code{\link{density.ppp}} and \code{\link{kppm}}
+  \code{\link[spatstat.core]{density.ppp}} and \code{\link[spatstat.core]{kppm}}.
 
   Simulation algorithms for cluster models:
   \code{\link{rCauchy}}
@@ -97,12 +90,7 @@
   X <- runifpoint(10)
   clusterfield(kernel, X, scal=0.05)
 }
-\author{\adrian
-  
-  ,
-  \rolf
-  
-  and \ege
-  .
+\author{
+  \spatstatAuthors.
 }
 \keyword{spatial}

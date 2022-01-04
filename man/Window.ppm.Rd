@@ -1,11 +1,10 @@
-\name{WindowOnly}
+\name{Window.ppm}
 \alias{Window.ppm}
 \alias{Window.kppm}
 \alias{Window.dppm}
 \alias{Window.slrm}
 \alias{Window.msr}
 \alias{Window.quadrattest}
-\alias{Window.rmhmodel}
 \title{Extract Window of Spatial Object}
 \description{
   Given a spatial object (such as a point pattern or pixel image)
@@ -25,7 +24,6 @@
 
  \method{Window}{quadrattest}(X, \dots)
 
- \method{Window}{rmhmodel}(X, \dots)
 
 
 }
@@ -59,8 +57,8 @@
   \code{\link{owin.object}}
 }
 \examples{
-   X <- quadratcount(cells, 4)
-   Window(X)
+   A <- ppm(cells ~ 1)
+   Window(A)
 }
 \author{
   \spatstatAuthors.

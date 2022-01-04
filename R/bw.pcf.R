@@ -1,7 +1,7 @@
 #'
 #' bw.pcf.R
 #'
-#' $Revision: 1.5 $  $Date: 2019/09/30 07:51:52 $
+#' $Revision: 1.6 $  $Date: 2022/01/04 05:30:06 $
 #'
 #' bandwidth selection for pcf
 #' with least-squares cross-validation method

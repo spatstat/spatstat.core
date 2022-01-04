@@ -68,7 +68,6 @@ void KrectInt(double *, double *, int *, double *, double *, int *, double *, do
 void KrectDbl(double *, double *, int *, double *, double *, int *, double *, double *, int *, int *, int *, int *, double *, double *, double *, double *, double *);
 void locpcfx(int *, double *, double *, int *, int *, double *, double *, int *, int *, double *, double *, double *); 
 void locWpcfx(int *, double *, double *, int *, int *, double *, double *, int *, double *, int *, double *, double *, double *);
-void knownCif(char *, int *);
 void scantrans(double *, double *, int *, double *, double *, double *, double *, int *, int *, double *, int *);
 void Gsmoopt(int *, double *, double *, double *, int *, double *, double *); 
 void Gwtsmoopt(int *, double *, double *, double *, int *, double *, double *, double *); 
@@ -87,12 +86,3 @@ void Ccrosspaircounts(int *, double *, double *, int *, double *, double *, doub
              Functions invoked by .Call
 
 */
-SEXP thinjumpequal(SEXP, SEXP, SEXP);
-SEXP xmethas(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP); 
-SEXP xmethas(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
-SEXP PerfectStrauss(SEXP, SEXP, SEXP, SEXP, SEXP); 
-SEXP PerfectHardcore(SEXP, SEXP, SEXP, SEXP); 
-SEXP PerfectStraussHard(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP); 
-SEXP PerfectDiggleGratton(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP); 
-SEXP PerfectDGS(SEXP, SEXP, SEXP, SEXP); 
-SEXP PerfectPenttinen(SEXP, SEXP, SEXP, SEXP, SEXP);

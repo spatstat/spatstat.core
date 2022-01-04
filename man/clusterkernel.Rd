@@ -1,6 +1,4 @@
 \name{clusterkernel}
-\alias{clusterkernel}
-\alias{clusterkernel.character}
 \alias{clusterkernel.kppm}
 \title{
   Extract Cluster Offspring Kernel
@@ -10,11 +8,9 @@
   returns the probability density of the cluster offspring.
 }
 \usage{
-clusterkernel(model, \dots)
 
 \method{clusterkernel}{kppm}(model, \dots)
 
-\method{clusterkernel}{character}(model, \dots)
 }
 \arguments{
   \item{model}{
@@ -37,20 +33,17 @@ clusterkernel(model, \dots)
   A function in the \R language with arguments \code{x,y,\dots}.
 }
 \author{
-\adrian
-
-
-\rolf
-
-and \ege
-
+  \spatstatAuthors.
 }
 \seealso{
-  \code{\link{clusterfield}}, \code{\link{kppm}}
+  \code{\link{clusterfield}}, \code{\link[spatstat.core]{kppm}}
 }
 \examples{
   fit <- kppm(redwood ~ x, "MatClust")
   f <- clusterkernel(fit)
+  f(0.05, 0.02)
+
+  f <- clusterkernel("Thomas", kappa=10, scale=0.5)
   f(0.1, 0.2)
 }
 \keyword{spatial}

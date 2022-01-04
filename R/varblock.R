@@ -3,7 +3,7 @@
 #
 #   Variance estimation using block subdivision
 #
-#   $Revision: 1.21 $  $Date: 2020/11/30 13:11:20 $
+#   $Revision: 1.22 $  $Date: 2022/01/04 05:30:06 $
 #
 
 varblock <- local({

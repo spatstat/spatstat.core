@@ -7,8 +7,6 @@
 */
 
 #include "proto.h"
-#include <R.h>
-#include <Rinternals.h>
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
@@ -49,7 +47,6 @@ static const R_CMethodDef CEntries[] = {
     {"KborderI",         (DL_FUNC) &KborderI,          8},
     {"KnoneD",           (DL_FUNC) &KnoneD,            6},
     {"KnoneI",           (DL_FUNC) &KnoneI,            6},
-    {"knownCif",         (DL_FUNC) &knownCif,          2},
     {"KrectDbl",         (DL_FUNC) &KrectDbl,         17},
     {"KrectInt",         (DL_FUNC) &KrectInt,         17},
     {"KrectWtd",         (DL_FUNC) &KrectWtd,         18},
@@ -80,21 +77,9 @@ static const R_CMethodDef CEntries[] = {
     {NULL, NULL, 0}
 };
 
-static const R_CallMethodDef CallEntries[] = {
-    {"PerfectDGS",           (DL_FUNC) &PerfectDGS,            4},
-    {"PerfectDiggleGratton", (DL_FUNC) &PerfectDiggleGratton,  6},
-    {"PerfectHardcore",      (DL_FUNC) &PerfectHardcore,       4},
-    {"PerfectPenttinen",     (DL_FUNC) &PerfectPenttinen,      5},
-    {"PerfectStrauss",       (DL_FUNC) &PerfectStrauss,        5},
-    {"PerfectStraussHard",   (DL_FUNC) &PerfectStraussHard,    6},
-    {"thinjumpequal",        (DL_FUNC) &thinjumpequal,         3},
-    {"xmethas",              (DL_FUNC) &xmethas,              25},
-    {NULL, NULL, 0}
-};
-
 void R_init_spatstat_core(DllInfo *dll)
 {
-    R_registerRoutines(dll, CEntries, CallEntries, NULL, NULL);
+    R_registerRoutines(dll, CEntries, NULL, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
     R_forceSymbols(dll, TRUE); 
 }

@@ -1,7 +1,7 @@
 #'
 #'   densityAdaptiveKernel.R
 #'
-#'   $Revision: 1.4 $  $Date: 2019/03/07 02:58:08 $
+#'   $Revision: 1.5 $  $Date: 2022/01/04 05:30:06 $
 #'
 #'
 #'  Adaptive kernel smoothing via 3D FFT

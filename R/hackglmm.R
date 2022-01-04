@@ -1,5 +1,5 @@
 # hackglmm.R
-#  $Revision: 1.8 $ $Date: 2020/11/04 00:27:07 $
+#  $Revision: 1.9 $ $Date: 2022/01/04 05:30:06 $
 
 hackglmmPQL <- 
 function (fixed, random, family, data, correlation, weights,

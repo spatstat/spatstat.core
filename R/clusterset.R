@@ -3,7 +3,7 @@
 #
 #   Allard-Fraley estimator of cluster region
 #
-#   $Revision: 1.12 $  $Date: 2016/02/16 01:39:12 $
+#   $Revision: 1.13 $  $Date: 2022/01/04 05:30:06 $
 #
 
 clusterset <- function(X, what=c("marks", "domain"),

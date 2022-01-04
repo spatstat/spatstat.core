@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.196 $ $Date: 2021/12/25 21:54:32 $
+# $Revision: 1.197 $ $Date: 2022/01/03 06:37:02 $
 #
 
 
@@ -1898,5 +1898,22 @@ psib.kppm <- function(object) {
   g <- pcfmodel(object)
   p <- 1 - 1/g(0)
   return(p)
+}
+
+reach.kppm <- function(x, ..., epsilon) {
+  thresh <- if(missing(epsilon)) NULL else epsilon
+  if(x$isPCP) 
+    return(2 * clusterradius.kppm(x, ..., thresh=thresh))
+  ## use pair correlation
+  g <- pcfmodel(x)
+  ## find upper bound
+  if(is.null(thresh)) thresh <- 0.01
+  f <- function(r) { g(r) - 1 - thresh }
+  scal <- as.list(x$par)$scale %orifnull% 1
+  for(a in scal * 2^(0:10)) { if(f(a) < 0) break; }
+  if(f(a) > 0) return(Inf)
+  ## solve g(r) = 1 + epsilon
+  b <- uniroot(f, c(0, a))$root
+  return(b)
 }
 

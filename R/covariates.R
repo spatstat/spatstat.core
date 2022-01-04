@@ -3,7 +3,7 @@
 #
 # evaluate covariates
 #
-#   $Revision: 1.3 $  $Date: 2015/10/21 09:06:57 $
+#   $Revision: 1.4 $  $Date: 2022/01/04 05:30:06 $
 #
 
 evalCovariate <- function(covariate, locations) {

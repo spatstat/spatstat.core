@@ -1,11 +1,10 @@
-\name{domain}
+\name{domain.ppm}
 \alias{domain.ppm}
 \alias{domain.kppm}
 \alias{domain.dppm}
 \alias{domain.slrm}
 \alias{domain.msr}
 \alias{domain.quadrattest}
-\alias{domain.rmhmodel}
 \title{
   Extract the Domain of any Spatial Object
 }
@@ -27,7 +26,8 @@
 
  \method{domain}{quadrattest}(X, \dots)
 
- \method{domain}{rmhmodel}(X, \dots)
+
+
 }
 \arguments{
   \item{X}{
@@ -40,7 +40,7 @@
   \item{from}{Character string. See Details.}
 }
 \details{
-  The function \code{domain} is generic.
+  The function \code{\link[spatstat.geom]{domain}} is generic.
 
   For a spatial object \code{X} in any number of dimensions, 
   \code{domain(X)} extracts the spatial domain in which \code{X} is
@@ -70,12 +70,15 @@
   \spatstatAuthors.
 }
 \seealso{
+  \code{\link[spatstat.geom]{domain}},
+  \code{\link[spatstat.random]{domain.rmhmodel}},
+  \code{\link[spatstat.linnet]{domain.lpp}}.
   \code{\link{Window}},
-  \code{\link{Frame}}
+  \code{\link{Frame}}.
 }
 \examples{
-  domain(cells)
-  domain(bei.extra$elev)
+  domain(ppm(redwood ~ 1))
+  domain(quadrat.test(redwood, 2, 2))
 }
 \keyword{spatial}
 \keyword{manip}

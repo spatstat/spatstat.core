@@ -30,7 +30,6 @@
 \alias{calc.TSE}
 \alias{cannot.update}
 \alias{censtimeCDFest}
-\alias{change.default.expand}          
 \alias{check.separable}
 \alias{check.testfun}
 \alias{circticks}
@@ -50,10 +49,6 @@
 \alias{CVforPCF}
 \alias{damaged.ppm}
 \alias{data.mppm}
-\alias{datagen.runifpointOnLines}
-\alias{datagen.runifpoisppOnLines}
-\alias{datagen.rpoisppOnLines}
-\alias{default.clipwindow}
 \alias{deltasuffstat}
 \alias{Deviation}
 \alias{dfbetas.ppmInfluence}
@@ -86,11 +81,9 @@
 \alias{evalInterEngine}
 \alias{evalPairPotential}
 \alias{evaluate2Dkernel}
-\alias{expandwinPerfect}
 \alias{ExpSmoothLog}
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
-\alias{fakeNeyScot}
 \alias{family.glmmPQL} 
 \alias{family.vblogit} 
 \alias{fasp}
@@ -118,7 +111,6 @@
 \alias{getglmsubset}
 \alias{getppmdatasubset}
 \alias{getppmOriginalCovariates}
-\alias{getRandomFieldsModelGen}
 \alias{getSumFun}
 \alias{geyercounts}
 \alias{geyerdelta2}
@@ -128,8 +120,6 @@
 \alias{hackglmmPQL}
 \alias{hasenvelope}
 \alias{hasglmfit}
-\alias{HermiteCoefs}
-\alias{handle.rshift.args}
 \alias{hierarchicalordering}
 \alias{hiermat}
 \alias{ho.engine}
@@ -142,10 +132,7 @@
 \alias{interactionfamilyname}
 \alias{intermaker}
 \alias{is.atomicQtest}
-\alias{is.cadlag}
-\alias{is.expandable}
 \alias{is.expandable.ppm}
-\alias{is.expandable.rmhmodel}
 \alias{is.interact}
 \alias{is.marked.mppm}    
 \alias{is.marked.msr}    
@@ -170,8 +157,6 @@
 \alias{kppmMinCon}
 \alias{kppmPalmLik}
 \alias{kppmCLadap}
-\alias{kraever}
-\alias{kraeverRandomFields}
 \alias{labels.ppm}
 \alias{leverage.ppmInfluence}
 \alias{localKengine}
@@ -195,7 +180,6 @@
 \alias{mpl.get.covariates}
 \alias{mpl.prepare}
 \alias{mpl.usable}
-\alias{MultiPair.checkmatrix}
 \alias{names<-.fv}
 \alias{newformula}
 \alias{newstyle.coeff.handling}
@@ -274,15 +258,9 @@
 \alias{print.quadrattest}
 \alias{print.qqppm}
 \alias{print.rat}
-\alias{print.rmhcontrol}
-\alias{print.rmhexpand}
-\alias{print.rmhmodel}
-\alias{print.rmhstart}
-\alias{print.rmhInfoList}
 \alias{print.rppm}
 \alias{print.Smoothfun}       
 \alias{print.summary.mppm}
-\alias{print.summary.rmhexpand}
 \alias{print.summary.ssf}
 \alias{print.summary.slrm}
 \alias{print.vblogit}
@@ -290,7 +268,6 @@
 \alias{quadBlockSizes}
 \alias{quadrat.testEngine}
 \alias{ratfv}
-\alias{RandomFieldsSafe}
 \alias{reach.slrm}
 \alias{rebadge.as.crossfun}
 \alias{rebadge.as.dotfun}
@@ -298,7 +275,6 @@
 \alias{rebadgeLabels}
 \alias{reconcile.fv}
 \alias{reduceformula}
-\alias{reheat}
 \alias{reincarnate.interact}
 \alias{RelevantDeviation}
 \alias{rename.fv}
@@ -311,32 +287,14 @@
 \alias{resolve.foxall.window}
 \alias{resolve.lambda}
 \alias{resolve.lambda.cross}
-\alias{resolve.vargamma.shape}
 \alias{rhohatEngine}
 \alias{rhohatCalc}
-\alias{rMaternInhibition}
 \alias{rmax.Rigid}
 \alias{rmax.rule}
-\alias{RmhExpandRule}
-\alias{rmhsnoop}
-\alias{rmhResolveControl}
-\alias{rmhResolveExpansion}
-\alias{rmhResolveTypes}
-\alias{rmhSnoopEnv}
-\alias{rmhcontrol.rmhcontrol}
-\alias{rmhcontrol.list}
-\alias{rmhEngine}
-\alias{rmhmodel.rmhmodel}
-\alias{rmhstart.rmhstart}
-\alias{rmhstart.list}
-\alias{rmpoint.I.allim}
 \alias{rocData}
 \alias{rocModel}
 \alias{roseContinuous}
 \alias{rotate.msr}
-\alias{rpoint.multi}
-\alias{runifpoispp}          
-\alias{runifpoisppOnLines}          
 \alias{safeFiniteValue}
 \alias{safePositiveValue}
 \alias{scalardilate.msr}
@@ -362,9 +320,7 @@
 \alias{Smooth.solist}
 \alias{smoothcrossEngine}              
 \alias{smoothpointsEngine}
-\alias{spatstatClusterModelInfo}
 \alias{spatstatDPPModelInfo}
-\alias{spatstatRmhInfo}
 \alias{spatialCDFframe}
 \alias{spatialCDFtest}
 \alias{spatialCDFtestCalc}
@@ -376,14 +332,11 @@
 \alias{suffloc}
 \alias{suffstat.generic}
 \alias{suffstat.poisson}
-\alias{summarise.trend}
 \alias{summary.envelope}
 \alias{summary.mppm}
 \alias{summary.msr}
 \alias{summary.profilepl}
-\alias{summary.rmhexpand}
 \alias{summary.vblogit}
-\alias{thinjump}
 \alias{tweak.coefs}
 \alias{tweak.fv.entry}
 \alias{tweak.ratfv.entry}
@@ -393,7 +346,6 @@
 \alias{unitname<-.msr}
 \alias{update.ippm}
 \alias{update.msr}
-\alias{update.rmhstart}
 \alias{validate2Dkernel}
 \alias{validate.angles}        
 \alias{validate.weights}        
@@ -406,6 +358,7 @@
 \alias{weightedclosepairs}
 \alias{windows.mppm}
 \alias{X2testEngine}
+
 
 
 
@@ -449,7 +402,6 @@ calc.TSE(COV, z, pos, Dim1, Dim2)
 cannot.update(\dots)
 censtimeCDFest(o, cc, d, breaks, \dots,
      KM, RS, HAN, RAW, han.denom, tt, pmax)
-change.default.expand(x, newdefault)
 check.separable(dmat, covname, isconstant, fatal)
 check.testfun(f, f1, X)
 circticks(R, at, unit, start, clockwise, labels)
@@ -470,10 +422,6 @@ cutoff2Dkernel(kernel, sigma, varcov, \dots, scalekernel, cutoff, fatal)
 CVforPCF(bw, stuff)
 damaged.ppm(object)
 data.mppm(x)
-datagen.runifpointOnLines(n, L)
-datagen.runifpoisppOnLines(lambda, L)
-datagen.rpoisppOnLines(lambda, L, lmax, \dots, check)
-default.clipwindow(object, epsilon)
 deltasuffstat(model, \dots,
               restrict, dataonly, sparseOK, quadsub,
               force, warn.forced, verbose, use.special)
@@ -546,11 +494,9 @@ evalInterEngine(X,P,E,interaction,correction,splitInf,\dots,
                 Reach,precomputed,savecomputed)
 evalPairPotential(X,P,E,pairpot,potpars,R)
 evaluate2Dkernel(kernel, x, y, sigma, varcov, \dots, scalekernel)
-expandwinPerfect(W, expand, amount)
 ExpSmoothLog(X, \dots, at, weights)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
-fakeNeyScot(Y, lambda, win, saveLambda, saveparents)
 \method{family}{glmmPQL}(object, \dots)
 \method{family}{vblogit}(object, \dots)
 fasp(fns, which, formulae, dataname, title, rowNames, colNames, checkfv)
@@ -578,7 +524,6 @@ getglmfit(object)
 getglmsubset(object)
 getppmdatasubset(object)
 getppmOriginalCovariates(object)
-getRandomFieldsModelGen(model)
 getSumFun(abbreviation, classname, ismarked, fatal)
 geyercounts(U,X,r,sat,Xcounts,EqualPairs)
 geyerdelta2(X,r,sat,\dots,sparseOK, correction)
@@ -589,9 +534,6 @@ hackglmmPQL(fixed, random, family, data, correlation, weights,
             control, niter, verbose, subset, \dots, reltol)
 hasenvelope(X, E)
 hasglmfit(object)
-HermiteCoefs(order)
-handle.rshift.args(W, \dots, radius, width, height,
-                   edge, clip, edgedefault)
 hierarchicalordering(i, s)
 hiermat(x, h)
 ho.engine(model, \dots, nsim, nrmh, start, control, verb)
@@ -604,10 +546,7 @@ instantiate.interact(x, par)
 interactionfamilyname(x)
 intermaker(f, blank)
 is.atomicQtest(x)
-is.cadlag(s)
-is.expandable(x)
 \method{is.expandable}{ppm}(x)  
-\method{is.expandable}{rmhmodel}(x) 
 is.interact(x)
 \method{is.marked}{mppm}(X, \dots)
 \method{is.marked}{msr}(X, \dots)
@@ -638,8 +577,6 @@ kppmPalmLik(X, Xname, po, clusters, control, stabilize, weightfun, rmax,
 kppmCLadap(X, Xname, po, clusters, control, weightfun, 
            rmax, epsilon, DPP, algorithm, \dots,
            startpar, globStrat)
-kraever(package, fatal)
-kraeverRandomFields()
 \method{labels}{ppm}(object, \dots)
 \method{leverage}{ppmInfluence}(model, \dots)
 localKengine(X, \dots, wantL, lambda, rmax, correction, verbose, rvalue)
@@ -693,7 +630,6 @@ mpl.prepare(Q, X, P, trend, interaction, covariates,
             vnamebase, vnameprefix, warn.illegal, warn.unidentifiable,
             weightfactor, skip.border, clip.interaction, splitInf)
 mpl.usable(x)
-MultiPair.checkmatrix(mat, n, matname, naok, zerook, asymmok)
 \method{names}{fv}(x) <- value
 newformula(old, change, eold, enew, expandpoly)
 newstyle.coeff.handling(object)
@@ -794,21 +730,14 @@ prefixfv(x, tagprefix, descprefix, lablprefix, whichtags)
 \method{print}{quadrattest}(x, \dots)
 \method{print}{qqppm}(x, \dots)
 \method{print}{rat}(x, \dots)
-\method{print}{rmhcontrol}(x, \dots)
-\method{print}{rmhexpand}(x, \dots, prefix=TRUE)
-\method{print}{rmhmodel}(x, \dots)
-\method{print}{rmhstart}(x, \dots)
-\method{print}{rmhInfoList}(x, \dots)
 \method{print}{rppm}(x, \dots)
 \method{print}{Smoothfun}(x, \dots)
 \method{print}{summary.mppm}(x, \dots, brief)
-\method{print}{summary.rmhexpand}(x, \dots)
 \method{print}{summary.slrm}(x, \dots)
 \method{print}{summary.ssf}(x, \dots)
 \method{print}{vblogit}(x, \dots)
 quad.mppm(x)
 quadBlockSizes(nX, nD, p, nMAX, announce)
-RandomFieldsSafe()
 ratfv(df, numer, denom, \dots, ratio)
 \method{reach}{slrm}(x, \dots)
 rebadge.as.crossfun(x, main, sub, i, j)
@@ -818,7 +747,6 @@ rebadge.fv(x, new.ylab, new.fname, tags, new.desc, new.labl, new.yexp,
 rebadgeLabels(x, new.fname)
 reconcile.fv(\dots)
 reduceformula(fmla, deletevar, verbose)
-reheat(model, invtemp)
 RelevantDeviation(x, alternative, clamp, scaling)
 rename.fv(x, fname, ylab, yexp)
 \method{rescale}{msr}(X, s, unitname)
@@ -829,7 +757,6 @@ resolve.lambda.cross(X, I, J, lambdaI, lambdaJ, \dots, lambdaX,
                      sigma, varcov, leaveoneout, update, lambdaIJ,
                      Iexplain, Jexplain, miss.update, miss.leave,
                      caller)
-resolve.vargamma.shape(\dots, nu.ker, nu.pcf, default)
 roseContinuous(ang, rad, unit, \dots,
                start, clockwise, main, labels, at, do.plot)
 \method{rotate}{msr}(X, angle, \dots, centre)
@@ -860,30 +787,10 @@ rhohatCalc(ZX, Zvalues, lambda, denom, \dots,
            n, bw, adjust, from, to, 
            bwref, covname, confidence, breaks, positiveCI, markovCI,
            covunits, modelcall, callstring, savestuff)
-rMaternInhibition(type, kappa, r, win, stationary, \dots, nsim, drop)
 rmax.Rigid(X, g)
 rmax.rule(fun, W, lambda)
-\method{rmhcontrol}{rmhcontrol}(\dots) 
-\method{rmhcontrol}{list}(\dots) 
-rmhEngine(InfoList, \dots, verbose, kitchensink, preponly, snoop,
-                           overrideXstart, overrideclip) 
-RmhExpandRule(nama)
-rmhResolveControl(control, model)
-rmhResolveExpansion(win, control, imagelist, itype)
-rmhResolveTypes(model, start, control)
-rmhsnoop(\dots, Wsim, Wclip, R, xcoords, ycoords, mlevels, mcodes, irep, itype, 
-     proptype, proplocn, propmark, propindx, numerator, denominator,
-     panel.only)
-rmhSnoopEnv(Xinit, Wclip, R)
-\method{rmhmodel}{rmhmodel}(model, \dots) 
-\method{rmhstart}{rmhstart}(start, \dots) 
-\method{rmhstart}{list}(start, \dots) 
-rmpoint.I.allim(n, f, types)
 rocData(covariate, nullmodel, \dots, high)
 rocModel(lambda, nullmodel, \dots, high)
-rpoint.multi(n, f, fmax, marks, win, giveup, verbose, warn, nsim, drop)
-runifpoispp(lambda, win, \dots, nsim, drop)
-runifpoisppOnLines(lambda, L, nsim, drop)
 safeFiniteValue(x, default)
 safePositiveValue(x, default)
 \method{scalardilate}{msr}(X, f, \dots)
@@ -915,9 +822,7 @@ smoothcrossEngine(Xdata, Xquery, values, sigma, \dots,
 smoothpointsEngine(x, values, sigma, \dots,
                    kernel, scalekernel,
                    weights, varcov, leaveoneout, sorted, cutoff, debug)
-spatstatClusterModelInfo(name, onlyPCP)
 spatstatDPPModelInfo(model)
-spatstatRmhInfo(cifname)
 spatialCDFframe(model, covariate, \dots, jitter)
 spatialCDFtest(model, covariate, test, \dots,
          dimyx, eps, interpolate, jitter,
@@ -931,14 +836,11 @@ strausscounts(U,X,r,EqualPairs)
 suffloc(object)
 suffstat.generic(model, X, callstring)
 suffstat.poisson(model, X, callstring)
-summarise.trend(trend, w, a)
 \method{summary}{envelope}(object,\dots)
 \method{summary}{mppm}(object, \dots, brief=FALSE)
 \method{summary}{msr}(object, \dots)
 \method{summary}{profilepl}(object, \dots)
-\method{summary}{rmhexpand}(object, \dots)
 \method{summary}{vblogit}(object, \dots)
-thinjump(n, p)
 tweak.coefs(model, new.coef)
 tweak.fv.entry(x, current.tag, new.labl, new.desc, new.tag)
 tweak.ratfv.entry(x, \dots)
@@ -952,7 +854,6 @@ twostage.envelope(X, \dots, nsim, nsimsub, nrank,
 \method{unitname}{msr}(x) <- value 
 \method{update}{ippm}(object, \dots, envir) 
 \method{update}{msr}(object, \dots) 
-\method{update}{rmhstart}(object, \dots)
 validate2Dkernel(kernel, fatal)
 validate.angles(angles, unit, guess)
 validate.weights(x, recip, how, allowzero, allowinf)
@@ -966,6 +867,7 @@ weightedclosepairs(X, r, correction, what)
 windows.mppm(x)
 X2testEngine(OBS, EXP, \dots, method, CR, df, nsim,
      conditional, alternative, testname, dataname)
+
 
 
 }

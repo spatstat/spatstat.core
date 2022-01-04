@@ -3,7 +3,7 @@
 ##
 ## Exact 'funxy' counterpart of density.ppp
 ##
-##  $Revision: 1.12 $ $Date: 2021/03/31 01:25:18 $
+##  $Revision: 1.13 $ $Date: 2022/01/04 05:30:06 $
 
 
 densityfun <- function(X, ...) {

@@ -1,19 +1,16 @@
-\name{as.owin}
+\name{as.owin.ppm}
 \alias{as.owin.ppm}
 \alias{as.owin.kppm}
 \alias{as.owin.dppm}
 \alias{as.owin.slrm}
 \alias{as.owin.msr}
 \alias{as.owin.quadrattest}
-\alias{as.owin.rmhmodel}
 \title{Convert Data To Class owin}
 \description{
 Converts data specifying an observation window
 in any of several formats, into an object of class \code{"owin"}.
 }
 \usage{
-
-
  \method{as.owin}{ppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
 
  \method{as.owin}{kppm}(W, \dots, from=c("points", "covariates"), fatal=TRUE)
@@ -25,11 +22,6 @@ in any of several formats, into an object of class \code{"owin"}.
  \method{as.owin}{msr}(W, \dots, fatal=TRUE)
 
  \method{as.owin}{quadrattest}(W, \dots, fatal=TRUE)
-
- \method{as.owin}{rmhmodel}(W, \dots, fatal=FALSE)
-
-
-
 }
 \arguments{
   \item{W}{
@@ -52,9 +44,11 @@ in any of several formats, into an object of class \code{"owin"}.
   The class \code{"owin"} is a way of specifying the observation window
   for a point pattern. See \code{\link{owin.object}} for an overview.
  
-  The generic function \code{as.owin} converts data in any of several formats 
+  The generic function \code{\link[spatstat.geom]{as.owin}}
+  converts data in any of several formats 
   into an object of class \code{"owin"} for use by the \pkg{spatstat}
-  package. The function \code{as.owin} is generic, with methods
+  package. The function \code{\link[spatstat.geom]{as.owin}}
+  is generic, with methods
   for different classes of objects, and a default method.
 
   The argument \code{W} may be
@@ -116,6 +110,16 @@ in any of several formats, into an object of class \code{"owin"}.
     covariate images to which the model was fitted,
     and returns a binary mask window that specifies the pixel locations.
     \item
+    an object of class \code{"lpp"}
+    representing a point pattern on a linear network.
+    In this case, \code{as.owin} extracts the linear network
+    and returns a window containing this network. 
+    \item
+    an object of class \code{"lppm"}
+    representing a fitted point process model on a linear network.
+    In this case, \code{as.owin} extracts the linear network
+    and returns a window containing this network. 
+    \item
     A \code{data.frame} with exactly three columns. Each row of the
     data frame corresponds to one pixel. Each row contains the
     \eqn{x} and \eqn{y} coordinates of a pixel, and a logical value
@@ -161,8 +165,12 @@ in any of several formats, into an object of class \code{"owin"}.
   will be guessed from the data.
 }
 \seealso{
-  \code{\link{owin.object}},
-  \code{\link{owin}}.
+  \code{\link[spatstat.geom]{as.owin}},
+  \code{\link[spatstat.random]{as.owin.rmhmodel}},
+  \code{\link[spatstat.linnet]{as.owin.lpp}}.
+  
+  \code{\link[spatstat.geom]{owin.object}},
+  \code{\link[spatstat.geom]{owin}}.
 
   Additional methods for \code{as.owin} are provided
   in the \pkg{maptools} package:
@@ -171,15 +179,8 @@ in any of several formats, into an object of class \code{"owin"}.
   \code{as.owin.SpatialPolygonsDataFrame}.
 }
 \examples{
- w <- as.owin(c(0,1,0,1))
- w <- as.owin(list(xrange=c(0,5),yrange=c(0,10)))
- # point pattern
- data(demopat)
- w <- as.owin(demopat)
- # image
- Z <- as.im(function(x,y) { x + 3}, unit.square())
- w <- as.owin(Z)
-
+  fit <- ppm(cells ~ 1)
+  as.owin(fit)
 }
 \author{
   \spatstatAuthors.

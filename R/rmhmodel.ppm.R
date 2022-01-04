@@ -3,7 +3,7 @@
 #
 #   convert ppm object into format palatable to rmh.default
 #
-#  $Revision: 2.64 $   $Date: 2017/06/05 10:31:58 $
+#  $Revision: 2.65 $   $Date: 2022/01/03 05:37:32 $
 #
 #   .Spatstat.rmhinfo
 #   rmhmodel.ppm()
@@ -380,48 +380,5 @@ rmhmodel.ppm <- function(model, w, ...,
     cat("done.\n")
   Z <- do.call(rmhmodel, append(list(Z), argh))
   return(Z)
-}
-
-rmhResolveExpansion <- function(win, control, imagelist, itype="covariate") {
-  # Determine expansion window for simulation
-  ex <- control$expand
-  
-# The following is redundant because it is implied by !will.expand(ex)  
-#  if(ex$force.noexp) {
-#    # Expansion prohibited
-#    return(list(wsim=win, expanded=FALSE))
-#  }
-  
-  # Is expansion contemplated?
-  if(!will.expand(ex))
-    return(list(wsim=win, expanded=FALSE))
-
-  # Proposed expansion window
-  wexp <- expand.owin(win, ex)
-
-  # Check feasibility
-  isim <- unlist(lapply(imagelist, is.im))
-  imagelist <- imagelist[isim]
-
-  if(length(imagelist) == 0) {
-    # Unlimited expansion is feasible
-    return(list(wsim=wexp, expanded=TRUE))
-  }
-
-  # Expansion is limited to domain of image data
-  # Determine maximum possible expansion window
-  wins <- lapply(imagelist, as.owin)
-  cwin <- do.call(intersect.owin, unname(wins))
-  
-  if(!is.subset.owin(wexp, cwin)) {
-    # Cannot expand to proposed window
-    if(ex$force.exp)
-      stop(paste("Cannot expand the simulation window,",
-                 "because the", itype, "images do not cover",
-                 "the expanded window"), call.=FALSE)
-      # Take largest possible window
-    wexp <- intersect.owin(wexp, cwin)
-  }
-  return(list(wsim=wexp, expanded=TRUE))
 }
 

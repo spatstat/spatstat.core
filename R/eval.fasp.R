@@ -6,7 +6,7 @@
 #
 #        compatible.fasp()       Check whether two fasp objects are compatible
 #
-#     $Revision: 1.11 $     $Date: 2016/02/11 10:17:12 $
+#     $Revision: 1.12 $     $Date: 2022/01/04 05:30:06 $
 #
 
 eval.fasp <- local({

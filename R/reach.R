@@ -1,12 +1,10 @@
 #
 #   reach.R
 #
-#  $Revision: 1.8 $   $Date: 2007/10/24 09:41:15 $
+#  $Revision: 1.9 $   $Date: 2022/01/04 05:30:06 $
 #
 
-reach <- function(x, ...) {
-  UseMethod("reach")
-}
+## The generic 'reach' is now in spatstat.random
 
 reach.interact <- function(x, ...) {
   verifyclass(x, "interact")
@@ -49,6 +47,5 @@ reach.ppm <- function(x, ..., epsilon=0) {
 
   return(ir)
 }
-
 
 

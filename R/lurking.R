@@ -1,7 +1,7 @@
 # Lurking variable plot for arbitrary covariate.
 #
 #
-# $Revision: 1.71 $ $Date: 2021/10/30 01:42:37 $
+# $Revision: 1.72 $ $Date: 2022/01/04 05:30:06 $
 #
 
 lurking <- function(object, ...) {

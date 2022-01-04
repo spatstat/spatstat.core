@@ -3,7 +3,7 @@
 #
 #    summary() method for class "ppm"
 #
-#    $Revision: 1.78 $   $Date: 2019/10/11 06:23:19 $
+#    $Revision: 1.79 $   $Date: 2022/01/03 08:01:54 $
 #
 #    summary.ppm()
 #    print.summary.ppm()
@@ -532,14 +532,6 @@ print.summary.ppm <- function(x, ...) {
 
 no.trend.ppm <- function(x) {
   summary.ppm(x, quick=TRUE)$no.trend
-}
-
-is.stationary <- function(x) {
-  UseMethod("is.stationary")
-}
-
-is.poisson <- function(x) {
-  UseMethod("is.poisson")
 }
 
 is.stationary.ppm <- function(x) {

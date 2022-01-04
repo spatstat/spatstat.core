@@ -1,46 +1,42 @@
 \name{is.stationary}
-\alias{is.stationary}
 \alias{is.stationary.ppm}
 \alias{is.stationary.kppm}
 \alias{is.stationary.slrm}
-\alias{is.stationary.rmhmodel}
 \alias{is.stationary.dppm}
 \alias{is.stationary.detpointprocfamily}
-\alias{is.poisson}
 \alias{is.poisson.ppm}
 \alias{is.poisson.kppm}
 \alias{is.poisson.slrm}
-\alias{is.poisson.rmhmodel}
 \alias{is.poisson.interact}
 \title{
   Recognise Stationary and Poisson Point Process Models
 }
 \description{
-  Given a point process model that has been fitted to data,
+  Given a point process model (either a model that has been fitted to
+  data, or a model specified by its parameters), 
   determine whether the model is a stationary point process,
   and whether it is a Poisson point process.
 }
 \usage{
-is.stationary(x)
 \method{is.stationary}{ppm}(x)
 \method{is.stationary}{kppm}(x)
 \method{is.stationary}{slrm}(x)
-\method{is.stationary}{rmhmodel}(x)
 \method{is.stationary}{dppm}(x)
 \method{is.stationary}{detpointprocfamily}(x)
 
-is.poisson(x)
 \method{is.poisson}{ppm}(x)
 \method{is.poisson}{kppm}(x)
 \method{is.poisson}{slrm}(x)
-\method{is.poisson}{rmhmodel}(x)
 \method{is.poisson}{interact}(x)
 }
 \arguments{
   \item{x}{
     A fitted spatial point process model
     (object of class \code{"ppm"}, \code{"kppm"},
-    \code{"dppm"} or \code{"slrm"}) or similar object.
+    \code{"lppm"}, \code{"dppm"} or \code{"slrm"})
+    or a specification of a Gibbs point process model
+    (object of class \code{"rmhmodel"})
+    or a similar object.
   }
 }
 \details{
@@ -83,8 +79,9 @@ is.poisson(x)
 \seealso{
   \code{\link{is.marked}} to determine whether a model is a marked
   point process. 
-  
-  \code{\link{summary.ppm}} for detailed information.
+
+  \code{\link[spatstat.core]{summary.ppm}} for detailed information about a
+  fitted model.
 
   Model-fitting functions 
   \code{\link{ppm}},
@@ -104,6 +101,7 @@ is.poisson(x)
   fot <- slrm(cells ~ x)
   is.stationary(fot)
   is.poisson(fot)
+
 }
 \keyword{spatial}
 \keyword{models}

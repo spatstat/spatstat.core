@@ -3,7 +3,7 @@
 #
 # 'exact' MPLE for stationary Strauss process
 #
-#  $Revision: 1.6 $  $Date: 2014/11/10 07:39:41 $
+#  $Revision: 1.7 $  $Date: 2022/01/04 05:30:06 $
 #
 
 exactMPLEstrauss <- local({

@@ -1,6 +1,6 @@
 ## clarkevans.R
 ## Clark-Evans statistic and test
-## $Revision: 1.17 $ $Date: 2015/10/19 05:03:37 $
+## $Revision: 1.18 $ $Date: 2022/01/04 05:30:06 $
 
 clarkevans <- function(X, correction=c("none", "Donnelly", "cdf"),
                        clipregion=NULL)

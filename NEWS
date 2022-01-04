@@ -1,19 +1,29 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.006
+        CHANGES IN spatstat.core VERSION 2.3-2.007
 
 OVERVIEW
 
-    o We thank Sriram Ramamurthy and Dominic Schuhmacher for contributions.
+    o We thank Sriram Ramamurthy for contributions.
 
+    o spatstat.core now depends on the new package 'spatstat.random'.
+
+    o Functions for generating random patterns have been removed.
+    
     o Bug fixes in anova.mppm and vcov.mppm.
 
-    o Bug fixes in rmh visual debugger.
+    o Minor improvements
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
+    o package structure
+    The code for generating random spatial patterns (including 'rpoispp',
+    'rMatClust', 'rThomas', 'rNeymanScott', 'rStrauss', 'rmh')
+    has been removed from 'spatstat.core' and placed in a new package
+    'spatstat.random'. This new package is required by 'spatstat.core'.
+
     o anova.mppm
     Improved labelling of models in output.
-    
+
 BUG FIXES
 
     o vcov.mppm
@@ -22,29 +32,20 @@ BUG FIXES
     Fixed.
 
     o anova.mppm
-    Results were sometimes incorrect if the two models had different interactions
-    (e.g. Strauss vs Poisson).
+    Results were sometimes incorrect if the two models
+    had different interactions (e.g. Strauss vs Poisson).
     Fixed.
 
     o anova.mppm
-    Crashed for some models with a message about 'coefficient missing from new.coef'.
+    Crashed for some models with a message about 'coefficient missing
+    from new.coef'.
     Fixed.
     
     o anova.mppm
-    Gave a warning for some models about "Internal error: unable to map submodels to full model".
+    Gave a warning for some models about "Internal error: 
+    unable to map submodels to full model".
     Fixed.
     
-    o rmh
-    The visual debugger did not display accepted births and deaths correctly.
-    [Spotted by Dominic Schuhmacher.]
-    Fixed.
-
-    o rmh
-    The visual debugger exited prematurely sometimes,
-    if the current state was the empty point pattern.
-    [Spotted by Dominic Schuhmacher.]
-    Fixed.
-
         CHANGES IN spatstat.core VERSION 2.3-2
 
 OVERVIEW

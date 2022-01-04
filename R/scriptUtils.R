@@ -1,5 +1,5 @@
 ## scriptUtils.R
-##       $Revision: 1.6 $ $Date: 2017/11/14 06:42:02 $
+##       $Revision: 1.7 $ $Date: 2022/01/04 05:30:06 $
 
 ## slick way to use precomputed data
 ##    If the named file exists, it is loaded, giving access to the data.
