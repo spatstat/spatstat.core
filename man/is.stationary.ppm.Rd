@@ -1,4 +1,4 @@
-\name{is.stationary}
+\name{is.stationary.ppm}
 \alias{is.stationary.ppm}
 \alias{is.stationary.kppm}
 \alias{is.stationary.slrm}
