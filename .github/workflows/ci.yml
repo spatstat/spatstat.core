@@ -38,6 +38,9 @@ jobs:
 
       - name: Dependencies
         run: ./run.sh install_all
+        
+      - name: RandomFields from source
+        run: ./run.sh install_github cran/RandomFieldsUtils cran/RandomFields
 
       - name: Test
         run: ./run.sh run_tests
