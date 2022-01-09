@@ -242,7 +242,8 @@ mincontrast <- local({
                    startpar = startpar,
                    objfun   = contrast.objective,
                    objargs  = objargs,
-                   dotargs  = list(...))
+                   dotargs  = list(...),
+                   pspace   = pspace)
     class(result) <- c("minconfit", class(result))
     return(result)
   }

@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.197 $ $Date: 2022/01/03 06:37:02 $
+# $Revision: 1.198 $ $Date: 2022/01/09 01:35:46 $
 #
 
 
@@ -188,7 +188,7 @@ kppm.ppp <- kppm.quad <-
 }
 
 kppmMinCon <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, statistic, statargs,
-                       algorithm="Nelder-Mead", DPP=NULL, ...) {
+                       algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   # Minimum contrast fit
   stationary <- is.stationary(po)
   # compute intensity
@@ -210,20 +210,21 @@ kppmMinCon <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, s
   mcfit <- clusterfit(X, clusters, lambda = lambda,
                       dataname = Xname, control = control,  stabilize=stabilize,
                       statistic = statistic, statargs = statargs,
-                      algorithm=algorithm, ...)
+                      algorithm=algorithm, pspace=pspace, ...)
   fitinfo <- attr(mcfit, "info")
   attr(mcfit, "info") <- NULL
   # all info that depends on the fitting method:
-  Fit <- list(method    = "mincon",
-              statistic = statistic,
-              Stat      = fitinfo$Stat,
-              StatFun   = fitinfo$StatFun,
-              StatName  = fitinfo$StatName,
-              FitFun    = fitinfo$FitFun,
-              statargs  = statargs,
-              pspace    = fitinfo$pspace,
-              mcfit     = mcfit,
-              maxlogcl  = NULL)
+  Fit <- list(method       = "mincon",
+              statistic    = statistic,
+              Stat         = fitinfo$Stat,
+              StatFun      = fitinfo$StatFun,
+              StatName     = fitinfo$StatName,
+              FitFun       = fitinfo$FitFun,
+              statargs     = statargs,
+              pspace.given = pspace,
+              pspace.used  = fitinfo$pspace.used, 
+              mcfit        = mcfit,
+              maxlogcl     = NULL)
   # results
   if(!is.null(DPP)){
     clusters <- update(clusters, as.list(mcfit$par))
@@ -395,7 +396,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                                   margs=dots$margs,
                                   model=dots$model,
                                   funaux=info$funaux,
-                                  pspace=pspace),
+                                  pspace=pspace), ## As modified above
                              list(...)
                              )
 
@@ -450,22 +451,22 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   ## The old fit fun that would have been used (DO WE NEED THIS?)
   FitFun <- paste0(tolower(clusters), ".est", statistic)
 
-  extra <- list(FitFun    = FitFun,
-                Stat      = Stat,
-                StatFun   = StatFun,
-                StatName  = StatName,
-                modelname  = info$modelabbrev,
-                isPCP      = isPCP,
-                lambda     = lambda,
-                pspace     = pspace)
+  extra <- list(FitFun       = FitFun,
+                Stat         = Stat,
+                StatFun      = StatFun,
+                StatName     = StatName,
+                modelname    = info$modelabbrev,
+                isPCP        = isPCP,
+                lambda       = lambda,
+                pspace.used  = pspace) # Modified from call to 'clusterfit'
   attr(mcfit, "info") <- extra
   if(verbose) splat("Returning from clusterfit")
   return(mcfit)
 }
 
-
-kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, weightfun, rmax,
-                       algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
+kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
+                       weightfun, rmax, algorithm="Nelder-Mead",
+                       DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
     rmax <- rmax.rule("K", W, intensity(X))
@@ -664,14 +665,15 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, w
   ## Finish in DPP case
   if(!is.null(DPP)){
     ## all info that depends on the fitting method:
-    Fit <- list(method    = "clik2",
-                clfit     = opt,
-                weightfun = weightfun,
-                rmax      = rmax,
-                objfun    = obj,
-                objargs   = objargs,
-                maxlogcl  = opt$value,
-                pspace    = pspace)
+    Fit <- list(method       = "clik2",
+                clfit        = opt,
+                weightfun    = weightfun,
+                rmax         = rmax,
+                objfun       = obj,
+                objargs      = objargs,
+                maxlogcl     = opt$value,
+                pspace.given = pspace,
+                pspace.used  = pspace)
     # pack up
     clusters <- update(clusters, as.list(opt$par))
     result <- list(Xname      = Xname,
@@ -701,14 +703,15 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, w
           eval.im(log(lambda) - sigma2/2)    
   }
   # all info that depends on the fitting method:
-  Fit <- list(method    = "clik2",
-              clfit     = opt,
-              weightfun = weightfun,
-              rmax      = rmax,
-              objfun    = obj,
-              objargs   = objargs,
-              maxlogcl  = opt$value,
-              pspace    = pspace)
+  Fit <- list(method       = "clik2",
+              clfit        = opt,
+              weightfun    = weightfun,
+              rmax         = rmax,
+              objfun       = obj,
+              objargs      = objargs,
+              maxlogcl     = opt$value,
+              pspace.given = pspace,
+              pspace.used  = pspace)
   # pack up
   result <- list(Xname      = Xname,
                  X          = X,
@@ -935,14 +938,15 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
   ## Finish in DPP case
   if(!is.null(DPP)){
     ## all info that depends on the fitting method:
-    Fit <- list(method    = "palm",
-                clfit     = opt,
-                weightfun = weightfun,
-                rmax      = rmax,
-                objfun    = obj,
-                objargs   = objargs,
-                maxlogcl  = opt$value,
-                pspace    = pspace)
+    Fit <- list(method       = "palm",
+                clfit        = opt,
+                weightfun    = weightfun,
+                rmax         = rmax,
+                objfun       = obj,
+                objargs      = objargs,
+                maxlogcl     = opt$value,
+                pspace.given = pspace,
+                pspace.used  = pspace)
     # pack up
     clusters <- update(clusters, as.list(optpar))
     result <- list(Xname      = Xname,
@@ -971,14 +975,15 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
           eval.im(log(lambda) - sigma2/2)    
   }
   # all info that depends on the fitting method:
-  Fit <- list(method    = "palm",
-              clfit     = opt,
-              weightfun = weightfun,
-              rmax      = rmax,
-              objfun    = obj,
-              objargs   = objargs,
-              maxlogcl  = opt$value,
-              pspace    = pspace)
+  Fit <- list(method       = "palm",
+              clfit        = opt,
+              weightfun    = weightfun,
+              rmax         = rmax,
+              objfun       = obj,
+              objargs      = objargs,
+              maxlogcl     = opt$value,
+              pspace.given = pspace,
+              pspace.used  = pspace)
   # pack up
   result <- list(Xname      = Xname,
                  X          = X,

@@ -571,7 +571,7 @@ km.rs.opt(o, cc, d, breaks, KM, RS)
 kppmComLik(X, Xname, po, clusters, control, stabilize, weightfun, rmax,
            algorithm, DPP, \dots, pspace)
 kppmMinCon(X, Xname, po, clusters, control, stabilize, statistic, statargs,
-           algorithm, DPP, \dots)
+           algorithm, DPP, \dots, pspace)
 kppmPalmLik(X, Xname, po, clusters, control, stabilize, weightfun, rmax, 
            algorithm, DPP, \dots, pspace)
 kppmCLadap(X, Xname, po, clusters, control, weightfun, 
