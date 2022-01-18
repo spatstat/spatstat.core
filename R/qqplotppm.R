@@ -3,7 +3,7 @@
 #
 #  qqplot.ppm()       QQ plot (including simulation)
 #
-#  $Revision: 1.31 $   $Date: 2020/11/18 03:07:14 $
+#  $Revision: 1.32 $   $Date: 2022/01/18 09:51:29 $
 #
 
 qqplot.ppm <- local({
@@ -14,11 +14,16 @@ qqplot.ppm <- local({
   }
   
   ## how to compute the residual field
-  residualfield <- function(fit, ...) {
+  residualfield <- function(fit, ..., addtype=FALSE) {
     d <- diagnose.ppm(fit, which="smooth",
                       plot.it=FALSE, compute.cts=FALSE, compute.sd=FALSE,
                       check=FALSE, ...)
-    return(d$smooth$Z$v)
+    result <- d$smooth$Z$v
+    if(addtype) {
+      attr(result, "type") <- d$type
+      attr(result, "typename") <- d$typename
+    }
+    return(result)
   }
 
   qqplot.ppm <-
@@ -52,7 +57,11 @@ qqplot.ppm <- local({
     ## Quantiles of the residual field will be computed.
 
     ## Data values
-    dat <- residualfield(fit, type=type, ..., dimyx=dimyx)
+    dat <- residualfield(fit, type=type, ..., dimyx=dimyx, addtype=TRUE)
+
+    ## type of residuals (partially matched and validated by diagnose.ppm)
+    type <- attr(dat, "type")
+    typename <- attr(dat, "typename") 
 
     ##################  How to perform simulations?  #######################
 
@@ -184,7 +193,7 @@ qqplot.ppm <- local({
              result <- qqplot(sim, dat, xlim=rr, ylim=rr, asp=1.0,
                               xlab="Quantiles of simulation",
                               ylab="Quantiles of data",plot.it=plot.it)
-             title(sub=paste("Residuals:", type))
+             title(sub=typename)
              abline(0,1, lty=2)
              result <- append(result,
                               list(data=dat,
@@ -194,6 +203,7 @@ qqplot.ppm <- local({
                                    xlab="Quantiles of simulation",
                                    ylab="Quantiles of data",
                                    rtype=type,
+                                   typename=typename,
                                    nsim=nsim,
                                    fit=fit,
                                    expr=exprstring,
@@ -233,7 +243,7 @@ qqplot.ppm <- local({
                abline(0,1)
                lines(meanq, q.025, lty=2, col=limcol)
                lines(meanq, q.975, lty=2, col=limcol)
-               title(sub=paste("Residuals:", type))
+               title(sub=typename)
              }
              result <- list(x=meanq, y=dats, sdq=sdq,
                             q.025=q.025, q.975=q.975,
@@ -242,6 +252,7 @@ qqplot.ppm <- local({
                             xlab="Mean quantile of simulations",
                             ylab="data quantile",
                             rtype=type,
+                            typename=typename,
                             nsim=nsim,
                             fit=fit,
                             expr=exprstring,
@@ -298,7 +309,8 @@ plot.qqppm <- local({
       if(!is.null(object$q.975))
         lines(object$x, object$q.975, lty = 2, col=limcol)
     }
-    title(sub=paste("Residuals:", object$rtype))
+    typename <- object$typename %orifnull% paste(object$rtype, "residuals")
+    title(sub=typename)
   }
 
   plot.qqppm

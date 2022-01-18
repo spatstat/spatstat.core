@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.009
+        CHANGES IN spatstat.core VERSION 2.3-2.010
 
 OVERVIEW
 
@@ -24,6 +24,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
     o anova.mppm
     Improved labelling of models in output.
 
+    o qqplot.ppm, plot.qqppm
+    Improved the text label indicating the type of residuals.
+
 BUG FIXES
 
     o vcov.mppm
@@ -45,6 +48,7 @@ BUG FIXES
     Gave a warning for some models about "Internal error: 
     unable to map submodels to full model".
     Fixed.
+    
     
         CHANGES IN spatstat.core VERSION 2.3-2
 
