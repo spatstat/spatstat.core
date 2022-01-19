@@ -3,7 +3,7 @@
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.117 $ $Date: 2022/01/03 06:05:35 $
+#'  $Revision: 1.118 $ $Date: 2022/01/19 03:20:18 $
 #' 
 
 
@@ -280,13 +280,19 @@ print.minconfit <- function(x, ...) {
             paste(tagvalue, collapse=", "))
     }
   }
-  if(!is.null(fu) && !is.null(da))
-    splat("Fitted by matching theoretical", fu, "function to", da)
-  else {
-    if(!is.null(fu))
+  if(!is.null(fu)) {
+    if(length(fu) > 1) {
+      ## compress names like c("K", "inhom") -> "K[inhom]"
+      fsub <- paste(fu[-1], collapse=",")
+      fu <- paste0(fu[1], paren(fsub, "["))
+    }
+    if(!is.null(da)) {
+      splat("Fitted by matching theoretical", fu, "function to", da)
+    } else {
       splat(" based on", fu)
-    if(!is.null(da))
-      splat(" fitted to", da)
+    }
+  } else if(!is.null(da)) {
+    splat(" fitted to", da)
   }
 
   if(waxlyrical('space', terselevel))

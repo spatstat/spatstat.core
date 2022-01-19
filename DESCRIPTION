@@ -1,5 +1,5 @@
 Package: spatstat.core
-Version: 2.3-2.011
+Version: 2.3-2.013
 Date: 2022-01-19
 Title: Core Functionality of the 'spatstat' Family
 Authors@R: c(person("Adrian", "Baddeley", 

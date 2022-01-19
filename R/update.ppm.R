@@ -2,7 +2,7 @@
 #  update.ppm.R
 #
 #
-#  $Revision: 1.61 $    $Date: 2017/10/04 03:51:04 $
+#  $Revision: 1.63 $    $Date: 2022/01/19 09:03:47 $
 #
 #
 #
@@ -71,9 +71,11 @@ update.ppm <- local({
         ## we can update using internal data
         FIT <- object$internal$glmfit
         orig.env <- environment(FIT$terms)
+        orig.trend <- object$trend
+        orig.formula <- update(orig.trend, formula(FIT))
         ## update formulae using "." rules
-        trend <- newformula(object$trend, fmla, callframe, envir)
-        fmla  <- newformula(formula(FIT), fmla, callframe, envir)
+        trend <- newformula(orig.trend,   fmla, callframe, envir)
+        fmla  <- newformula(orig.formula, fmla, callframe, envir)
         ## expand polynom() in formula
         if(spatstat.options("expand.polynom")) {
           fmla <- expand.polynom(fmla)
@@ -176,7 +178,8 @@ update.ppm <- local({
         ## Q = X ~ trend
         if(newstyle) {
           ## update the formula
-          call$Q <- newformula(call$Q, argQ, callframe, envir)
+          callQ <- update(object$trend, call$Q)
+          call$Q <- newformula(callQ, argQ, callframe, envir)
         } else {
           ## split into Q = X and trend = ~trend
           if(!is.null(lhs <- lhs.of.formula(argQ)))
@@ -237,7 +240,8 @@ update.ppm <- local({
         if(is.null(lhs)) {
           argfmla <- as.formula(paste(".", deparse(argfmla)))
         } else X.is.new <- TRUE
-        call$Q <- newformula(call$Q, argfmla, callframe, envir)
+        callQ <- update(object$trend, call$Q)
+        call$Q <- newformula(callQ, argfmla, callframe, envir)
       } else {
         ## ppm.ppp: update the trend and possibly the data
         if(is.null(lhs)) {

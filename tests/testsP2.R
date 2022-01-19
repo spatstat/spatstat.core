@@ -260,7 +260,7 @@ local({
 #
 #   Test things that might corrupt the internal format of ppm objects
 #
-#   $Revision: 1.6 $  $Date: 2020/04/30 05:23:52 $
+#   $Revision: 1.7 $  $Date: 2022/01/19 09:18:20 $
 #
 
 if(ALWAYS) {  # dependent on R version?
@@ -291,12 +291,17 @@ local({
   anova(fut1a, futx, test="Chi")
   fut1d <- ppm(cells ~ 1, Strauss(0.1), nd=23)
   anova(fut1d, futx, test="Chi")
-  ## The following doesn't work yet
-  ## futxyg <- ppm(cells ~ x + s(y), Strauss(0.1), use.gam=TRUE)
-  ## anova(futx, futxyg)
+  ## This now works!
+  futxyg <- ppm(cells ~ x + s(y), Strauss(0.1), use.gam=TRUE)
+  anova(futx, futxyg)
+  ## marked
   fatP <- ppm(amacrine ~ marks)
   fatM <- ppm(amacrine ~ marks, MultiStrauss(matrix(0.07, 2, 2)))
   anova(fatP, fatM, test="Chi")
+
+  ## (5) expansion of "." in update.ppm
+  fitb <- ppm(bei ~ . , data=bei.extra)
+  step(fitb)
 })
 }
 grep#

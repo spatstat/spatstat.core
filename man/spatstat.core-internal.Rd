@@ -82,6 +82,7 @@
 \alias{evalPairPotential}
 \alias{evaluate2Dkernel}
 \alias{ExpSmoothLog}
+\alias{expandDot}
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
 \alias{family.glmmPQL} 
@@ -495,6 +496,7 @@ evalInterEngine(X,P,E,interaction,correction,splitInf,\dots,
 evalPairPotential(X,P,E,pairpot,potpars,R)
 evaluate2Dkernel(kernel, x, y, sigma, varcov, \dots, scalekernel)
 ExpSmoothLog(X, \dots, at, weights)
+expandDot(f, dotvars)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
 \method{family}{glmmPQL}(object, \dots)
@@ -631,7 +633,7 @@ mpl.prepare(Q, X, P, trend, interaction, covariates,
             weightfactor, skip.border, clip.interaction, splitInf)
 mpl.usable(x)
 \method{names}{fv}(x) <- value
-newformula(old, change, eold, enew, expandpoly)
+newformula(old, change, eold, enew, expandpoly, dotvars)
 newstyle.coeff.handling(object)
 nncleanEngine(kthNND, k, d, \dots, tol, maxit,
               plothist, lineargs, verbose, Xname)
