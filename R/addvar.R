@@ -3,7 +3,7 @@
 #
 # added variable plot
 #
-#   $Revision: 1.12 $  $Date: 2022/01/04 05:30:06 $
+#   $Revision: 1.13 $  $Date: 2022/01/19 00:49:17 $
 #
 
 
@@ -117,7 +117,7 @@ addvar <- function(model, covariate, ...,
   rhs <- formula(model)
   fo <- as.formula(paste(covname, paste(rhs, collapse=" ")))
 
-  fit <- lm(fo, data=df, weights=lam * wts)
+  fit <- lm(fo, data=df, weights=lam * wts, na.action=na.exclude)
   xresid <- residuals(fit, type="pearson")/sqrt(wts)
 
   if(crosscheck) {

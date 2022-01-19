@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.010
+        CHANGES IN spatstat.core VERSION 2.3-2.011
 
 OVERVIEW
 
@@ -9,9 +9,9 @@ OVERVIEW
 
     o Functions for generating random patterns have been removed.
     
-    o Bug fixes in anova.mppm and vcov.mppm.
+    o Important bug fixes in anova.mppm and vcov.mppm.
 
-    o Minor improvements
+    o Minor improvements and bug fixes
 
 SIGNIFICANT USER-VISIBLE CHANGES
 
@@ -48,7 +48,11 @@ BUG FIXES
     Gave a warning for some models about "Internal error: 
     unable to map submodels to full model".
     Fixed.
-    
+
+    o addvar
+    If the covariate contained NA, NaN or Infinite values,
+    the calculations were sometimes incorrect.
+    Fixed.
     
         CHANGES IN spatstat.core VERSION 2.3-2
 
