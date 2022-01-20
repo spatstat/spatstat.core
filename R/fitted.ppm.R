@@ -3,7 +3,7 @@
 #
 # method for 'fitted' for ppm objects
 #
-#   $Revision: 1.18 $   $Date: 2018/03/19 14:29:48 $
+#   $Revision: 1.19 $   $Date: 2022/01/20 02:05:37 $
 # 
 
 fitted.ppm <- function(object, ..., type="lambda", dataonly=FALSE,
@@ -26,6 +26,8 @@ fitted.ppm <- function(object, ..., type="lambda", dataonly=FALSE,
       stop("Leave-one-out calculation requires dataonly=TRUE")
     if(!is.null(new.coef))
       stop("Leave-one-out calculation requires new.coef=NULL")
+    if(length(coef(object)) == 0)
+      warning("Model has no fitted coefficients; using leaveoneout=FALSE")
   }
   
   coeffs <- adaptcoef(new.coef, coef(object), drop=dropcoef)

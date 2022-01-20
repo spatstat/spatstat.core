@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.014
+        CHANGES IN spatstat.core VERSION 2.3-2.015
 
 OVERVIEW
 
@@ -56,6 +56,10 @@ BUG FIXES
 
     o pcfmodel.ppm
     Refused to handle an inhomogeneous Poisson process.
+    Fixed.
+
+    o fitted.ppm
+    Crashed if leaveoneout=TRUE and the model had no fitted coefficients.
     Fixed.
     
         CHANGES IN spatstat.core VERSION 2.3-2
