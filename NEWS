@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.013
+        CHANGES IN spatstat.core VERSION 2.3-2.014
 
 OVERVIEW
 
@@ -52,6 +52,10 @@ BUG FIXES
     o addvar
     If the covariate contained NA, NaN or Infinite values,
     the calculations were sometimes incorrect.
+    Fixed.
+
+    o pcfmodel.ppm
+    Refused to handle an inhomogeneous Poisson process.
     Fixed.
     
         CHANGES IN spatstat.core VERSION 2.3-2

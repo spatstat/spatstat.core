@@ -1,7 +1,7 @@
 # Lurking variable plot for arbitrary covariate.
 #
 #
-# $Revision: 1.72 $ $Date: 2022/01/04 05:30:06 $
+# $Revision: 1.73 $ $Date: 2022/01/20 00:41:37 $
 #
 
 lurking <- function(object, ...) {
@@ -401,7 +401,7 @@ LurkEngine <- function(object, type, cumulative=TRUE, plot.sd=TRUE,
       Fisher <- Fisher %orifnull% asymp$fisher
       ## Local sufficient statistic at quadrature points
       suff <- asymp$suff
-      if(!allok) suff <- suff[ok, , drop=FALSE]
+      if(!allok && !is.null(suff)) suff <- suff[ok, , drop=FALSE]
     } else if(is.slrm(object)) {
       ## Fitted intensity at quadrature points
       lambda <- predict(object, type="intensity")[quadpoints, drop=FALSE]
@@ -409,12 +409,13 @@ LurkEngine <- function(object, type, cumulative=TRUE, plot.sd=TRUE,
       Fisher <- Fisher %orifnull% vcov(object, what="Fisher")
       ## Sufficient statistic at quadrature points
       suff <- model.matrix(object)
-      if(!allok) suff <- suff[ok, , drop=FALSE]
+      if(!allok && !is.null(suff)) suff <- suff[ok, , drop=FALSE]
     } else stop("object should be a ppm or slrm")
     ## Clip if required
     if(clip) {
       lambda <- lambda[clipquad]
-      suff   <- suff[clipquad, , drop=FALSE]  ## suff is a matrix
+      if(!is.null(suff))
+        suff   <- suff[clipquad, , drop=FALSE]  ## suff is a matrix
     }
     ## First term: integral of lambda^(2p+1)
     switch(type,
@@ -439,13 +440,22 @@ LurkEngine <- function(object, type, cumulative=TRUE, plot.sd=TRUE,
              varI <- cumsum(dvar)
            })
 
-    ## variance-covariance matrix of coefficients
-    V <- try(solve(Fisher), silent=TRUE)
-    if(inherits(V, "try-error")) {
-      warning("Fisher information is singular; reverting to oldstyle=TRUE")
-      oldstyle <- TRUE
+    if(!oldstyle) {
+      ## check feasibility of variance calculations
+      if(length(Fisher) == 0 || length(suff) == 0) {
+        warning("Model has no fitted coefficients; using oldstyle=TRUE")
+        oldstyle <- TRUE
+      } else {
+        ## variance-covariance matrix of coefficients
+        V <- try(solve(Fisher), silent=TRUE)
+        if(inherits(V, "try-error")) {
+          warning("Fisher information is singular; reverting to oldstyle=TRUE")
+          oldstyle <- TRUE
+        }
+      }
     }
-    if(any(dim(V) != ncol(suff))) {
+
+    if(!oldstyle && any(dim(V) != ncol(suff))) {
       #' drop rows and columns
       nama <- colnames(suff)
       V <- V[nama, nama, drop=FALSE]

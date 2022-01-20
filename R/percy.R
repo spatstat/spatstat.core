@@ -2,16 +2,16 @@
 ##
 ## Percus-Yevick style approximations to pcf and K
 ##
-##  $Revision: 1.4 $ $Date: 2014/01/31 10:10:19 $
+##  $Revision: 1.6 $ $Date: 2022/01/20 00:47:44 $
 
 pcfmodel.ppm <- local({
 
   pcfmodel.ppm <- function(model, ...) {
     if(is.multitype(model))
       stop("Not yet implemented for multitype models")
-    if(!is.stationary(model))
-      stop("Model must be stationary")
     if(is.poisson(model)) return(function(r) rep(1, length(r)))
+    if(!is.stationary(model))
+      stop("Not implemented for non-stationary Gibbs models")
     inte <- as.interact(model)
     if(inte$family$name != "pairwise")
       stop("Only implemented for pairwise-interaction models")
