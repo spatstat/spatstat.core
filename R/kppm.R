@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.198 $ $Date: 2022/01/09 01:35:46 $
+# $Revision: 1.199 $ $Date: 2022/01/21 06:53:42 $
 #
 
 
@@ -1689,18 +1689,20 @@ update.kppm <- function(object, ..., evaluate=TRUE, envir=environment(terms(obje
   methodname <- as.character(thecall[[1L]])
   switch(methodname,
          kppm.formula = {
-	   # original call has X = [formula with lhs]
+	   ## original call has X = [formula with lhs]
 	   if(!is.null(Xexpr)) {
 	     lhs.of.formula(fmla) <- Xexpr
 	   } else if(is.null(lhs.of.formula(fmla))) {
 	     lhs.of.formula(fmla) <- as.name('.')
 	   }
-           oldformula <- as.formula(getCall(object)$X)
+           oldformula <- getCall(object)$X
+           oldformula <- eval(oldformula, callframe)
            thecall$X <- newformula(oldformula, fmla, callframe, envir)
          },
          {
-	   # original call has X = ppp and trend = [formula without lhs]
-           oldformula <- as.formula(getCall(object)$trend %orifnull% (~1))
+	   ## original call has X = ppp and trend = [formula without lhs]
+           oldformula <- getCall(object)$trend %orifnull% (~1)
+           oldformula <- eval(oldformula, callframe)
 	   fom <-  newformula(oldformula, fmla, callframe, envir)
 	   if(!is.null(Xexpr))
 	      lhs.of.formula(fom) <- Xexpr

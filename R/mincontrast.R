@@ -1,9 +1,9 @@
-#'
+c#'
 #'  mincontrast.R
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.118 $ $Date: 2022/01/19 03:20:18 $
+#'  $Revision: 1.119 $ $Date: 2022/01/21 04:07:12 $
 #' 
 
 
@@ -84,6 +84,7 @@ mincontrast <- local({
                           pspace=NULL) {
     verifyclass(observed, "fv")
     action.bad.values <- match.arg(action.bad.values)
+
     
     stopifnot(is.function(theoretical))
     if(!any("par" %in% names(formals(theoretical))))
