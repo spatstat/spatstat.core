@@ -1,6 +1,6 @@
 Package: spatstat.core
-Version: 2.3-2.016
-Date: 2022-01-23
+Version: 2.3-2.017
+Date: 2022-02-05
 Title: Core Functionality of the 'spatstat' Family
 Authors@R: c(person("Adrian", "Baddeley", 
                     role = c("aut", "cre"),

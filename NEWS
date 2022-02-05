@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.3-2.016
+        CHANGES IN spatstat.core VERSION 2.3-2.017
 
 OVERVIEW
 
@@ -26,6 +26,9 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o qqplot.ppm, plot.qqppm
     Improved the text label indicating the type of residuals.
+
+    o reload.or.compute
+    New argument 'context' 
 
 BUG FIXES
 
@@ -60,6 +63,10 @@ BUG FIXES
 
     o fitted.ppm
     Crashed if leaveoneout=TRUE and the model had no fitted coefficients.
+    Fixed.
+
+    o reload.or.compute
+    Scoping error (crashed sometimes if called from a non-global environment).
     Fixed.
     
         CHANGES IN spatstat.core VERSION 2.3-2

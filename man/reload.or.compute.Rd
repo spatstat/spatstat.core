@@ -10,7 +10,9 @@
 }
 \usage{
 reload.or.compute(filename, expr, objects = NULL,
-                  destination = parent.frame(), force=FALSE, verbose=TRUE)
+                  context = parent.frame(), 
+                  destination = parent.frame(),
+                  force=FALSE, verbose=TRUE)
 }
 \arguments{
   \item{filename}{
@@ -25,8 +27,12 @@ reload.or.compute(filename, expr, objects = NULL,
     or names of objects that should be present in \code{filename}
     when loaded.
   }
+  \item{context}{
+    Environment containing objects that are mentioned in \code{expr}
+    (other than objects in the global environment).
+  }
   \item{destination}{
-    Environment in which the resulting objects should be assigned.
+    Environment into which the resulting objects should be assigned.
   }
   \item{force}{
     Logical value indicating whether to perform the computation
