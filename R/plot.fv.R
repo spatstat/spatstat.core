@@ -1,7 +1,7 @@
 #
 #       plot.fv.R   (was: conspire.S)
 #
-#  $Revision: 1.132 $    $Date: 2021/10/03 01:49:22 $
+#  $Revision: 1.133 $    $Date: 2022/02/06 10:42:20 $
 #
 #
 
@@ -79,6 +79,8 @@ plot.fv <- local({
 
     ## This *is* the last possible moment, so...
     fmla <- as.formula(fmla, env=env.user)
+
+    lhs.is.dot <- identical(lhs.of.formula(fmla), as.symbol('.'))
 
     ## validate the variable names
     vars <- variablesinformula(fmla)
@@ -184,7 +186,7 @@ plot.fv <- local({
                      "for columns of x"), call.=FALSE)
         nmore <- ncol(morelhs)
         extrashadevars <- colnames(morelhs)
-        if(defaultplot) {
+        if(defaultplot && lhs.is.dot) {
           success <- TRUE
         } else if("." %in% variablesinformula(fmla.original)) {
           ## evaluate lhs of formula, expanding "." to shade names
@@ -375,7 +377,7 @@ plot.fv <- local({
     ## construct label for y axis
     if(is.null(ylab)) {
       yl <- attr(x, "yexp")
-      if(defaultplot && !is.null(yl)) {
+      if(defaultplot && lhs.is.dot && !is.null(yl)) {
         ylab <- yl
       } else {
         ## replace "." and short identifiers by plot labels
@@ -512,7 +514,7 @@ plot.fv <- local({
     legtxt <- key
     if(legendmath) {
       legtxt <- leglabl
-      if(defaultplot) {
+      if(defaultplot && lhs.is.dot) {
         ## try to convert individual labels to expressions
         fancy <- try(parse(text=leglabl), silent=TRUE)
         if(!inherits(fancy, "try-error"))

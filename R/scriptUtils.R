@@ -1,5 +1,5 @@
 ## scriptUtils.R
-##       $Revision: 1.10 $ $Date: 2022/02/05 01:14:01 $
+##       $Revision: 1.11 $ $Date: 2022/02/09 00:52:53 $
 
 ## slick way to use precomputed data
 ##    If the named file exists, it is loaded, giving access to the data.
@@ -15,7 +15,7 @@ reload.or.compute <- function(filename, expr,
   if(force || !file.exists(filename)) {
     if(verbose) splat("Recomputing...")
     ## evaluate 'expr' in a fresh environment
-    ee <- as.expression(substitute(expr))
+    .Expr <- ee <- as.expression(substitute(expr))
     en <- new.env(parent=context)
     assign(".Expr", ee, pos=en)
     local(eval(.Expr), envir=en)
