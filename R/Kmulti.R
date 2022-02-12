@@ -4,7 +4,7 @@
 #	Compute estimates of cross-type K functions
 #	for multitype point patterns
 #
-#	$Revision: 5.55 $	$Date: 2021/10/09 02:04:59 $
+#	$Revision: 5.56 $	$Date: 2022/02/12 09:09:31 $
 #
 #
 # -------- functions ----------------------------------------
@@ -157,7 +157,7 @@ function(X, I, J, r=NULL, breaks=NULL,
 
   npts <- npoints(X)
   W <- X$window
-  areaW <- area(W)
+  ## areaW <- area(W)
 
   dotargs <- list(...)
   domainI <- resolve.1.default("domainI", dotargs) %orifnull% W

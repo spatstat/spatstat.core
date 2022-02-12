@@ -1,7 +1,7 @@
 # Lurking variable plot for arbitrary covariate.
 #
 #
-# $Revision: 1.73 $ $Date: 2022/01/20 00:41:37 $
+# $Revision: 1.75 $ $Date: 2022/02/12 09:11:35 $
 #
 
 lurking <- function(object, ...) {
@@ -85,7 +85,7 @@ lurking.ppp <- lurking.ppm <- function(object, covariate,
 
   ## extract spatial locations
   Q <- quad.ppm(object)
-  datapoints <- Q$data
+  ## datapoints <- Q$data
   quadpoints <- union.quad(Q)
   Z <- is.data(Q)
   wts <- w.quad(Q)
@@ -268,7 +268,7 @@ LurkEngine <- function(object, type, cumulative=TRUE, plot.sd=TRUE,
     quadpoints <- quadpoints[ok]
     covvalues <- covvalues[ok]
     okdata <- ok[Z]   # which original data points are retained
-    Zok    <- Z & ok  # which original quadrature pts are retained as data pts
+    ## Zok    <- Z & ok # which original quadrature pts are retained as data pts
     Z      <- Z[ok]   # which of the retained quad pts are data pts
     wts    <- wts[ok]
     resvalues <- resvalues[if(type == "eem") okdata else ok]

@@ -3,7 +3,7 @@
 #'
 #' cdf of |X1-X2| when X1,X2 are iid uniform in W, etc
 #'
-#'  $Revision: 1.18 $  $Date: 2021/08/12 06:21:43 $
+#'  $Revision: 1.19 $  $Date: 2022/02/12 09:07:38 $
 #'
 
 distcdf <- local({
@@ -74,7 +74,7 @@ distcdf <- local({
     if(is.null(nr)) 
       nr <- max(1024, 512 * ceiling(rmax/(pix*512)))
     rgrid <- seq(0, rmax, length=nr)
-    dr <- rmax/(nr-1)
+    ## dr <- rmax/(nr-1)
     h <- whist(rvals, breaks=rgrid, weights=gvals/sum(gvals))
     ch <- c(0,cumsum(h))
     #' regularise at very short distances

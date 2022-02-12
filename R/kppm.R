@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.199 $ $Date: 2022/01/21 06:53:42 $
+# $Revision: 1.201 $ $Date: 2022/02/11 03:05:49 $
 #
 
 
@@ -186,6 +186,10 @@ kppm.ppp <- kppm.quad <-
   attr(out, "h") <- h
   return(out)
 }
+
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+##                M  i  n  i  m  u  m       C  o  n  t  r  a  s  t
+## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 kppmMinCon <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, statistic, statargs,
                        algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
@@ -403,6 +407,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   if(isDPP && algorithm=="Brent" && changealgorithm)
     mcargs <- resolve.defaults(mcargs, list(lower=alg$lower, upper=alg$upper))
 
+  
   ## .............. FIT .......................
   if(verbose) splat("Starting minimum contrast fit")
   mcfit <- do.call(mincontrast, mcargs)
@@ -463,6 +468,10 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   if(verbose) splat("Returning from clusterfit")
   return(mcfit)
 }
+
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+##                C  o  m  p  o  s  i  t  e    L  i  k  e  l  i  h  o  o  d
+## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
                        weightfun, rmax, algorithm="Nelder-Mead",
@@ -578,7 +587,7 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
       },
       enclos=objargs$envir)
     }
-    ## determine a suitable large number to replace Inf
+    ## Determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   } else {
     # create local function to evaluate  pair correlation(d) * weight(d)
@@ -610,7 +619,7 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
       },
       enclos=objargs$envir)
     }
-    ## determine a suitable large number to replace Inf
+    ## Determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   }
 
@@ -734,6 +743,11 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
 }
 
 
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+##                P  a  l  m     L  i  k  e  l  i  h  o  o  d              
+## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, weightfun, rmax,
                         algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
   W <- as.owin(X)
@@ -849,7 +863,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
       },
       enclos=objargs$envir)
     }
-    ## determine a suitable large number to replace Inf
+    ## Determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   } else {
     # create local function to evaluate  pair correlation(d) * weight(d)
@@ -882,7 +896,7 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
       },
       enclos=objargs$envir)
     }
-    ## determine a suitable large number to replace Inf
+    ## Determine a suitable large number to replace Inf
     objargs$BIGVALUE <- bigvaluerule(obj, objargs, startpar)
   }
 
@@ -1002,6 +1016,11 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
                  Fit        = Fit)
   return(result)
 }
+
+
+## >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+##       A  d  a  p  t  i  v  e     C  o  m  p  o  s  i  t  e    L  i  k  e  l  i  h  o  o  d
+## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 ## ........... contributed by Chiara Fend ...................

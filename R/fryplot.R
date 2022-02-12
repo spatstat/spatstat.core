@@ -1,7 +1,7 @@
 #
 #  fryplot.R
 #
-#  $Revision: 1.17 $ $Date: 2020/12/19 05:25:06 $
+#  $Revision: 1.18 $ $Date: 2022/02/10 06:04:37 $
 #
 
 fryplot <- function(X, ..., width=NULL, from=NULL, to=NULL, axes=FALSE) {
@@ -44,11 +44,13 @@ frypoints <- function(X, from=NULL, to=NULL, dmax=Inf) {
       DX <- as.vector(dx[notsame])
       DY <- as.vector(dy[notsame])
       I <- row(notsame)[notsame]
+      J <- col(notsame)[notsame]
     } else {
       cl <- closepairs(X, dmax)
       DX <- cl$dx
       DY <- cl$dy
       I  <- cl$j  ## sic: I is the index of the 'TO' element
+      J  <- cl$i  ## sic
     }
   } else {
     seqn <- seq_len(n)
@@ -63,12 +65,14 @@ frypoints <- function(X, from=NULL, to=NULL, dmax=Inf) {
       DX <- as.vector(dx[notsame])
       DY <- as.vector(dy[notsame])
       I <- row(notsame)[notsame]
+      J <- col(notsame)[notsame]
     } else {
       cl <- crosspairs(X[from], X[to], dmax)
       ok <- with(cl, from[i] != to[j])
       DX <- cl$dx[ok]
       DY <- cl$dy[ok]
       I  <- cl$j[ok]
+      J  <- cl$i[ok]
     }
   }
   ## form into point pattern
@@ -78,5 +82,6 @@ frypoints <- function(X, from=NULL, to=NULL, dmax=Inf) {
     marxto <- if(is.null(to)) marx else marx[to, ,drop=FALSE]
     marks(Fry) <- marxto[I, ]
   }
+  attr(Fry, "indices") <- list(I=I, J=J)
   return(Fry)
 }

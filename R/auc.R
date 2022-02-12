@@ -3,7 +3,7 @@
 ##
 ##  Calculate ROC curve or area under it
 ##
-## $Revision: 1.10 $ $Date: 2021/07/11 10:12:38 $
+## $Revision: 1.11 $ $Date: 2022/02/12 09:13:11 $
 
 roc <- function(X, ...) { UseMethod("roc") }
 
@@ -59,6 +59,7 @@ roc.slrm <- function(X, ...) {
   lambda <- predict(model, ..., type="probabilities")
   Y <- response(model)
   nullmodel <- slrm(Y ~ 1)
+  dont.complain.about(Y)
   result <- rocModel(lambda, nullmodel, ..., lambdatype="probabilities")
   return(result)
 }

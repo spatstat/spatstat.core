@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.57 $   $Date: 2021/10/30 05:19:17 $
+#  $Revision: 1.59 $   $Date: 2022/02/12 09:13:49 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -810,8 +810,8 @@ slrmInfluence <- function(model,
     what <- c("leverage", "influence", "dfbetas", "dffit")
   FIT <- model$Fit$FIT
   W <- model$Data$W
-  nr <- nrow(W)
-  nc <- ncol(W)
+  ## nr <- nrow(W)
+  ## nc <- ncol(W)
   result <- list()
   if("leverage" %in% what) {
     h <- hatvalues(FIT, ...)
@@ -873,12 +873,12 @@ emend.slrm <- local({
     }
     # Fitted coefficients
     coef.orig <- coeffs <- coef(object)
-    coefnames  <- names(coeffs)
+    ## coefnames  <- names(coeffs)
     # Trend terms in trend formula
     trendterms <- attr(terms(object), "term.labels")
     # Mapping from coefficients to terms of GLM
     coef2term  <- attr(model.matrix(object), "assign")
-    istrend <- (coef2term > 0)
+    ## istrend <- (coef2term > 0)
     # Identify non-finite trend coefficients
     bad <-  !is.finite(coeffs)
     if(!any(bad)) {

@@ -136,7 +136,8 @@ qqplot.ppm <- local({
     repeat {
       inext <- isim + 1
       ## protect from randomly-generated crashes in gam
-      ei <- try(eval(expr, envir=envir.expr), silent=!verbose)
+      ##      ei <- try(eval(expr, envir=envir.expr), silent=!verbose)
+      ei <- eval(expr, envir=envir.expr)
       if(inherits(ei, "try-error")) {
         ## error encountered in evaluating 'expr'
         ierr <- ierr + 1

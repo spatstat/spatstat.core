@@ -1,7 +1,7 @@
 #'
 #'      rhohat.slrm.R
 #'
-#'   $Revision: 1.2 $ $Date: 2021/06/28 03:47:38 $
+#'   $Revision: 1.3 $ $Date: 2022/02/12 09:12:11 $
 #' 
 
 rhohat.slrm <- function(object, covariate, ...,
@@ -33,7 +33,7 @@ rhohat.slrm <- function(object, covariate, ...,
   reference <- "model"
   modelcall <- model$call
 
-  if(!is.null(splitby <- object$CallInfo$splitby))
+  if(!is.null(object$CallInfo$splitby))
     stop("Sorry, rhohat.slrm is not yet implemented for split pixels",
          call.=FALSE)
 
