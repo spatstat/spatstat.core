@@ -2,6 +2,8 @@
 #'   zclustermodel.R
 #'
 #' Experimental
+#' 
+#'   $Revision: 1.10 $ $Date: 2022/02/21 02:24:07 $
 #'
 
 zclustermodel <- function(name="Thomas", ..., mu, kappa, scale) {
@@ -9,10 +11,14 @@ zclustermodel <- function(name="Thomas", ..., mu, kappa, scale) {
   if(missing(mu)) stop("The mean cluster size mu must be given")
   if(missing(scale)) stop("The cluster scale must be given")
   rules <- spatstatClusterModelInfo(name)
-  par <- c(kappa=kappa, scale=scale)
-  other <- rules$resolvedots(...)
-  clustargs <- rules$checkclustargs(other$margs, old=FALSE)
-  out <- list(name=name, rules=rules, par=par, mu=mu, clustargs=clustargs,
+  par.std <- c(kappa=kappa, scale=scale)
+  par.std <- rules$checkpar(par.std, native=FALSE)
+  par.idio <- rules$checkpar(par.std, native=TRUE)
+  other <- rules$resolveshape(...)
+  clustargs <- rules$outputshape(other$margs)
+  out <- list(name=name, rules=rules,
+              par.std=par.std, par.idio=par.idio,
+              mu=mu, clustargs=clustargs,
               other=other)
   class(out) <- "zclustermodel"
   return(out)
@@ -23,7 +29,7 @@ print.zclustermodel <- local({
   print.zclustermodel <- function(x, ...) {
     with(x, {
       splat(rules$printmodelname(list(clustargs=clustargs)))
-      newpar <- rules$checkpar(par, old=FALSE)
+      newpar <- rules$checkpar(par.std, native=FALSE)
       splat("Parent intensity kappa =", blurb("kappa", newpar["kappa"]))
       splat("Cluster scale = ", newpar["scale"])
       splat("Mean cluster size mu =", blurb("mu", mu))
@@ -58,20 +64,20 @@ print.zclustermodel <- local({
                              
 pcfmodel.zclustermodel <- function(model, ...) {
   p <- model$rules$pcf
-  mpar <- model$par
+  mpar <- model$par.idio
   other <- model$other
   f <- function(r) {
-    do.call(p, c(list(par=mpar, rvals=r), other, model$rules["funaux"]))
+    do.call(p, c(list(par=mpar, rvals=r), other))
   }
   return(f)
 }
 
 Kmodel.zclustermodel <- function(model, ...) {
   K <- model$rules$K
-  mpar <- model$par
+  mpar <- model$par.idio
   other <- model$other
   f <- function(r) {
-    as.numeric(do.call(K, c(list(par=mpar, rvals=r), other, model$rules["funaux"])))
+    as.numeric(do.call(K, c(list(par=mpar, rvals=r), other)))
   }
   return(f)
 }
@@ -87,7 +93,7 @@ predict.zclustermodel <- function(object, ...,
   ## limited use!!!
   if(!identical(type, "intensity"))
     stop("Sorry, only type='intensity' is implemented")
-  lambda <- object$par[["kappa"]] * object$mu
+  lambda <- object$par.std[["kappa"]] * object$mu
   if(is.numeric(lambda)) {
     if(is.ppp(locations))
       return(rep(lambda, npoints(locations)))
@@ -105,7 +111,7 @@ clusterradius.zclustermodel <- function(model, ...,
           resolve.defaults(
             list(model = model$name, thresh = thresh, precision = precision),
             list(...),
-            as.list(model$par),
+            as.list(model$par.std), # sic
             model$clustargs)
           )
 }

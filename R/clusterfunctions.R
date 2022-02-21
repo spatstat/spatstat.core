@@ -5,7 +5,7 @@
 ##  - clusterfield
 ##  - clusterradius.
 ##
-##   $Revision: 1.10 $  $Date: 2022/01/04 05:30:06 $
+##   $Revision: 1.11 $  $Date: 2022/02/21 02:24:34 $
 ##
 
 ## The generic clusterkernel() is now in spatstat.random

@@ -3,7 +3,7 @@ c#'
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.119 $ $Date: 2022/01/21 04:07:12 $
+#'  $Revision: 1.121 $ $Date: 2022/02/21 04:25:11 $
 #' 
 
 
@@ -494,7 +494,7 @@ thomas.estK <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("Thomas")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$K
   
   result <- mincontrast(K, theoret, startpar,
@@ -511,8 +511,8 @@ thomas.estK <- function(X, startpar=c(kappa=1,scale=1),
   ## infer meaningful model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="Thomas")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -536,11 +536,10 @@ lgcp.estK <- function(X, startpar=c(var=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("LGCP")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
 
   ## digest parameters of Covariance model and test validity
-  ph <- info$parhandler
-  cmodel <- do.call(ph, covmodel)
+  cmodel <- do.call(info$resolveshape, covmodel)$covmodel
   
   theoret <- info$K
 
@@ -562,9 +561,9 @@ lgcp.estK <- function(X, startpar=c(var=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="lgcp")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
-  result$clustargs <- info$checkclustargs(cmodel$margs, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
+  result$clustargs <- info$outputshape(cmodel$margs)
   return(result)
 }
 
@@ -587,9 +586,8 @@ matclust.estK <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("MatClust")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$K
-  funaux <-  info$funaux
   
   result <- mincontrast(K, theoret, startpar,
                         ctrl=list(q=q, p=p,rmin=rmin, rmax=rmax),
@@ -598,8 +596,7 @@ matclust.estK <- function(X, startpar=c(kappa=1,scale=1),
                         explain=list(dataname=dataname,
                           fname=attr(K, "fname"),
                           modelname="Matern Cluster process"),
-                        ...,
-                        funaux=funaux)
+                        ...)
   ## imbue with meaning
   par <- result$par
   names(par) <- c("kappa", "R")
@@ -607,8 +604,8 @@ matclust.estK <- function(X, startpar=c(kappa=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="MatClust")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -634,7 +631,7 @@ thomas.estpcf <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("Thomas")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$pcf
   
   ## avoid using g(0) as it may be infinite
@@ -659,8 +656,8 @@ thomas.estpcf <- function(X, startpar=c(kappa=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="Thomas")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -684,9 +681,8 @@ matclust.estpcf <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("MatClust")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$pcf
-  funaux <-  info$funaux
   
   ## avoid using g(0) as it may be infinite
   argu <- fvnames(g, ".x")
@@ -701,8 +697,7 @@ matclust.estpcf <- function(X, startpar=c(kappa=1,scale=1),
                         explain=list(dataname=dataname,
                           fname=attr(g, "fname"),
                           modelname="Matern Cluster process"),
-                        ...,
-                        funaux=funaux)
+                        ...)
   ## imbue with meaning
   par <- result$par
   names(par) <- c("kappa", "R")
@@ -710,8 +705,8 @@ matclust.estpcf <- function(X, startpar=c(kappa=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="MatClust")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -736,11 +731,10 @@ lgcp.estpcf <- function(X, startpar=c(var=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("LGCP")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
 
   ## digest parameters of Covariance model and test validity
-  ph <- info$parhandler
-  cmodel <- do.call(ph, covmodel)
+  cmodel <- do.call(info$resolveshape, covmodel)$covmodel
   
   theoret <- info$pcf
   
@@ -762,9 +756,9 @@ lgcp.estpcf <- function(X, startpar=c(var=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="lgcp")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
-  result$clustargs <- info$checkclustargs(cmodel$margs, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
+  result$clustargs <- info$outputshape(cmodel$margs)
   return(result)
 }
 
@@ -792,7 +786,7 @@ cauchy.estK <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("Cauchy")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$K
 
   desc <- "minimum contrast fit of Neyman-Scott process with Cauchy kernel"
@@ -809,8 +803,8 @@ cauchy.estK <- function(X, startpar=c(kappa=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="Cauchy")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -839,7 +833,7 @@ cauchy.estpcf <- function(X, startpar=c(kappa=1,scale=1),
     stop("Unrecognised format for argument X")
 
   info <- spatstatClusterModelInfo("Cauchy")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$pcf
 
   ## avoid using g(0) as it may be infinite
@@ -863,8 +857,8 @@ cauchy.estpcf <- function(X, startpar=c(kappa=1,scale=1),
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="Cauchy")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
   return(result)
 }
 
@@ -903,12 +897,11 @@ vargamma.estK <- function(X, startpar=c(kappa=1,scale=1), nu = -1/4,
   stopifnot(nu > -1/2)
 
   info <- spatstatClusterModelInfo("VarGamma")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$K
   
   ## test validity of parameter nu and digest
-  ph <- info$parhandler
-  cmodel <- ph(nu.ker=nu)
+  cmodel <- info$resolveshape(nu.ker=nu)$covmodel
   margs <- cmodel$margs
 
   desc <- "minimum contrast fit of Neyman-Scott process with Variance Gamma kernel"
@@ -927,9 +920,9 @@ vargamma.estK <- function(X, startpar=c(kappa=1,scale=1), nu = -1/4,
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="VarGamma")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
-  result$clustargs <- info$checkclustargs(cmodel$margs, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
+  result$clustargs <- info$outputshape(cmodel$margs)
   return(result)
 }
 
@@ -964,18 +957,18 @@ vargamma.estpcf <- function(X, startpar=c(kappa=1,scale=1), nu=-1/4,
   if(missing(nu)){
       ## nutmp <- try(resolve.vargamma.shape(nu.ker=dots$nu.ker, nu.pcf=dots$nu.pcf)$nu.ker, silent=TRUE)
       ## if(!inherits(nutmp, "try-error")) nu <- nutmp
-      nu <- resolve.vargamma.shape(nu.ker=dots$nu.ker, nu.pcf=dots$nu.pcf, default = TRUE)$nu.ker
+    nu <- resolve.vargamma.shape(nu.ker=dots$nu.ker,
+                                 nu.pcf=dots$nu.pcf, default = TRUE)$nu.ker
   }
   check.1.real(nu)
   stopifnot(nu > -1/2)
 
   info <- spatstatClusterModelInfo("VarGamma")
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   theoret <- info$pcf
 
   ## test validity of parameter nu and digest 
-  ph <- info$parhandler
-  cmodel <- ph(nu.ker=nu)
+  cmodel <- info$resolveshape(nu.ker=nu)$covmodel
   margs <- cmodel$margs
   
   ## avoid using g(0) as it may be infinite
@@ -1002,9 +995,9 @@ vargamma.estpcf <- function(X, startpar=c(kappa=1,scale=1), nu=-1/4,
   ## infer model parameters
   result$modelpar <- info$interpret(par, lambda)
   result$internal <- list(model="VarGamma")
-  ## add new parametrisation to object
-  result$clustpar <- info$checkpar(par, old=FALSE)
-  result$clustargs <- info$checkclustargs(cmodel$margs, old=FALSE)
+  ## parameters in standard form
+  result$clustpar <- info$checkpar(par, native=FALSE)
+  result$clustargs <- info$outputshape(cmodel$margs)
   return(result)
 }
 

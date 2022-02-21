@@ -1,7 +1,7 @@
 #'
 #'     dppm.R
 #'
-#'     $Revision: 1.15 $   $Date: 2021/07/14 09:44:32 $
+#'     $Revision: 1.16 $   $Date: 2022/02/21 02:23:49 $
 
 dppm <-
   function(formula, family, data=NULL,
@@ -81,13 +81,16 @@ spatstatDPPModelInfo <- function(model){
     modelabbrev = paste(model$name, "DPP"), # In fitted obj.
     printmodelname = function(...) paste(model$name, "DPP"), # Used by print.kppm
     parnames = model$freepar,
-    checkpar = function(par){
-      return(par)
-    },
-    checkclustargs = function(margs, old = TRUE) list(),
-    resolvedots = function(...){
-      return(list(...))
-    },
+    shapenames = NULL,
+    clustargsnames = NULL, # deprecated
+    checkpar = function(par, ...){ return(par) },
+    outputshape = function(margs) list(),
+    checkclustargs = function(margs, native=old, ..., old = TRUE) { # deprecated
+      return(list())
+    }, 
+    resolveshape = function(...) { return(list(...)) },
+    resolvedots = function(...){ return(list(...)) }, # deprecated
+    parhandler = function(...){ return(list(...)) }, # deprecated
     ## K-function
     K = function(par, rvals, ...){
       if(length(par)==1 && is.null(names(par)))

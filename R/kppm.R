@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.201 $ $Date: 2022/02/11 03:05:49 $
+# $Revision: 1.205 $ $Date: 2022/02/21 04:44:08 $
 #
 
 
@@ -351,7 +351,7 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
           if(isDPP)
               stop("No rule for starting parameters in this case. Please set ",
                    sQuote("startpar"), " explicitly.")
-          startpar <- info$checkpar(startpar, old=FALSE)
+          startpar <- info$checkpar(startpar, native=FALSE)
           startpar[["scale"]] <- mean(range(Stat[[fvnames(Stat, ".x")]]))
       }
   } else{
@@ -377,9 +377,9 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
     algorithm <- alg$algorithm
   }
 
-  dots <- info$resolvedots(...)
+  dots <- info$resolveshape(...)
   #' determine initial values of parameters
-  startpar <- info$checkpar(startpar)
+  startpar <- info$checkpar(startpar, native=TRUE)
   #' code to compute the theoretical summary function of the model
   theoret <- info[[statistic]]
   #' explanatory text
@@ -399,7 +399,6 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
                                       modelname=info$modelname),
                                   margs=dots$margs,
                                   model=dots$model,
-                                  funaux=info$funaux,
                                   pspace=pspace), ## As modified above
                              list(...)
                              )
@@ -450,8 +449,8 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
   }
   ## Parameter values (new format)
   mcfit$mu <- mu
-  mcfit$clustpar <- info$checkpar(mcfit$par, old=FALSE)
-  mcfit$clustargs <- info$checkclustargs(dots$margs, old=FALSE)
+  mcfit$clustpar <- info$checkpar(mcfit$par, native=FALSE)
+  mcfit$clustargs <- info$outputshape(dots$margs)
 
   ## The old fit fun that would have been used (DO WE NEED THIS?)
   FitFun <- paste0(tolower(clusters), ".est", statistic)
@@ -539,23 +538,21 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
   g <- g[with(g, .x) <= rmax,]
   # get pair correlation function (etc) for model
   info <- spatstatClusterModelInfo(clusters)
-  pcfun      <- info$pcf
-  funaux     <- info$funaux
-  selfstart  <- info$selfstart
-  isPCP      <- info$isPCP
-  parhandler <- info$parhandler
-  modelname  <- info$modelname
+  pcfun        <- info$pcf
+  selfstart    <- info$selfstart
+  isPCP        <- info$isPCP
+  resolveshape <- info$resolveshape
+  modelname    <- info$modelname
   # Assemble information required for computing pair correlation
-  pcfunargs <- list(funaux=funaux)
-  if(is.function(parhandler)) {
-    # Additional parameters of cluster model are required.
+  if(is.function(resolveshape)) {
+    # Additional 'shape' parameters of cluster model are required.
     # These may be given as individual arguments,
     # or in a list called 'covmodel'
     clustargs <- if("covmodel" %in% names(otherargs))
                  otherargs[["covmodel"]] else otherargs
-    clargs <- do.call(parhandler, clustargs)
-    pcfunargs <- append(clargs, pcfunargs)
-  } else clargs <- NULL
+    shapemodel <- do.call(resolveshape, clustargs)$covmodel
+  } else shapemodel <- NULL
+  pcfunargs <- shapemodel
   # determine starting parameter values
   startpar <- selfstart(X)
   
@@ -732,10 +729,10 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
                  lambda     = lambda,
                  mu         = mu,
                  par        = optpar,
-                 clustpar   = info$checkpar(par=optpar, old=FALSE),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE), #clargs$margs,
+                 clustpar   = info$checkpar(par=optpar, native=FALSE),
+                 clustargs  = info$outputshape(shapemodel$margs),
                  modelpar   = modelpar,
-                 covmodel   = clargs,
+                 covmodel   = shapemodel,
                  Fit        = Fit)
   
 
@@ -814,23 +811,21 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
   g <- g[with(g, .x) <= rmax,]
   # get pair correlation function (etc) for model
   info <- spatstatClusterModelInfo(clusters)
-  pcfun      <- info$pcf
-  funaux     <- info$funaux
-  selfstart  <- info$selfstart
-  isPCP      <- info$isPCP
-  parhandler <- info$parhandler
-  modelname  <- info$modelname
+  pcfun        <- info$pcf
+  selfstart    <- info$selfstart
+  isPCP        <- info$isPCP
+  resolveshape <- info$resolveshape
+  modelname    <- info$modelname
   # Assemble information required for computing pair correlation
-  pcfunargs <- list(funaux=funaux)
-  if(is.function(parhandler)) {
-    # Additional parameters of cluster model are required.
+  if(is.function(resolveshape)) {
+    # Additional 'shape' parameters of cluster model are required.
     # These may be given as individual arguments,
     # or in a list called 'covmodel'
     clustargs <- if("covmodel" %in% names(otherargs))
                  otherargs[["covmodel"]] else otherargs
-    clargs <- do.call(parhandler, clustargs)
-    pcfunargs <- append(clargs, pcfunargs)
-  } else clargs <- NULL
+    shapemodel <- do.call(resolveshape, clustargs)$covmodel
+  } else shapemodel <- NULL
+  pcfunargs <- shapemodel
   # determine starting parameter values
   startpar <- selfstart(X)
   
@@ -1009,10 +1004,10 @@ kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, 
                  lambda     = lambda,
                  mu         = mu,
                  par        = optpar,
-                 clustpar   = info$checkpar(par=optpar, old=FALSE),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE), #clargs$margs,
+                 clustpar   = info$checkpar(par=optpar, native=FALSE),
+                 clustargs  = info$outputshape(shapemodel$margs),
                  modelpar   = modelpar,
-                 covmodel   = clargs,
+                 covmodel   = shapemodel,
                  Fit        = Fit)
   return(result)
 }
@@ -1083,31 +1078,28 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
   
   # get pair correlation function (etc) for model
   info <- spatstatClusterModelInfo(clusters)
-  pcfun      <- info$pcf
-  dpcfun     <- info$Dpcf
-  funaux     <- info$funaux
-  selfstart  <- info$selfstart
-  isPCP      <- info$isPCP
-  parhandler <- info$parhandler
-  modelname  <- info$modelname
+  pcfun        <- info$pcf
+  dpcfun       <- info$Dpcf
+  selfstart    <- info$selfstart
+  isPCP        <- info$isPCP
+  resolveshape <- info$resolveshape
+  modelname    <- info$modelname
   # Assemble information required for computing pair correlation
-  pcfunargs <- list(funaux=funaux)
-  if(is.function(parhandler)) {
+  if(is.function(resolveshape)) {
     # Additional parameters of cluster model are required.
     # These may be given as individual arguments,
     # or in a list called 'covmodel'
     clustargs <- if("covmodel" %in% names(otherargs))
       otherargs[["covmodel"]] else otherargs
-    clargs <- do.call(parhandler, clustargs)
-    pcfunargs <- append(clargs, pcfunargs)
-  } else clargs <- NULL
+    shapemodel <- do.call(resolveshape, clustargs)$covmodel
+  } else shapemodel <- NULL
+  pcfunargs <- shapemodel
   
   ## determine starting parameter values
   if(is.null(startpar)) {
     startpar <- selfstart(X)
   } else if(!isDPP){
-    checkpar  <- info$checkpar
-    startpar <- checkpar(startpar, old=TRUE)
+    startpar <- info$checkpar(startpar, native=TRUE)
   }
   ## optimization will be over the logarithms of the parameters
   startparLog <- log(startpar)
@@ -1244,10 +1236,10 @@ kppmCLadap <- function(X, Xname, po, clusters, control, weightfun,
                  lambda     = lambda,
                  mu         = mu,
                  par        = optpar,
-                 clustpar   = info$checkpar(par=optpar, old=FALSE),
-                 clustargs  = info$checkclustargs(clargs$margs, old=FALSE),
+                 clustpar   = info$checkpar(par=optpar, native=FALSE),
+                 clustargs  = info$outputshape(shapemodel$margs),
                  modelpar   = modelpar,
-                 covmodel   = clargs,
+                 covmodel   = shapemodel,
                  Fit        = Fit)
   return(result)
 }
@@ -1815,15 +1807,13 @@ Kpcf.kppm <- function(model, what=c("K", "pcf", "kernel")) {
          "cluster model")
   # Extract model parameters
   par <- model$par
-  # Extract auxiliary definitions (if applicable)
-  funaux <- tableentry$funaux
   # Extract covariance model (if applicable)
   cm <- model$covmodel
   model <- cm$model
   margs <- cm$margs
   #
   f <- function(r) as.numeric(fun(par=par, rvals=r,
-                                  funaux=funaux, model=model, margs=margs))
+                                  model=model, margs=margs))
   return(f)
 }
 

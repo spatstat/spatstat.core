@@ -1,7 +1,7 @@
 #'
 #'       summary.kppm.R
 #'
-#'   $Revision: 1.36 $  $Date: 2022/01/16 13:06:58 $
+#'   $Revision: 1.37 $  $Date: 2022/02/21 02:24:17 $
 #' 
 
 summary.kppm <- function(object, ..., quick=FALSE) {
