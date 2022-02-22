@@ -3,7 +3,7 @@
 #
 #  Method for 'density' for point patterns
 #
-#  $Revision: 1.113 $    $Date: 2021/01/07 03:08:41 $
+#  $Revision: 1.116 $    $Date: 2022/02/22 04:47:38 $
 #
 
 # ksmooth.ppp <- function(x, sigma, ..., edge=TRUE) {
@@ -26,6 +26,11 @@ density.ppp <- function(x, sigma=NULL, ...,
                        c(pixels="pixels",
                          points="points"))
 
+  if(any(sidelengths(Frame(x)) == 0)) { ## pixels will have zero area
+    val <- npoints(x)/0 # Inf or NaN
+    return(as.im(val, W=Frame(x), ...)) 
+  }
+  
   if(!identical(kernel, "gaussian")) {
     validate2Dkernel(kernel)
     ## kernel is only partly implemented!

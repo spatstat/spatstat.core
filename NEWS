@@ -1,10 +1,15 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.001
+        CHANGES IN spatstat.core VERSION 2.4-0.002
 
 OVERVIEW
 
     o Internal improvements.
-    
+
+BUG FIXES
+
+    o density.ppp
+    Crashed if the observation window had zero area.
+    Fixed.
 
         CHANGES IN spatstat.core VERSION 2.4-0
 
