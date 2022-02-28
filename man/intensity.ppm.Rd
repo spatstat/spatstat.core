@@ -7,11 +7,14 @@
   Computes the intensity of a fitted point process model.
 }
 \usage{
-\method{intensity}{ppm}(X, \dots)
+ \method{intensity}{ppm}(X, method=c("Poisson","DPP"), \dots)
 }
 \arguments{
   \item{X}{
     A fitted point process model (object of class \code{"ppm"}).
+  }
+  \item{method}{
+    The approximation method for Gibbs model. By defaut the Poisson-saddlepoint approximation is used \code{method="Poisson"}. The DPP approximation \code{method="DPP"} is available for stationary pairwise-interaction models.
   }
   \item{\dots}{
     Arguments passed to \code{\link{predict.ppm}} in some cases.
@@ -33,13 +36,15 @@
   image is controlled by the arguments \code{\dots} which are passed
   to \code{\link{predict.ppm}}.)
 
-  If \code{X} is another Gibbs point process model, the intensity is
+  If \code{X} is another Gibbs point process model and \code{method="Poisson"}, the intensity is
   computed approximately using the Poisson-saddlepoint approximation
   (Baddeley and Nair, 2012a, 2012b, 2016; Anderssen et al, 2014). 
   The approximation is currently available for pairwise-interaction
   models (Baddeley and Nair, 2012a, 2012b)
   and for the area-interaction model and Geyer saturation model
   (Baddeley and Nair, 2016).
+  If \code{method="DPP"}, the approximation is based on (Coeurjolly and Lavancier, 2018), resulting to a better 
+  approximation of the intensity for repulsive interactions. This method is only available for stationary pairwise-interaction models and requires both the interaction range and the hardcore parameter. If not supplied, the interaction range is approximated and the hardcore parameter is set to 0. 
 
   For a non-stationary Gibbs model, the 
   pseudostationary solution (Baddeley and Nair, 2012b;
@@ -70,16 +75,24 @@
   Poisson-saddlepoint approximation for spatial point processes
   with infinite order interaction.
   Submitted for publication.
+
+  Coeurjolly, J.-F. and Lavancier, F. (2018)
+  Approximation intensity for pairwise interaction Gibbs point processes
+  using determinantal point processes.
+  \emph{Electronic Journal of Statistics} \bold{12} 3181--3203.
+  
 }
 \seealso{
   \code{\link{intensity}},
   \code{\link{intensity.ppp}}
+  \code{\link{intensity.interact}}
 }
 \examples{
   fitP <- ppm(swedishpines ~ 1)
   intensity(fitP)
   fitS <- ppm(swedishpines ~ 1, Strauss(9))
   intensity(fitS)
+  intensity(fitS,method="DPP")
   fitSx <- ppm(swedishpines ~ x, Strauss(9))
   lamSx <- intensity(fitSx)
   fitG <- ppm(swedishpines ~ 1, Geyer(9, 1))

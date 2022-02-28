@@ -3,10 +3,9 @@
 #'
 #'    Intensity and intensity approximations for fitted point process models
 #'
-#'    $Revision: 1.1 $ $Date: 2020/11/24 01:57:24 $
-#'
 
-intensity.ppm <- function(X, ...) {
+
+intensity.ppm <- function(X, method="Poisson",...) {
   if(!identical(valid.ppm(X), TRUE)) {
     warning("Model is invalid - projecting it")
     X <- project.ppm(X)
@@ -40,7 +39,15 @@ intensity.ppm <- function(X, ...) {
     beta <- predict(X, ...)
   }
   ## apply approximation
-  lambda <- PoisSaddle(beta, fitin(X))
+  if(method=="Poisson"){lambda <- PoisSaddle(beta, fitin(X))}
+  if(method=="DPP"){
+    if(!identical(inte$family$name, "pairwise") || !is.stationary(X)){
+      stop("The DPP approximation is only available for stationary pairwise interaction models")
+    }
+    lambda <- DPPSaddlePairwise(beta,fitin(X),interaction.coef)
+  }
+  
+  
   return(lambda)
 }
 
@@ -59,15 +66,17 @@ PoisSaddle <- function(beta, fi) {
              inte$name), call.=FALSE)
 }
 
-PoisSaddlePairwise <- function(beta, fi) {
+PoisSaddlePairwise <- function(beta, fi, co=NULL) {
+  stopifnot(inherits(fi,c("fii","interact")))
+  
+  if(inherits(fi,"fii")){co <- with(fi, coefs[Vnames[!IsOffset]])}  
+  else if(is.null(co)){stop("The interaction coefficients must be supplied for an interaction function")}
+  
   inte <- as.interact(fi)
   Mayer <- inte$Mayer
-  if(is.null(Mayer))
-    stop(paste("Sorry, not yet implemented for", inte$name))
-  # interaction coefficients
-  co <- with(fi, coefs[Vnames[!IsOffset]])
-  # compute second Mayer cluster integral
-  G <- Mayer(co, inte)
+  if (is.null(Mayer)){G<-Mayerfun(co,inte)}
+  else{G <- Mayer(co, inte)}
+  
   if(is.null(G) || !is.finite(G)) 
     stop("Internal error in computing Mayer cluster integral")
   if(G < 0)
@@ -244,3 +253,97 @@ PoisSaddleArea <- local({
   PoisSaddleArea
 
 })
+
+
+
+DPPSaddlePairwise<-function (beta, fi,co=NULL) {
+  stopifnot(inherits(fi,c("fii","interact")))
+  
+  if(inherits(fi,"fii")){co <- with(fi, coefs[Vnames[!IsOffset]])}  
+  else if(is.null(co)){stop("The interaction coefficients must be supplied for an interaction function")}
+  
+  inte <- as.interact(fi)
+  Mayer <- inte$Mayer
+  if (is.null(Mayer)){G<-Mayerfun(co,inte)}
+  else{G <- Mayer(co, inte)}
+  
+  if (is.null(G) || !is.finite(G)) 
+    stop("Internal error in computing Mayer cluster integral")
+  
+  if(G<(-exp(-1)/beta)){warning("The Mayer integral is less than exp(-1)/beta, which may lead to an unreliable solution.")}
+  
+  Mayer2<-Mayersquarefun(co,inte)
+  if (is.null(Mayer2) || !is.finite(Mayer2)) 
+    stop("Internal error in computing integral of (1-g)^2")
+  
+  Bhc<-0
+  if(is.na(inte$hasInf)||is.null(inte$hasInf)){
+    hc=inte$par$hc
+    if(is.null(hc)){hc=inte$par$sigma0}
+    if(is.null(hc)){hc=inte$par$h}
+    if(is.null(hc)){hc=0}
+    Bhc<-pi*hc^2
+  }
+  else if(inte$hasInf){
+    hc=inte$par$hc
+    if(is.null(hc)){hc=inte$par$sigma0}
+    if(is.null(hc)){hc=inte$par$h}
+    if(is.null(hc)){
+      hc=0
+      warning("No parameter named hc or h or sigma0 found for the hardcore parameter. hc=0 has been chosen.")}
+    Bhc<-pi*hc^2
+  }
+  
+  R<-reach(inte)
+  if(!is.finite(R)){
+    R=rev(inte$par$r)[1]
+    if(is.null(R)){
+      if(!is.null(inte$irange)){
+        R<-inte$irange(inte,co,epsilon=0.001)
+        warning(paste("The maximal interaction range supplied by reach is infinite. 
+        The approximated practical range R=",R," is used instead."))
+      }
+      else {stop("Impossible to get the maximal interaction range or an approximated practical range")}
+    }
+    else{
+      warning(paste("The maximal interaction range supplied by reach is infinite. 
+        The last value of parameter r (R=",R,") has been used instead.",sep=""))
+    }
+  }
+  BR<-pi*R^2
+  
+  kappa<-(Mayer2-Bhc)/(BR-Bhc)
+  
+  
+  fun<-function(x) log(beta) + (1+x*Bhc)*log(1-x*Bhc/(1+x*Bhc)) + 
+    (1+x*(G-Bhc)/kappa)*log(1-x*(G-Bhc)/(1+x*(G-Bhc)/kappa)) - log(x)
+  
+  lambda<-uniroot(fun,c(0,2*beta))$root
+  
+  return(lambda)
+}
+
+
+Mayerfun=function(co,inte){
+  #compute Mayer integral for a pairwise interaction inte
+  #given interaction coefficient co 
+  if(!identical(inte$family$name, "pairwise")){stop("Only implemented for pairwise interactions")}
+  log.g=function(r) sum(co*inte$pot(as.matrix(r),inte$par)) #as.matrix and sum to handle Pairpiece
+  log.g=Vectorize(log.g)
+  f=function(x){po<-log.g(x)
+  return(ifelse(is.finite(po),2 * pi * x * (1 - exp(log.g(x))),2 * pi * x))}
+  R<-reach(inte)
+  integrate(f,0,R)$value
+}
+
+Mayersquarefun<-function(co,inte){
+  #compute the square version of the Mayer integral for a pairwise interaction inte
+  #given interaction coefficient co
+  if(!identical(inte$family$name, "pairwise")){stop("Only implemented for pairwise interactions")}
+  log.g=function(r) sum(co*inte$pot(as.matrix(r),inte$par))  #as.matrix and sum to handle Pairpiece
+  log.g=Vectorize(log.g)
+  f=function(x){po<-log.g(x)
+  return(ifelse(is.finite(po),2 * pi * x * (1 - exp(log.g(x)))^2,2 * pi * x))}
+  R<-reach(inte)
+  integrate(f,0,R)$value
+}
