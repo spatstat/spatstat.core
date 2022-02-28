@@ -654,7 +654,7 @@ PairPotentialType(pairpot)
 PoisSaddle(beta, fi)
 PoisSaddleArea(beta, fi)
 PoisSaddleGeyer(beta, fi)
-PoisSaddlePairwise(beta, fi)
+PoisSaddlePairwise(beta, fi,co)
 polyLaslett(X, \dots, oldX, verbose, plotit)
 PPMmodelmatrix(object, data, \dots, subset, Q, keepNA, irregular,
                splitInf)

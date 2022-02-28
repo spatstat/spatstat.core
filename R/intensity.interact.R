@@ -5,8 +5,8 @@
 #'    
 #'    
 
-intensity.interact <- function(X,beta=NULL,interaction.coef=NULL, method="Poisson", ...) {
-  
+intensity.interact <- function(X,beta=NULL,interaction.coef=NULL, method=c("Poisson","DPP"), ...) {
+  method <- match.arg(method)
   if(!identical(X$family$name, "pairwise")) stop("Only pairwise interactions are considered")
   
   if(is.null(beta)||is.null(interaction.coef)){

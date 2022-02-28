@@ -5,7 +5,9 @@
 #'
 
 
-intensity.ppm <- function(X, method="Poisson",...) {
+intensity.ppm <- function(X, method = c("Poisson", "DPP"),...) {
+  method <- match.arg(method)
+  
   if(!identical(valid.ppm(X), TRUE)) {
     warning("Model is invalid - projecting it")
     X <- project.ppm(X)
@@ -41,10 +43,10 @@ intensity.ppm <- function(X, method="Poisson",...) {
   ## apply approximation
   if(method=="Poisson"){lambda <- PoisSaddle(beta, fitin(X))}
   if(method=="DPP"){
-    if(!identical(inte$family$name, "pairwise") || !is.stationary(X)){
+    if(!identical(X$interaction$family$name, "pairwise") || !is.stationary(X)){
       stop("The DPP approximation is only available for stationary pairwise interaction models")
     }
-    lambda <- DPPSaddlePairwise(beta,fitin(X),interaction.coef)
+    lambda <- DPPSaddlePairwise(beta,fitin(X))
   }
   
   

@@ -7,7 +7,7 @@
   Approximates the intensity of a Gibbs pairwise-interaction model.
 }
 \usage{
-  \method{intensity}{ppm}(X, beta=NULL,interaction.coef=NULL,method=c("Poisson","DPP"), \dots)
+  \method{intensity}{interact}(X, beta=NULL,interaction.coef=NULL,method=c("Poisson","DPP"), \dots)
 }
 \arguments{
   \item{X}{
@@ -63,9 +63,9 @@
   If \code{X} is another pairwise-interaction Gibbs point process model and \code{method="Poisson"}, the intensity is
   computed approximately using the Poisson-saddlepoint approximation
   (Baddeley and Nair, 2012a, 2012b).
-  If \code{method="DPP"}, the approximation is based on (Coeurjolly and Lavancier, 2018), resulting to a better 
-  approximation of the intensity. This method is only available for stationary models (\code{beta} is a numerical value). 
-  
+   If \code{method="DPP"}, the approximation is based on (Coeurjolly and Lavancier, 2018), resulting to a better 
+  approximation of the intensity for repulsive interactions. This method is only available for stationary models (\code{beta} is a numerical value) and requires both the interaction range and the hardcore parameter. If not supplied, the interaction range is approximated and the hardcore parameter is set to 0. 
+ 
   For a non-stationary Gibbs model (\code{beta} is a pixel image), the 
   pseudostationary solution (Baddeley and Nair, 2012b;
                              Anderssen et al, 2014) is used. The result is a pixel image,

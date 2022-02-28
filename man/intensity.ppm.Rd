@@ -14,7 +14,7 @@
     A fitted point process model (object of class \code{"ppm"}).
   }
   \item{method}{
-    The approximation method for Gibbs model. By defaut the Poisson-saddlepoint approximation is used \code{method="Poisson"}. The DPP approximation \code{method="DPP"} is available for stationary pairwise-interaction models.
+    The approximation method for Gibbs model. By defaut the Poisson-saddlepoint approximation is used (\code{method="Poisson"}). The DPP approximation (\code{method="DPP"}) is available for stationary pairwise-interaction models.
   }
   \item{\dots}{
     Arguments passed to \code{\link{predict.ppm}} in some cases.
