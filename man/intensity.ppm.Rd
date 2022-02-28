@@ -84,7 +84,7 @@
 }
 \seealso{
   \code{\link{intensity}},
-  \code{\link{intensity.ppp}}
+  \code{\link{intensity.ppp}},
   \code{\link{intensity.interact}}
 }
 \examples{
