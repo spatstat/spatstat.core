@@ -485,112 +485,130 @@ local({
 reset.spatstat.options()
 
 local({
-  #' Kmeasure, second.moment.engine
-  #' Expansion of window
-  Zno  <- Kmeasure(redwood, sigma=0.2, expand=FALSE)
-  Zyes <- Kmeasure(redwood, sigma=0.2, expand=TRUE)
-  #' All code blocks
-  sigmadouble <- rep(0.1, 2)
-  diagmat <- diag(sigmadouble^2)
-  generalmat <- matrix(c(1, 0.5, 0.5, 1)/100, 2, 2)
-  Z <- Kmeasure(redwood, sigma=sigmadouble)
-  Z <- Kmeasure(redwood, varcov=diagmat)
-  Z <- Kmeasure(redwood, varcov=generalmat)
-  A <- second.moment.calc(redwood, 0.1, what="all", debug=TRUE)
-  B <- second.moment.calc(redwood, varcov=diagmat,    what="all")
-  B <- second.moment.calc(redwood, varcov=diagmat,    what="all")
-  D <- second.moment.calc(redwood, varcov=generalmat, what="all")
-  PR <- pixellate(redwood)
-  DRno  <- second.moment.calc(PR, 0.2, debug=TRUE, expand=FALSE,
+  if(ALWAYS) {
+    #' Kmeasure, second.moment.engine
+    #' Expansion of window
+    Zno  <- Kmeasure(redwood, sigma=0.2, expand=FALSE)
+    Zyes <- Kmeasure(redwood, sigma=0.2, expand=TRUE)
+    #' All code blocks
+    sigmadouble <- rep(0.1, 2)
+    diagmat <- diag(sigmadouble^2)
+    generalmat <- matrix(c(1, 0.5, 0.5, 1)/100, 2, 2)
+    Z <- Kmeasure(redwood, sigma=sigmadouble)
+    Z <- Kmeasure(redwood, varcov=diagmat)
+    Z <- Kmeasure(redwood, varcov=generalmat)
+    A <- second.moment.calc(redwood, 0.1, what="all", debug=TRUE)
+    B <- second.moment.calc(redwood, varcov=diagmat,    what="all")
+    B <- second.moment.calc(redwood, varcov=diagmat,    what="all")
+    D <- second.moment.calc(redwood, varcov=generalmat, what="all")
+    PR <- pixellate(redwood)
+    DRno  <- second.moment.calc(PR, 0.2, debug=TRUE, expand=FALSE,
+                                npts=npoints(redwood), obswin=Window(redwood))
+    DRyes <- second.moment.calc(PR, 0.2, debug=TRUE, expand=TRUE,
+                                npts=npoints(redwood), obswin=Window(redwood))
+    DR2 <- second.moment.calc(solist(PR, PR), 0.2, debug=TRUE, expand=TRUE,
                               npts=npoints(redwood), obswin=Window(redwood))
-  DRyes <- second.moment.calc(PR, 0.2, debug=TRUE, expand=TRUE,
-                              npts=npoints(redwood), obswin=Window(redwood))
-  DR2 <- second.moment.calc(solist(PR, PR), 0.2, debug=TRUE, expand=TRUE,
-                            npts=npoints(redwood), obswin=Window(redwood))
-  Gmat <- generalmat * 100
-  isoGauss <- function(x,y) {dnorm(x) * dnorm(y)}
-  ee <- evaluate2Dkernel(isoGauss, runif(10), runif(10),
-                         varcov=Gmat, scalekernel=TRUE)
-  isoGaussIm <- as.im(isoGauss, square(c(-3,3)))
-  gg <- evaluate2Dkernel(isoGaussIm, runif(10), runif(10),
-                         varcov=Gmat, scalekernel=TRUE)
-  ## experimental code
-  op <- spatstat.options(developer=TRUE)
-  DR <- density(redwood, 0.1)
-  spatstat.options(op)
-})
-
-local({
-  #' bandwidth selection
-  op <- spatstat.options(n.bandwidth=8)
-  bw.diggle(cells) 
-  bw.diggle(cells, method="interpreted") # undocumented test
-#  bw.relrisk(urkiola, hmax=20) is tested in man/bw.relrisk.Rd
-  bw.relrisk(urkiola, hmax=20, method="leastsquares")
-  bw.relrisk(urkiola, hmax=20, method="weightedleastsquares")
-  ZX <- density(swedishpines, at="points")
-  bw.pcf(swedishpines, lambda=ZX)
-  bw.pcf(swedishpines, lambda=ZX,
-         bias.correct=FALSE, simple=FALSE, cv.method="leastSQ")
-  spatstat.options(op)
-})
-
-local({
-  #' code in kernels.R
-  kernames <- c("gaussian", "rectangular", "triangular",
-                "epanechnikov", "biweight", "cosine", "optcosine")
-  X <- rnorm(20)
-  U <- runif(20)
-  for(ker in kernames) {
-    dX <- dkernel(X, ker)
-    fX <- pkernel(X, ker)
-    qU <- qkernel(U, ker)
-    m0 <- kernel.moment(0, 0, ker)
-    m1 <- kernel.moment(1, 0, ker)
-    m2 <- kernel.moment(2, 0, ker)
-    m3 <- kernel.moment(3, 0, ker)
+    Gmat <- generalmat * 100
+    isoGauss <- function(x,y) {dnorm(x) * dnorm(y)}
+    ee <- evaluate2Dkernel(isoGauss, runif(10), runif(10),
+                           varcov=Gmat, scalekernel=TRUE)
+    isoGaussIm <- as.im(isoGauss, square(c(-3,3)))
+    gg <- evaluate2Dkernel(isoGaussIm, runif(10), runif(10),
+                           varcov=Gmat, scalekernel=TRUE)
+    ## experimental code
+    op <- spatstat.options(developer=TRUE)
+    DR <- density(redwood, 0.1)
+    spatstat.options(op)
   }
 })
 
 local({
-  ## idw
-  Z <- idw(longleaf, power=4)
-  Z <- idw(longleaf, power=4, se=TRUE)
-  ZX <- idw(longleaf, power=4, at="points")
-  ZX <- idw(longleaf, power=4, at="points", se=TRUE)
-  ## dodgy code blocks in densityVoronoi.R
-  A <- adaptive.density(nztrees, nrep=2, f=0.5, counting=TRUE)
-  B <- adaptive.density(nztrees, nrep=2, f=0.5, counting=TRUE, fixed=TRUE)
-  D <- adaptive.density(nztrees, nrep=2, f=0.5, counting=FALSE)
-  E <- adaptive.density(nztrees, nrep=2, f=0.5, counting=FALSE, fixed=TRUE)
-  #' adaptive kernel estimation
-  d10 <- nndist(nztrees, k=10)
-  d10fun <- distfun(nztrees, k=10)
-  d10im  <- as.im(d10fun)
-  uN <- 2 * runif(npoints(nztrees))
-  AA <- densityAdaptiveKernel(nztrees, bw=d10)
-  BB <- densityAdaptiveKernel(nztrees, bw=d10, weights=uN)
-  DD <- densityAdaptiveKernel(nztrees, bw=d10fun, weights=uN)
-  EE <- densityAdaptiveKernel(nztrees, bw=d10im, weights=uN)
+  if(FULLTEST) {
+    #' bandwidth selection
+    op <- spatstat.options(n.bandwidth=8)
+    bw.diggle(cells) 
+    bw.diggle(cells, method="interpreted") # undocumented test
+    ##  bw.relrisk(urkiola, hmax=20) is tested in man/bw.relrisk.Rd
+    bw.relrisk(urkiola, hmax=20, method="leastsquares")
+    bw.relrisk(urkiola, hmax=20, method="weightedleastsquares")
+    ZX <- density(swedishpines, at="points")
+    bw.pcf(swedishpines, lambda=ZX)
+    bw.pcf(swedishpines, lambda=ZX,
+           bias.correct=FALSE, simple=FALSE, cv.method="leastSQ")
+    spatstat.options(op)
+  }
 })
 
 local({
-  ## unnormdensity
-  x <- rnorm(20) 
-  d0 <- unnormdensity(x, weights=rep(0, 20))
-  dneg <- unnormdensity(x, weights=c(-runif(19), 0))
+  if(FULLTEST) {
+    #' code in kernels.R
+    kernames <- c("gaussian", "rectangular", "triangular",
+                  "epanechnikov", "biweight", "cosine", "optcosine")
+    X <- rnorm(20)
+    U <- runif(20)
+    for(ker in kernames) {
+      dX <- dkernel(X, ker)
+      fX <- pkernel(X, ker)
+      qU <- qkernel(U, ker)
+      m0 <- kernel.moment(0, 0, ker)
+      m1 <- kernel.moment(1, 0, ker)
+      m2 <- kernel.moment(2, 0, ker)
+      m3 <- kernel.moment(3, 0, ker)
+    }
+  }
+})
 
-  ## cases of 'intensity' etc
-  a <- intensity(amacrine, weights=expression(x))
-  SA <- split(amacrine)
-  a <- intensity(SA, weights=expression(x))
-  a <- intensity(SA, weights=amacrine$x)
-  a <- intensity(ppm(amacrine ~ 1))
+local({
+  if(FULLTEST) {
+    ## idw
+    Z <- idw(longleaf, power=4)
+    Z <- idw(longleaf, power=4, se=TRUE)
+    ZX <- idw(longleaf, power=4, at="points")
+    ZX <- idw(longleaf, power=4, at="points", se=TRUE)
+  }
+  if(ALWAYS) {
+    ## former bug in densityVoronoi.ppp 
+    X <- redwood[1:2]
+    A <- densityVoronoi(X, f=0.51, counting=FALSE, fixed=FALSE, nrep=50, verbose=FALSE)
+    ## dodgy code blocks in densityVoronoi.R
+    A <- adaptive.density(nztrees, nrep=2, f=0.5, counting=TRUE)
+    B <- adaptive.density(nztrees, nrep=2, f=0.5, counting=TRUE, fixed=TRUE)
+    D <- adaptive.density(nztrees, nrep=2, f=0.5, counting=FALSE)
+    E <- adaptive.density(nztrees, nrep=2, f=0.5, counting=FALSE, fixed=TRUE)
+  }
+  if(FULLTEST) {
+    #' adaptive kernel estimation
+    d10 <- nndist(nztrees, k=10)
+    d10fun <- distfun(nztrees, k=10)
+    d10im  <- as.im(d10fun)
+    uN <- 2 * runif(npoints(nztrees))
+    AA <- densityAdaptiveKernel(nztrees, bw=d10)
+    BB <- densityAdaptiveKernel(nztrees, bw=d10, weights=uN)
+    DD <- densityAdaptiveKernel(nztrees, bw=d10fun, weights=uN)
+    EE <- densityAdaptiveKernel(nztrees, bw=d10im, weights=uN)
+  }
+})
 
-  ## check infrastructure for 'densityfun'
-  f <- densityfun(cells, 0.05)
-  Z <- as.im(f)
-  Z <- as.im(f, W=square(0.5))
+local({
+  if(ALWAYS) {
+    ## unnormdensity
+    x <- rnorm(20) 
+    d0 <- unnormdensity(x, weights=rep(0, 20))
+    dneg <- unnormdensity(x, weights=c(-runif(19), 0))
+  }
+  if(FULLTEST) {
+    ## cases of 'intensity' etc
+    a <- intensity(amacrine, weights=expression(x))
+    SA <- split(amacrine)
+    a <- intensity(SA, weights=expression(x))
+    a <- intensity(SA, weights=amacrine$x)
+    a <- intensity(ppm(amacrine ~ 1))
+
+    ## check infrastructure for 'densityfun'
+    f <- densityfun(cells, 0.05)
+    Z <- as.im(f)
+    Z <- as.im(f, W=square(0.5))
+  }
 })
 
 reset.spatstat.options()

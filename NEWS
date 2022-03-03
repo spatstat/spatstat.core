@@ -1,14 +1,20 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.002
+        CHANGES IN spatstat.core VERSION 2.4-0.003
 
 OVERVIEW
 
-    o Internal improvements.
+    o Internal improvements and bug fixes.
 
 BUG FIXES
 
     o density.ppp
     Crashed if the observation window had zero area.
+    Fixed.
+
+    o dirichletVoronoi.ppp
+    Crashed randomly, with obscure error messages from 'im' or 'eval.im',
+    when argument 'f' had a small value.
+    [Spotted by Suman Rakshit.]
     Fixed.
 
         CHANGES IN spatstat.core VERSION 2.4-0

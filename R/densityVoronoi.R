@@ -1,7 +1,7 @@
 #'
 #'  densityVoronoi.R
 #'
-#'  $Revision: 1.19 $   $Date: 2022/01/04 05:30:06 $
+#'  $Revision: 1.21 $   $Date: 2022/03/03 08:01:52 $
 #'
 
 densityVoronoi <- function(X, ...) {
@@ -54,8 +54,8 @@ densityVoronoi.ppp <- function(X, f=1, ...,
       cat(paste("Computing", nrep, "intensity estimates..."))
     state <- list()
     for(i in seq_len(nrep)) {
-      estimate <- densityVoronoi(X, f, ...,
-                                 counting=counting, fixed=fixed, nrep=1)
+      estimate <- densityVoronoi.ppp(X, f, ...,
+                                     counting=counting, fixed=fixed, nrep=1)
       total <- eval.im(total + estimate)
       if(verbose) state <- progressreport(i, nrep, state=state)
     }
@@ -63,6 +63,7 @@ densityVoronoi.ppp <- function(X, f=1, ...,
     average <- eval.im(total/nrep)
     return(average)
   }
+  ## ------ This is the main calculation -------
   ## perform thinning
   if(!fixed) {
     itess <- thinjump(nX, f)
@@ -73,6 +74,13 @@ densityVoronoi.ppp <- function(X, f=1, ...,
   }
   Xtess <- X[itess]
   if(duped) Xtess <- unique(Xtess)
+  ## handle trivial cases
+  nXT <- npoints(Xtess)
+  if(nXT <= 1) {
+    W <- Window(X)
+    if(nXT == 0) return(as.im(0, W, ...))         # dirichlet(Xtess) undefined
+    if(nXT == 1) return(as.im(1/area(W), W, ...)) # efficiency
+  }
   ## make tessellation
   tes <- dirichlet(Xtess)
   ## estimate intensity in each tile
