@@ -1,11 +1,19 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.005
+        CHANGES IN spatstat.core VERSION 2.4-0.006
 
 OVERVIEW
 
     o Extract more information about a point process model.
 
+    o Experimental code to represent (theoretical) point process models
+    
     o Internal improvements and bug fixes.
+
+NEW CLASSES
+
+    o zgibbsmodel
+    Experimental. An object of class 'zgibbsmodel' represents a Gibbs point process model
+    with specified parameter values.
 
 NEW FUNCTIONS
 
@@ -14,7 +22,17 @@ NEW FUNCTIONS
 
     o interactionorder
     Extract the order of interpoint interaction of a point process model.
+
+    o zgibbsmodel
+    Experimental. Create an object of class 'zgibbsmodel' with specified parameter values.
+
+    o print.zgibbsmodel
+    Experimental. Print an object of class 'zgibbsmodel'.
     
+    o interactionorder.zgibbsmodel, is.poisson.zgibbsmodel, is.stationary.zgibbsmodel
+    Experimental. Methods for class 'zgibbsmodel'
+
+
 BUG FIXES
 
     o density.ppp
