@@ -91,7 +91,7 @@ dg.progress(X, fun = Lest, \dots,
   This test depends on the choice of an interval of
   distance values (the argument \code{rinterval}).
   A \emph{progress plot} or \emph{envelope representation}
-  of the test (Baddeley et al, 2014) is a plot of the
+  of the test (Baddeley et al, 2014, 2015; Baddeley, Rubak and Turner, 2015) is a plot of the
   test statistic (and the corresponding critical value) against the length of
   the interval \code{rinterval}.
   
@@ -150,7 +150,11 @@ dg.progress(X, fun = Lest, \dots,
   Baddeley, A., Hardegen, A., Lawrence, L., 
   Milne, R.K., Nair, G.M. and Rakshit, S. (2015)
   Pushing the envelope: extensions of graphical
-  Monte Carlo tests. Submitted for publication.
+  Monte Carlo tests. Unpublished manuscript.
+
+  Baddeley, A., Rubak, E. and Turner, R. (2015)
+  \emph{Spatial Point Patterns: Methodology and Applications with R}.
+  Chapman and Hall/CRC Press, Boca Raton, FL.
 
   Dao, N.A. and Genton, M. (2014)
   A Monte Carlo adjusted goodness-of-fit test for
@@ -159,16 +163,9 @@ dg.progress(X, fun = Lest, \dots,
   \bold{23}, 497--517.
 }
 \author{
-  \adrian, Andrew Hardegen, Tom Lawrence,
+  Adrian Baddeley, Andrew Hardegen, Tom Lawrence,
   Robin Milne, Gopalan Nair and Suman Rakshit.
-  Implemented by
-  \adrian
-  
-  
-  \rolf
-  
-  and \ege
-  
+  Implemented by \spatstatAuthors.
 }
 \seealso{
   \code{\link{dg.test}},

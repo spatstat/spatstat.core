@@ -78,7 +78,8 @@ dg.envelope(X, \dots,
 \details{
   Computes global simulation envelopes corresponding to the
   Dao-Genton (2014) adjusted Monte Carlo goodness-of-fit test.
-  The envelopes are described in Baddeley et al (2015).
+  The envelopes were developed in Baddeley et al (2015) and
+  described in Baddeley, Rubak and Turner (2015).
   
   If \code{X} is a point pattern, the null hypothesis is CSR.
 
@@ -101,19 +102,16 @@ dg.envelope(X, \dots,
   Baddeley, A., Hardegen, A., Lawrence, L., 
   Milne, R.K., Nair, G.M. and Rakshit, S. (2015)
   Pushing the envelope: extensions of graphical
-  Monte Carlo tests. Submitted for publication.
+  Monte Carlo tests. Unpublished manuscript.
+
+  Baddeley, A., Rubak, E. and Turner, R. (2015)
+  \emph{Spatial Point Patterns: Methodology and Applications with R}.
+  Chapman and Hall/CRC Press, Boca Raton, FL.
 }
 \author{
-  \adrian, Andrew Hardegen, Tom Lawrence,
+  Adrian Baddeley, Andrew Hardegen, Tom Lawrence,
   Robin Milne, Gopalan Nair and Suman Rakshit.
-  Implemented by
-  \adrian
-  
-  
-  \rolf
-  
-  and \ege
-  
+  Implemented by \spatstatAuthors.
 }
 \seealso{
   \code{\link{dg.test}},

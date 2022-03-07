@@ -217,7 +217,7 @@ hardcoredist.fii <- function(x, ..., epsilon=0) {
   h <- hardcore(inte, coeffs[Vnames], epsilon=epsilon)
   if(is.na(h) || is.null(h))
     h <- 0
-  return(h)
+  return(as.numeric(h))
 }
 
 plot.fii <- function(x, ...) {

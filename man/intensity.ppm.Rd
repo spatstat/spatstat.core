@@ -35,11 +35,11 @@
 
   If \code{X} is another Gibbs point process model, the intensity is
   computed approximately using the Poisson-saddlepoint approximation
-  (Baddeley and Nair, 2012a, 2012b, 2016; Anderssen et al, 2014). 
+  (Baddeley and Nair, 2012a, 2012b, 2017; Anderssen et al, 2014). 
   The approximation is currently available for pairwise-interaction
   models (Baddeley and Nair, 2012a, 2012b)
   and for the area-interaction model and Geyer saturation model
-  (Baddeley and Nair, 2016).
+  (Baddeley and Nair, 2017).
 
   For a non-stationary Gibbs model, the 
   pseudostationary solution (Baddeley and Nair, 2012b;
@@ -66,10 +66,11 @@
   \emph{Stat} \bold{1}, 1, 18--30.
   \code{DOI: 10.1002/sta4.5}
 
-  Baddeley, A. and Nair, G. (2016)
-  Poisson-saddlepoint approximation for spatial point processes
-  with infinite order interaction.
-  Submitted for publication.
+  Baddeley, A. and Nair, G. (2017)
+  Poisson-saddlepoint approximation for Gibbs point
+  processes with infinite-order interaction: in memory
+  of Peter Hall.
+  \emph{Journal of Applied Probability} \bold{54}, 4, 1008--1026.
 }
 \seealso{
   \code{\link{intensity}},

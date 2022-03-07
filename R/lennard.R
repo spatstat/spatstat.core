@@ -101,7 +101,7 @@ LennardJones <- local({
            if(anyNA(coeffs)) return(NA)
            sig0 <- self$par$sigma0 
            if(is.na(sig0) || is.null(sig0)) sig0 <- 1
-           theta1 <- abs(coeffs[1L])
+           theta1 <- abs(as.numeric(coeffs[1L]))
            h <- sig0 * (-log(epsilon)/theta1)^(1/12)
            return(h)
          },

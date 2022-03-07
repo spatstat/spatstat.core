@@ -93,7 +93,7 @@
   This test depends on the choice of an interval of
   distance values (the argument \code{rinterval}).
   A \emph{significance trace} (Bowman and Azzalini, 1997;
-  Baddeley et al, 2014, 2015)
+  Baddeley et al, 2014, 2015; Baddeley, Rubak and Turner, 2015)
   of the test is a plot of the \eqn{p}-value
   obtained from the test against the length of
   the interval \code{rinterval}.
@@ -149,7 +149,11 @@
   Baddeley, A., Hardegen, A., Lawrence, L., 
   Milne, R.K., Nair, G.M. and Rakshit, S. (2015)
   Pushing the envelope: extensions of graphical
-  Monte Carlo tests. Submitted for publication.
+  Monte Carlo tests. Unpublished manuscript.
+
+  Baddeley, A., Rubak, E. and Turner, R. (2015)
+  \emph{Spatial Point Patterns: Methodology and Applications with R}.
+  Chapman and Hall/CRC Press, Boca Raton, FL.
 
   Bowman, A.W. and Azzalini, A. (1997) 
   \emph{Applied smoothing techniques for data analysis: 
@@ -163,10 +167,9 @@
   \bold{23}, 497--517.
 }
 \author{
-  \adrian, Andrew Hardegen, Tom Lawrence,
+  Adrian Baddeley, Andrew Hardegen, Tom Lawrence,
   Robin Milne, Gopalan Nair and Suman Rakshit.
-  Implemented by
-  \spatstatAuthors.
+  Implemented by \spatstatAuthors.
 }
 \seealso{
   \code{\link{dg.test}} for the Dao-Genton test,
