@@ -2,7 +2,7 @@
 #
 #    multistrhard.S
 #
-#    $Revision: 2.39 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 2.40 $	$Date: 2022/03/07 02:20:59 $
 #
 #    The multitype Strauss/hardcore process
 #
@@ -293,6 +293,11 @@ doMultiStraussHard <- local({
              return(0)
            else
              return(max(c(r[ractive],h[hactive])))
+         },
+         hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+           h <- self$par$hradii
+           active <- !is.na(h)
+           return(max(0, h[active]))
          },
          version=NULL # to be added
          )

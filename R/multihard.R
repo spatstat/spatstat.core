@@ -169,6 +169,10 @@ MultiHard <- local({
          h <- self$par$hradii
          return(max(0, h, na.rm=TRUE))
        },
+       hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+         h <- self$par$hradii
+         return(h)
+       },
        version=NULL # fix later
   )
   class(BlankMH) <- "interact"

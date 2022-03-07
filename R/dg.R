@@ -1,7 +1,7 @@
 #
 #     dg.S
 #
-#    $Revision: 1.23 $	$Date: 2021/01/07 03:08:41 $
+#    $Revision: 1.24 $	$Date: 2022/03/07 02:05:33 $
 #
 #     Diggle-Gratton pair potential
 #
@@ -147,6 +147,9 @@ DiggleGratton <- local({
            if(abs(kappa) <= epsilon)
              return(delta)
            else return(rho)
+         },
+         hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+           return(self$par$delta)
          },
        version=NULL, # evaluated later
        # fast evaluation is available for the border correction only

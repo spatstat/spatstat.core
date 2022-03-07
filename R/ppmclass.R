@@ -1034,6 +1034,10 @@ domain.ppm <- Window.ppm <- function(X, ..., from=c("points", "covariates")) {
   as.owin(X, ..., from=from)
 }
 
+hardcoredist.ppm <- function(x, ..., epsilon=0) {
+  hardcoredist.fii(fitin(x), ..., epsilon=epsilon)
+}
+
 ## change the coefficients in a ppm or other model
 
 tweak.coefs <- function(model, new.coef) {

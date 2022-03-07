@@ -2,7 +2,7 @@
 #
 #    fiksel.R
 #
-#    $Revision: 1.19 $	$Date: 2021/01/07 03:08:41 $
+#    $Revision: 1.20 $	$Date: 2022/03/07 02:05:50 $
 #
 #    Fiksel interaction 
 #    
@@ -133,6 +133,9 @@ Fiksel <- local({
              return(hc)
            else
              return(r)
+         },
+         hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+           return(self$par$hc)
          },
        version=NULL, # evaluated later
        # fast evaluation is available for the border correction only

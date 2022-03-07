@@ -15,6 +15,7 @@
 inforder.family <-
   list(
        name  = "inforder",
+       order = Inf,
        print = function(self) {
          cat("Family of infinite-order interactions\n")
        },

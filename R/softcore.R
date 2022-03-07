@@ -2,7 +2,7 @@
 #
 #    softcore.S
 #
-#    $Revision: 2.16 $   $Date: 2018/03/15 07:37:41 $
+#    $Revision: 2.17 $   $Date: 2022/03/07 02:31:44 $
 #
 #    Soft core processes.
 #
@@ -93,6 +93,18 @@ Softcore <- local({
          sig0  <- self$par$sigma0
          if(is.na(sig0)) sig0 <- 1
          return(sig0 * (theta/epsilon)^(kappa/2))
+       },
+       hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+         # distance d below which interaction factor <= epsilon
+         if(anyNA(coeffs) || epsilon == 0)
+           return(0)
+         theta <- abs(as.numeric(coeffs[1]))
+         if(theta == 0) return(0)
+         kappa <- self$par$kappa
+         sig0  <- self$par$sigma0
+         if(is.na(sig0)) sig0 <- 1
+         h <- sig0 * (-log(epsilon)/theta)^(-kappa/2)
+         return(h)
        },
        Mayer=function(coeffs, self) {
          # second Mayer cluster integral

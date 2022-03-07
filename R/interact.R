@@ -2,7 +2,7 @@
 #	interact.S
 #
 #
-#	$Revision: 1.30 $	$Date: 2020/11/30 10:19:35 $
+#	$Revision: 1.32 $	$Date: 2022/03/07 04:00:24 $
 #
 #	Class 'interact' representing the interpoint interaction
 #               of a point process model
@@ -310,10 +310,30 @@ as.interact.interact <- function(object) {
   return(object)
 }
 
-interactionfamilyname <- function(x) {
-  if(inherits(x, "isf")) return(x$name)
-  x <- as.interact(x)
-  return(x$family$name)
+as.isf <- function(object) {
+  if(inherits(object, "isf")) return(object)
+  object <- as.interact(object)
+  return(object$family)
+}
+
+interactionfamilyname <- function(object) { as.isf(object)$name }
+
+interactionorder <- function(object) {
+  UseMethod("interactionorder")
+}
+
+interactionorder.isf <- function(object) {
+  return(object$order %orifnull% Inf)
+}
+
+interactionorder.interact <- function(object) {
+  ## order may be specified in the interaction object itself (e.g. in a hybrid, or Poisson)
+  ## but is usually determined by the interaction family
+  object$order %orifnull% interactionorder(object$family)
+}
+
+interactionorder.fii <- interactionorder.ppm <- function(object) {
+  interactionorder(as.interact(object))
 }
 
 # Extract version string from interact object
@@ -323,7 +343,6 @@ versionstring.interact <- function(object) {
   v <- object$version
   return(v)  # NULL before 1.11-0
 }
-
 
 #### internal code for streamlining initialisation of interactions
 #

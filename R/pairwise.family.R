@@ -15,6 +15,7 @@
 pairwise.family <-
   list(
        name  = "pairwise",
+       order = 2,
        print = function(self) {
          cat("Pairwise interaction family\n")
        },

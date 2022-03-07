@@ -18,6 +18,7 @@
 pairsat.family <-
   list(
          name  = "saturated pairwise",
+         order = Inf,
          print = function(self) {
                       cat("Saturated pairwise interaction family\n")
          },

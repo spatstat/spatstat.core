@@ -98,6 +98,9 @@ StraussHard <- local({
            else
              return(r)
          },
+         hardcore = function(self, ...) {
+           return(self$par$hc)
+         },
        version=NULL, # evaluated later
        # fast evaluation is available for the border correction only
        can.do.fast=function(X,correction,par) {

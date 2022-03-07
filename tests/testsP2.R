@@ -77,7 +77,7 @@ local({
 #'
 #'   Class support for ppm
 #'
-#'   $Revision: 1.8 $ $Date: 2020/12/04 08:24:43 $
+#'   $Revision: 1.9 $ $Date: 2022/03/07 03:26:09 $
 
 if(FULLTEST) {
 local({
@@ -135,7 +135,10 @@ local({
   is.expandable(fitf)
   fit0 <- update(fitZ, . ~ 1)
   anova(fit0, fitZ, override=TRUE)
-
+  interactionfamilyname(fat)
+  interactionorder(fat)
+  hardcoredist(fat)
+  
   #' (5) miscellaneous
   
   ## example from Robert Aue - handling offsets
@@ -144,6 +147,11 @@ local({
   fit <- ppm(X ~ 1, GH)
   valid.ppm(fit)
 
+  #' hard core distance of hybrid
+  hardcoredist(fit)
+  #' interaction order of hybrid
+  interactionorder(fit)
+  
   #' case of boundingbox
   boundingbox(cells, ppm(cells ~ 1))
 })

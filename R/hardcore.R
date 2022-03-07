@@ -2,7 +2,7 @@
 #
 #    hardcore.S
 #
-#    $Revision: 1.15 $	$Date: 2018/03/19 14:44:53 $
+#    $Revision: 1.16 $	$Date: 2022/03/07 02:06:12 $
 #
 #    The Hard core process
 #
@@ -73,8 +73,10 @@ Hardcore <- local({
            return(NULL)
          },
          irange = function(self, coeffs=NA, epsilon=0, ...) {
-           hc <- self$par$hc
-           return(hc)
+           return(self$par$hc)
+         },
+         hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+           return(self$par$hc)
          },
        version=NULL, # evaluated later
        # fast evaluation is available for the border correction only

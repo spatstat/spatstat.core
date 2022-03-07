@@ -2,7 +2,7 @@
 #
 #    hybrid.R
 #
-#    $Revision: 1.9 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 1.12 $	$Date: 2022/03/07 03:35:48 $
 #
 #    Hybrid of several interactions
 #
@@ -53,12 +53,15 @@ Hybrid <- local({
     haveInf <- lapply(interlist, getElement, name="hasInf")
     haveInf <- !sapply(haveInf, identical, y=FALSE)
     hasInf <- any(haveInf)
+    #' determine interaction order
+    maxorder <- max(sapply(interlist, interactionorder))
     #' build object
     out <- 
       list(
         name     = "Hybrid interaction",
         creator  = "Hybrid",
-        family    = hybrid.family,
+        family   = hybrid.family,
+        order    = maxorder, # Overrides family$order
         pot      = NULL,
         par      = interlist,
         parnames = names(interlist),
@@ -252,6 +255,50 @@ Hybrid <- local({
               answer <- max(answer, resultI)
             }
           }
+          return(answer)
+        },
+        hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+          interlist <- self$par
+          n <- length(interlist)
+          results <- vector(mode="list", length=n)
+          for(i in seq_len(n)) {
+            interI <- interlist[[i]]
+            nameI  <- names(interlist)[[i]]
+            nameI. <- paste(nameI, ".", sep="")
+            #' find coefficients with prefix that exactly matches nameI.
+            if(all(is.na(coeffs)))
+              Crelevant <- NA
+            else {
+              Cname  <- names(coeffs)
+              prefixlength <- nchar(nameI.)
+              Cprefix <- substr(Cname, 1, prefixlength)
+              relevant <- (Cprefix == nameI.)
+              #' extract them
+              Crelevant <- coeffs[relevant]
+              names(Crelevant) <-
+                substr(Cname[relevant], prefixlength+1, max(nchar(Cname)))
+            }
+            #' compute hard core for component i
+            hardI <- interI$hardcore
+            if(is.function(hardI)) 
+              results[[i]] <- hardI(interI,
+                                    coeffs=Crelevant, epsilon=epsilon, ...)
+          }
+          ## collate answers
+          results <- results[!sapply(results, is.null)]
+          if(length(results) == 0)
+            return(0)
+          values <- Reduce(function(...) pmax(..., na.rm=TRUE), results)
+          dims <- lapply(results, dim)
+          dims <- dims[!sapply(dims, is.null)]
+          if(length(dims) == 0)
+            return(values)
+          dims <- unique(dims)
+          if(length(dims) > 1)
+            stop("Incompatible matrix dimensions of hardcore distance matrices in hybrid")
+          d <- dims[[1]]
+          dn <- unique(lapply(results, dimnames))[[1]]
+          answer <- matrix(values, d[1], d[2], dimnames=dn)
           return(answer)
         },
         version=versionstring.spatstat()

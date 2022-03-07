@@ -1,7 +1,7 @@
 ##
 ##    hierhard.R
 ##
-##    $Revision: 1.4 $	$Date: 2018/03/15 07:37:41 $
+##    $Revision: 1.5 $	$Date: 2022/03/07 02:06:42 $
 ##
 ##    The hierarchical hard core process
 ##
@@ -170,7 +170,14 @@ HierHard <- local({
        },
        irange = function(self, coeffs=NA, epsilon=0, ...) {
          h <- self$par$hradii
-         return(max(0, h, na.rm=TRUE))
+         active <- !is.na(h) & self$par$archy$relation
+         return(max(0, h[active]))
+       },
+       hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+         h <- self$par$hradii
+         active <- !is.na(h) & self$par$archy$relation
+         h[!active] <- 0
+         return(h)
        },
        version=NULL # to be added
        )

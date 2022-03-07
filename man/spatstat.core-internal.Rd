@@ -11,6 +11,7 @@
 \alias{areadelta2}
 \alias{as.data.frame.bw.optim}
 \alias{as.data.frame.fv}
+\alias{as.isf}
 \alias{as.ppm.rppm}
 \alias{assemble.plot.objects}       
 \alias{augment.msr}
@@ -378,6 +379,7 @@ adjust.ratfv(f, columns, numfactor, denfactor)
 ang2rad(ang, unit, start, clockwise)
 areadelta2(X, r, \dots, sparseOK)
 assemble.plot.objects(xlim, ylim, \dots, lines, polygon)
+as.isf(object)
 \method{as.ppm}{rppm}(object)
 \method{as.data.frame}{bw.optim}(x, \dots)
 \method{as.data.frame}{fv}(x, \dots)
@@ -545,7 +547,7 @@ impliedpresence(tags, formula, df, extranames=character(0))
 impliedcoefficients(object, tag, new.coef)
 \method{influence}{ppmInfluence}(model, \dots)
 instantiate.interact(x, par)
-interactionfamilyname(x)
+interactionfamilyname(object)
 intermaker(f, blank)
 is.atomicQtest(x)
 \method{is.expandable}{ppm}(x)  

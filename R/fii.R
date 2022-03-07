@@ -199,6 +199,27 @@ reach.fii <- function(x, ..., epsilon=0) {
   return(ir)
 }
 
+hardcoredist <- function(x, ...) {
+  UseMethod("hardcoredist")
+}
+
+hardcoredist.fii <- function(x, ..., epsilon=0) {
+  inte <- x$interaction
+  coeffs <- x$coefs
+  Vnames <- x$Vnames
+  if(is.poisson.interact(inte))
+    return(0)
+  # get 'hardcore' function from interaction object
+  hardcore <- inte$hardcore
+  if(is.null(hardcore) || !is.function(hardcore))
+    return(0)
+  # apply 'hardcore' function using fitted coefficients
+  h <- hardcore(inte, coeffs[Vnames], epsilon=epsilon)
+  if(is.na(h) || is.null(h))
+    h <- 0
+  return(h)
+}
+
 plot.fii <- function(x, ...) {
   inte <- x$interaction
   if(is.poisson.interact(inte)) {

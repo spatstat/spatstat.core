@@ -2,7 +2,7 @@
 #
 #    poisson.S
 #
-#    $Revision: 1.8 $	$Date: 2015/10/21 09:06:57 $
+#    $Revision: 1.9 $	$Date: 2022/03/07 03:58:22 $
 #
 #    The Poisson process
 #
@@ -20,6 +20,7 @@ Poisson <- local({
     name     = "Poisson process",
     creator  = "Poisson",
     family   = NULL,
+    order    = 1,
     pot      = NULL,
     par      = NULL,
     parnames = NULL,

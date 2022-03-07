@@ -1,7 +1,7 @@
 ##
 ##    hierstrhard.R
 ##
-##    $Revision: 1.5 $	$Date: 2018/03/15 07:37:41 $
+##    $Revision: 1.6 $	$Date: 2022/03/07 02:07:02 $
 ##
 ##    The hierarchical Strauss-hard core process
 ##
@@ -287,6 +287,12 @@ HierStraussHard <- local({
            return(0)
          else
            return(max(c(r[ractive],h[hactive])))
+       },
+       hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+         h <- self$par$hradii
+         active <- !is.na(h) & self$par$archy$relation
+         h[!active] <- 0
+         return(h)
        },
        version=NULL # to be added
        )

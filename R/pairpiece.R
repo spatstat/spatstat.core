@@ -2,7 +2,7 @@
 #
 #    pairpiece.S
 #
-#    $Revision: 1.23 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 1.24 $	$Date: 2022/03/07 02:24:21 $
 #
 #    A pairwise interaction process with piecewise constant potential
 #
@@ -106,6 +106,15 @@ PairPiece <- local({
           if(!any(active))
             return(0)
           else return(max(r[active]))
+        },
+        hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+          r <- self$par$r
+          if(all(is.na(coeffs)))
+            return(0)
+          gamma <- (self$interpret)(coeffs, self)$param$gammas
+          gamma[is.na(gamma)] <- 1
+          prohibited <- (gamma <= epsilon)
+          return(max(0, r[prohibited]))
         },
        Mayer=function(coeffs, self) {
          # second Mayer cluster integral

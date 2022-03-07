@@ -15,6 +15,7 @@
 triplet.family <-
   list(
        name  = "triplet",
+       order = 3,
        print = function(self) {
          cat("Family of third-order interactions\n")
        },

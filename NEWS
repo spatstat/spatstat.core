@@ -1,10 +1,20 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.003
+        CHANGES IN spatstat.core VERSION 2.4-0.004
 
 OVERVIEW
 
+    o Extract more information about a point process model.
+
     o Internal improvements and bug fixes.
 
+NEW FUNCTIONS
+
+    o hardcoredist
+    Extract the hard core distance of a point process model.
+
+    o interactionorder
+    Extract the order of interpoint interaction of a point process model.
+    
 BUG FIXES
 
     o density.ppp

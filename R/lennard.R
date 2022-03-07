@@ -2,7 +2,7 @@
 #
 #    lennard.R
 #
-#    $Revision: 1.22 $	$Date: 2018/03/15 07:37:41 $
+#    $Revision: 1.23 $	$Date: 2022/03/07 02:19:22 $
 #
 #    Lennard-Jones potential
 #
@@ -95,6 +95,15 @@ LennardJones <- local({
            theta1 <- abs(coeffs[1L])
            theta2 <- abs(coeffs[2L])
            return(sig0 * max((theta1/epsilon)^(1/12), (theta2/epsilon)^(1/6)))
+         },
+         hardcore = function(self, coeffs=NA, epsilon=0, ...) {
+           if(epsilon == 0) return(0)
+           if(anyNA(coeffs)) return(NA)
+           sig0 <- self$par$sigma0 
+           if(is.na(sig0) || is.null(sig0)) sig0 <- 1
+           theta1 <- abs(coeffs[1L])
+           h <- sig0 * (-log(epsilon)/theta1)^(1/12)
+           return(h)
          },
        version=NULL # filled in later
   )
