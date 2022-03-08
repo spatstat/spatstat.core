@@ -42,6 +42,9 @@ jobs:
       - name: RandomFields from source
         run: ./run.sh install_github cran/RandomFieldsUtils cran/RandomFields
 
+      - name: Packages from spatstat family from source
+        run: ./run.sh install_github spatstat/spatstat.utils spatstat/spatstat.data spatstat/spatstat.geom spatstat/spatstat.random
+
       - name: Test
         run: ./run.sh run_tests
 
