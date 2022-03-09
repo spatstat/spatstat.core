@@ -2,7 +2,7 @@
 #
 #    pairwise.family.S
 #
-#    $Revision: 1.72 $	$Date: 2020/11/17 03:47:24 $
+#    $Revision: 1.74 $	$Date: 2022/03/09 01:54:53 $
 #
 #    The pairwise interaction family of point process models
 #
@@ -582,4 +582,62 @@ evalPairPotential <- function(X, P, E, pairpot, potpars, R) {
   }
   attr(result, "IsOffset") <- IsOffset
   return(result)
+}
+
+evalPairwiseTerm <- function(fint, d) {
+  ## very similar to pairwise.family$plot
+  verifyclass(fint, "fii")
+  inter <- fint$interaction
+  if(is.null(inter) || interactionorder(inter) != 2)
+    stop("This operation is only defined for pairwise interactions")
+   ## get fitted coefficients of interaction terms
+  ## and set coefficients of offset terms to 1
+  Vnames <- fint$Vnames
+  IsOffset <- fint$IsOffset
+  coeff <- rep.int(1, length(Vnames))
+  names(coeff) <- Vnames
+  coeff[!IsOffset] <- fint$coefs[Vnames[!IsOffset]]
+  ## 
+  pairpot <- inter$pot
+  potpars <- inter$par
+  types <- potpars$types
+  if(is.null(types)) {
+    ## values of interaction term at distances 'd'
+    dd <- matrix(d, ncol=1)
+    p <- pairpot(dd, potpars)
+    if(length(dim(p))==2)
+      p <- array(p, dim=c(dim(p),1), dimnames=NULL)
+    if(dim(p)[3] != length(coeff))
+      stop("Dimensions of potential do not match coefficient vector")
+    for(k in seq_len(dim(p)[3])) 
+      p[,,k] <- multiply.only.finite.entries( p[,,k] , coeff[k] )
+    z <- exp(apply(p, c(1,2), sum))
+    z <- as.numeric(z)
+  } else {
+    ## value of interaction terms between each pair of types
+    if(!is.factor(types))
+      types <- factor(types, levels=types)
+    m <- length(types)
+    nd <- length(d)
+    dd <- matrix(rep.int(d, m), nrow=nd * m, ncol=m)
+    tx <- rep.int(types, rep.int(nd, m))
+    ty <- types
+    p <- pairpot(dd, tx, ty, potpars)
+    if(length(dim(p))==2)
+      p <- array(p, dim=c(dim(p),1), dimnames=NULL)
+    if(dim(p)[3] != length(coeff))
+      stop("Dimensions of potential do not match coefficient vector")
+    for(k in seq_len(dim(p)[3]))
+      p[,,k] <- multiply.only.finite.entries( p[,,k] , coeff[k] )
+    y <- exp(apply(p, c(1,2), sum))
+    z <- matrix(1, nrow=nd, ncol=m * m)
+    colnames(z) <- as.character(outer(types, types, paste, sep=":"))
+    for(i in seq_len(m)) {
+      for(j in seq_len(m)) {
+        ## extract values of potential
+        z[ , j + (i-1) * m] <- y[tx == types[i], j]
+      }
+    }
+  }
+  return(z)
 }

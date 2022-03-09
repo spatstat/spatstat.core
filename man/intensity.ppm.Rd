@@ -7,7 +7,7 @@
   Computes the intensity of a fitted point process model.
 }
 \usage{
-\method{intensity}{ppm}(X, \dots)
+ \method{intensity}{ppm}(X, \dots, approx=c("Poisson", "DPP"))
 }
 \arguments{
   \item{X}{
@@ -16,6 +16,10 @@
   \item{\dots}{
     Arguments passed to \code{\link{predict.ppm}} in some cases.
     See Details.
+  }
+  \item{approx}{
+    Character string (partially matched) specifying the type of
+    approximation to the intensity for a non-Poisson model.
   }
 }
 \details{
@@ -33,19 +37,30 @@
   image is controlled by the arguments \code{\dots} which are passed
   to \code{\link{predict.ppm}}.)
 
-  If \code{X} is another Gibbs point process model, the intensity is
-  computed approximately using the Poisson-saddlepoint approximation
-  (Baddeley and Nair, 2012a, 2012b, 2017; Anderssen et al, 2014). 
-  The approximation is currently available for pairwise-interaction
-  models (Baddeley and Nair, 2012a, 2012b)
-  and for the area-interaction model and Geyer saturation model
-  (Baddeley and Nair, 2017).
+  If \code{X} is a Gibbs point process model that is not a Poisson model,
+  the intensity is computed approximately:
+  \itemize{
+    \item if \code{approx="Poisson"} (the default),
+    the intensity is computed  using the Poisson-saddlepoint approximation
+    (Baddeley and Nair, 2012a, 2012b, 2017; Anderssen et al, 2014).
+    This approximation is currently available for pairwise-interaction
+    models (Baddeley and Nair, 2012a, 2012b)
+    and for the area-interaction model and Geyer saturation model
+    (Baddeley and Nair, 2017).
 
-  For a non-stationary Gibbs model, the 
-  pseudostationary solution (Baddeley and Nair, 2012b;
-  Anderssen et al, 2014) is used. The result is a pixel image,
-  whose resolution is controlled by the arguments \code{\dots} which are passed
-  to \code{\link{predict.ppm}}.
+    If the model is non-stationary. the pseudostationary solution
+    (Baddeley and Nair, 2012b; Anderssen et al, 2014) is used.
+    The result is a pixel image,
+    whose resolution is controlled by the arguments \code{\dots}
+    which are passed to \code{\link{predict.ppm}}.
+    
+    \item if \code{approx="DPP"}, the intensity is calculated using
+    the approximation of (Coeurjolly and Lavancier, 2018) based on a
+    determinantal point process. This approximation is more accurate
+    than the Poisson saddlepoint approximation, for inhibitory
+    interactions. However the DPP approximation is only available
+    for stationary pairwise interaction models.
+  }
 }
 \value{
   A numeric value (if the model is stationary)
@@ -71,6 +86,11 @@
   processes with infinite-order interaction: in memory
   of Peter Hall.
   \emph{Journal of Applied Probability} \bold{54}, 4, 1008--1026.
+
+  Coeurjolly, J.-F. and Lavancier, F. (2018)
+  Approximation intensity for pairwise interaction Gibbs point processes
+  using determinantal point processes.
+  \emph{Electronic Journal of Statistics} \bold{12} 3181--3203.
 }
 \seealso{
   \code{\link{intensity}},
@@ -81,6 +101,7 @@
   intensity(fitP)
   fitS <- ppm(swedishpines ~ 1, Strauss(9))
   intensity(fitS)
+  intensity(fitS, approx="D")
   fitSx <- ppm(swedishpines ~ x, Strauss(9))
   lamSx <- intensity(fitSx)
   fitG <- ppm(swedishpines ~ 1, Geyer(9, 1))
@@ -89,8 +110,7 @@
   lamA <- intensity(fitA)
 }
 \author{
-  \adrian
-  and Gopalan Nair.
+  \adrian, Gopalan Nair, and \Frederic Lavancier.
 }
 \keyword{spatial}
 \keyword{models}

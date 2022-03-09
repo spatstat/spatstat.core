@@ -3,11 +3,13 @@
 #'
 #'    Intensity and intensity approximations for fitted point process models
 #'
-#'    $Revision: 1.1 $ $Date: 2020/11/24 01:57:24 $
+#'    $Revision: 1.3 $ $Date: 2022/03/09 00:57:01 $
 #'
+#'    Adrian Baddeley with contributions from Frederic Lavancier
 
-intensity.ppm <- function(X, ...) {
-  if(!identical(valid.ppm(X), TRUE)) {
+intensity.ppm <- function(X, ..., approx=c("Poisson", "DPP")) {
+  approx <- match.arg(approx)
+  if(!isTRUE(valid.ppm(X))) {
     warning("Model is invalid - projecting it")
     X <- project.ppm(X)
   }
@@ -40,34 +42,37 @@ intensity.ppm <- function(X, ...) {
     beta <- predict(X, ...)
   }
   ## apply approximation
-  lambda <- PoisSaddle(beta, fitin(X))
+  lambda <- SaddleApprox(beta, fitin(X), approx=approx)
   return(lambda)
+}
+
+SaddleApprox <- function(beta, fi, approx=c("Poisson", "DPP")) {
+  approx <- match.arg(approx)
+  z <- switch(approx,
+              Poisson = PoisSaddle(beta, fi),
+              DPP     = DPPSaddle(beta, fi))
+  return(z)
 }
 
 PoisSaddle <- function(beta, fi) {
   ## apply Poisson-Saddlepoint approximation
   ## given first order term and fitted interaction
   stopifnot(inherits(fi, "fii"))
-  inte <- as.interact(fi)
-  if(identical(inte$family$name, "pairwise"))
+  if(interactionorder(fi) == 2)
     return(PoisSaddlePairwise(beta, fi))
-  if(identical(inte$name, "Geyer saturation process"))
+  modelname <- as.interact(fi)$name
+  if(identical(modelname, "Geyer saturation process"))
     return(PoisSaddleGeyer(beta, fi))
-  if(identical(inte$name, "Area-interaction process"))
+  if(identical(modelname, "Area-interaction process"))
     return(PoisSaddleArea(beta, fi))
-  stop(paste("Intensity approximation is not yet available for",
-             inte$name), call.=FALSE)
+  stop(paste("Poisson-saddlepoint intensity approximation",
+             "is not yet available for",
+             modelname), call.=FALSE)
 }
 
 PoisSaddlePairwise <- function(beta, fi) {
-  inte <- as.interact(fi)
-  Mayer <- inte$Mayer
-  if(is.null(Mayer))
-    stop(paste("Sorry, not yet implemented for", inte$name))
-  # interaction coefficients
-  co <- with(fi, coefs[Vnames[!IsOffset]])
   # compute second Mayer cluster integral
-  G <- Mayer(co, inte)
+  G <- Mayer(fi)
   if(is.null(G) || !is.finite(G)) 
     stop("Internal error in computing Mayer cluster integral")
   if(G < 0)
@@ -82,7 +87,6 @@ PoisSaddlePairwise <- function(beta, fi) {
   }
   return(lambda)
 }
-
 
 # Lambert's W-function
 
@@ -244,3 +248,85 @@ PoisSaddleArea <- local({
   PoisSaddleArea
 
 })
+
+## The following was contributed by Frederic Lavancier
+## hacked by Adrian
+
+DPPSaddle <- function(beta, fi) {
+  if(interactionorder(fi) != 2)
+    stop("DPP approximation is only available for pairwise interactions")
+  if(!is.numeric(beta))
+    stop("DPP approximation is only available for stationary models")
+  if(length(beta) > 1)
+    stop("DPP approximation is not available for multitype models")
+  DPPSaddlePairwise(beta, fi)
+}
+
+DPPSaddlePairwise<-function (beta, fi) {
+  stopifnot(inherits(fi, "fii"))
+  ## second Mayer cluster integral
+  G <- Mayer(fi)
+  if (is.null(G) || !is.finite(G)) 
+    stop("Internal error in computing Mayer cluster integral")
+  if(G < (-exp(-1)/beta)){
+    warning(paste("The second Mayer cluster integral",
+                  "is less than exp(-1)/beta,",
+                  "which may lead to an unreliable solution."))
+  }
+  ## integral of (1-g)^2
+  G2 <- Mayer(fi, exponent=2)
+  if (is.null(G2) || !is.finite(G2)) 
+    stop("Internal error in computing integral of (1-g)^2")
+
+  ## hard core distance
+  hc <- hardcoredist(fi)
+
+  ## interaction range
+  R <- reach(fi, epsilon=0.001)
+  if(!is.finite(R))
+    stop("Unable to determine a finite range of interaction")
+
+  ## solve
+  Bhc <- pi * hc^2
+  BR <- pi*R^2
+  kappa<-(G2-Bhc)/(BR-Bhc)
+  
+  fun <-function(x) {
+    log(beta) + (1+x*Bhc)*log(1-x*Bhc/(1+x*Bhc)) + 
+      (1+x*(G-Bhc)/kappa)*log(1-x*(G-Bhc)/(1+x*(G-Bhc)/kappa)) - log(x)
+  }
+  lambda <- uniroot(fun,c(0,2*beta))$root
+
+  return(lambda)
+}
+
+Mayer <- function(fi, exponent=1){
+  stopifnot(inherits(fi, "fii"))
+  ## compute second Mayer cluster integral for a PAIRWISE interaction
+  if(exponent == 1) {
+    ## check if there is an analytic expression
+    inte <- as.interact(fi)
+    MayerCode <- inte$Mayer
+    if(is.function(MayerCode)) {
+      ## interaction coefficients
+      co <- with(fi, coefs[Vnames[!IsOffset]])
+      z <- MayerCode(co, inte) # sic
+      return(z)
+    }
+  }
+  ## No specialised code provided.
+  if(interactionorder(fi) != 2)
+    stop("Mayer() is only defined for pairwise interactions")
+  ## Compute by numerical integration
+  f <- function(x) {
+    log.g <- evalPairwiseTerm(fi, x)
+    z <- 2 * pi * x * ifelse(is.finite(log.g),
+                             (1 - exp(log.g))^exponent,
+                             1)
+    return(z)
+  }
+  R <- reach(fi)
+  M <- integrate(f,0,R)$value
+  return(M)
+}
+

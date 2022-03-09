@@ -68,6 +68,8 @@
 \alias{dppDpcf}
 \alias{dppmFixAlgorithm}
 \alias{dppmFixIntensity}
+\alias{DPPSaddle}
+\alias{DPPSaddlePairwise}
 \alias{envelopeEngine}
 \alias{envelopeProgressData}
 \alias{envelopeTest}
@@ -81,11 +83,13 @@
 \alias{evalInteraction}
 \alias{evalInterEngine}
 \alias{evalPairPotential}
+\alias{evalPairwiseTerm}
 \alias{evaluate2Dkernel}
 \alias{ExpSmoothLog}
 \alias{expandDot}
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
+\alias{fakefii}
 \alias{family.glmmPQL} 
 \alias{family.vblogit} 
 \alias{fasp}
@@ -174,6 +178,7 @@
 \alias{maskLaslett}
 \alias{match2DkernelName}
 \alias{match.kernel}
+\alias{Mayer}
 \alias{mctestSigtraceEngine}
 \alias{meanlistfv}
 \alias{model.se.image}
@@ -297,6 +302,7 @@
 \alias{rocModel}
 \alias{roseContinuous}
 \alias{rotate.msr}
+\alias{SaddleApprox}
 \alias{safeFiniteValue}
 \alias{safePositiveValue}
 \alias{scalardilate.msr}
@@ -455,6 +461,8 @@ doMultiStraussHard(iradii, hradii, types)
 dppDpcf(model, \dots)
 dppmFixIntensity(DPP, lambda, po)
 dppmFixAlgorithm(algorithm, changealgorithm, clusters, startpar)
+DPPSaddle(beta, fi)
+DPPSaddlePairwise(beta, fi)
 envelopeEngine(X, fun, simul,
            nsim, nrank, \dots, funargs, funYargs,
            verbose, clipdata, 
@@ -496,11 +504,13 @@ evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
 evalInterEngine(X,P,E,interaction,correction,splitInf,\dots,
                 Reach,precomputed,savecomputed)
 evalPairPotential(X,P,E,pairpot,potpars,R)
+evalPairwiseTerm(fint, d)
 evaluate2Dkernel(kernel, x, y, sigma, varcov, \dots, scalekernel)
 ExpSmoothLog(X, \dots, at, weights)
 expandDot(f, dotvars)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
+fakefii(model)
 \method{family}{glmmPQL}(object, \dots)
 \method{family}{vblogit}(object, \dots)
 fasp(fns, which, formulae, dataname, title, rowNames, colNames, checkfv)
@@ -613,6 +623,7 @@ mapInterVars(object, subs, mom)
 maskLaslett(X, \dots, eps, dimyx, xy, oldX, verbose, plotit)
 match.kernel(kernel)
 match2DkernelName(kernel)
+Mayer(fi, exponent)
 mctestSigtraceEngine(R, devdata, devsim, \dots,
      interpolate, confint, alpha, exponent, unitname)
 meanlistfv(z, \dots)
@@ -795,6 +806,7 @@ rmax.Rigid(X, g)
 rmax.rule(fun, W, lambda)
 rocData(covariate, nullmodel, \dots, high)
 rocModel(lambda, nullmodel, \dots, high)
+SaddleApprox(beta, fi, approx)
 safeFiniteValue(x, default)
 safePositiveValue(x, default)
 \method{scalardilate}{msr}(X, f, \dots)

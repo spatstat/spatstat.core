@@ -1,19 +1,24 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.006
+        CHANGES IN spatstat.core VERSION 2.4-0.007
 
 OVERVIEW
 
-    o Extract more information about a point process model.
-
+    o We thank Frederic Lavancier for contributions.
+    
+    o Improved approximation of intensity of Gibbs models.
+    
     o Experimental code to represent (theoretical) point process models
     
+    o Extract more information about a point process model.
+
     o Internal improvements and bug fixes.
 
 NEW CLASSES
 
     o zgibbsmodel
-    Experimental. An object of class 'zgibbsmodel' represents a Gibbs point process model
-    with specified parameter values.
+    Experimental. An object of class 'zgibbsmodel' represents a
+    Gibbs point process model with specified parameter values
+    (whereas 'ppm' represents a model fitted to data).
 
 NEW FUNCTIONS
 
@@ -24,14 +29,19 @@ NEW FUNCTIONS
     Extract the order of interpoint interaction of a point process model.
 
     o zgibbsmodel
-    Experimental. Create an object of class 'zgibbsmodel' with specified parameter values.
+    Experimental. Create an object of class 'zgibbsmodel'.
 
     o print.zgibbsmodel
     Experimental. Print an object of class 'zgibbsmodel'.
     
-    o interactionorder.zgibbsmodel, is.poisson.zgibbsmodel, is.stationary.zgibbsmodel
+    o is.poisson.zgibbsmodel, is.stationary.zgibbsmodel
     Experimental. Methods for class 'zgibbsmodel'
 
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    o intensity.ppm
+    Can now calculate the Coeurjolly-Lavancier DPP approximation of intensity.
+    New argument 'approx' specifies the choice of approximation.
 
 BUG FIXES
 

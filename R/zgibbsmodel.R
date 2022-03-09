@@ -3,7 +3,7 @@
 #'
 #'    Experimental
 #' 
-#'    $Revision: 1.1 $ $Date: 2022/03/07 05:57:04 $
+#'    $Revision: 1.2 $ $Date: 2022/03/09 02:36:48 $
 
 zgibbsmodel <- local({
 
@@ -35,6 +35,9 @@ zgibbsmodel <- local({
       interaction <- as.interact(interaction)
     } else if(!inherits(interaction, "interact"))
       stop("Argument 'interaction' should be an object of class 'interact' or 'fii'")
+    ## 
+    if(anyNA(interaction$par))
+      stop("All irregular parameters of the interaction must be supplied")
     ## build
     out <- list(beta        = beta,
                 interaction = interaction,
@@ -85,4 +88,42 @@ print.zgibbsmodel <- function(x, ...) {
     print(x$icoef)
   }
   invisible(NULL) 
+}
+
+fakefii <- function(model) {
+  ## create a 'fake' fii object from a zgibbsmodel
+  stopifnot(inherits(model, "zgibbsmodel"))
+  inte <- as.interact(model)
+  if(is.multitype(inte)) stop("Not implemented for multitype interactions")
+  ## determine dimension of potential, etc
+  fakePOT <- inte$pot(d=matrix(, 0, 0), par=inte$par)
+  IsOffset <- attr(fakePOT, "IsOffset")
+  fakePOT <- ensure3Darray(fakePOT)
+  Vnames <- dimnames(fakePOT)[[3]]
+  p <- dim(fakePOT)[3]
+  if(sum(nzchar(Vnames)) < p)
+    Vnames <- if(p == 1) "Interaction" else paste0("Interaction.", 1:p)
+  if(length(IsOffset) < p)
+    IsOffset <- logical(p)
+  ## determine interaction coefficients
+  icoef <- model$icoef
+  if(!any(nzchar(names(icoef)))) names(icoef) <- Vnames
+  ## create fake object
+  fii(inte, icoef, Vnames, IsOffset)
+}
+
+## contributed by Frederic Lavancier (hacked by Adrian)
+
+intensity.zgibbsmodel <- function(X, ..., approx=c("Poisson","DPP")) {
+  approx <- match.arg(approx)
+  
+  fint <- fakefii(X)
+  icoef <- coef(fint)
+  beta <- X$beta
+
+  lambda <- switch(approx,
+                   Poisson = PoisSaddle(beta, fint),
+                   DPP     = DPPSaddle(beta, fint))
+  
+  return(lambda)
 }
