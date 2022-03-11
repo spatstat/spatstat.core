@@ -1,9 +1,9 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.007
+        CHANGES IN spatstat.core VERSION 2.4-0.008
 
 OVERVIEW
 
-    o We thank Frederic Lavancier for contributions.
+    o We thank Frederic Lavancier and Suman Rakshit for contributions.
     
     o Improved approximation of intensity of Gibbs models.
     
@@ -41,6 +41,7 @@ SIGNIFICANT USER-VISIBLE CHANGES
 
     o intensity.ppm
     Can now calculate the Coeurjolly-Lavancier DPP approximation of intensity.
+    [Code kindly contributed by Frederic Lavancier]
     New argument 'approx' specifies the choice of approximation.
 
 BUG FIXES
@@ -52,6 +53,11 @@ BUG FIXES
     o dirichletVoronoi.ppp
     Crashed randomly, with obscure error messages from 'im' or 'eval.im',
     when argument 'f' had a small value.
+    [Spotted by Suman Rakshit.]
+    Fixed.
+
+    o dirichletVoronoi.ppp
+    Rarely, produced an image containing NA values.
     [Spotted by Suman Rakshit.]
     Fixed.
 
