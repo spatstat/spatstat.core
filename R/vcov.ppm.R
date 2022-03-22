@@ -3,7 +3,7 @@
 ## and Fisher information matrix
 ## for ppm objects
 ##
-##  $Revision: 1.134 $  $Date: 2021/02/06 03:43:12 $
+##  $Revision: 1.135 $  $Date: 2022/03/22 00:34:37 $
 ##
 
 vcov.ppm <- local({
@@ -560,6 +560,8 @@ vcalcGibbsGeneral <- function(model,
                                         conform=TRUE, across=1)
           ## momdel[ ,i,j] = h(X[i] | X[-j])
           momdel <- mom.array - ddS
+          ## lamdel[i,j] = lambda(X[i] | X[-j]) is not sparse; avoid computing it
+          lamdel <- NULL
           ## pairweight[i,j] = lambda(X[i] | X[-j] )/lambda( X[i] | X ) - 1
           pairweight <- expm1(tensor1x1(-use.coef, ddS))
         } else {

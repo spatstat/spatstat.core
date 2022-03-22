@@ -1,9 +1,9 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.008
+        CHANGES IN spatstat.core VERSION 2.4-0.009
 
 OVERVIEW
 
-    o We thank Frederic Lavancier and Suman Rakshit for contributions.
+    o We thank Frederic Lavancier, Suman Rakshit and Sven Wagner for contributions.
     
     o Improved approximation of intensity of Gibbs models.
     
@@ -61,6 +61,11 @@ BUG FIXES
     [Spotted by Suman Rakshit.]
     Fixed.
 
+    o vcov.ppm
+    Crashed in some cases, with message 'object lamdel not found'.
+    [Spotted by Sven Wagner.]
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.4-0
 
 OVERVIEW
