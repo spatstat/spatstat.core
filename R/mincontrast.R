@@ -3,7 +3,7 @@ c#'
 #'
 #'  Functions for estimation by minimum contrast
 #'
-#'  $Revision: 1.121 $ $Date: 2022/02/21 04:25:11 $
+#'  $Revision: 1.122 $ $Date: 2022/03/22 00:52:06 $
 #' 
 
 
@@ -888,11 +888,8 @@ vargamma.estK <- function(X, startpar=c(kappa=1,scale=1), nu = -1/4,
     stop("Unrecognised format for argument X")
 
   ## Catch old nu.ker/nu.pcf syntax and resolve nu-value.
-  dots <- list(...)
-  if(missing(nu)){
-    nu <- resolve.vargamma.shape(nu.ker=dots$nu.ker,
-                                 nu.pcf=dots$nu.pcf, default = TRUE)$nu.ker
-  }
+  if(missing(nu))
+    nu <- resolve.vargamma.shape(..., allow.default = TRUE)$nu.ker
   check.1.real(nu)
   stopifnot(nu > -1/2)
 
@@ -953,13 +950,8 @@ vargamma.estpcf <- function(X, startpar=c(kappa=1,scale=1), nu=-1/4,
       stop("Unrecognised format for argument X")
   
   ## Catch old nu.ker/nu.pcf syntax and resolve nu-value.
-  dots <- list(...)
-  if(missing(nu)){
-      ## nutmp <- try(resolve.vargamma.shape(nu.ker=dots$nu.ker, nu.pcf=dots$nu.pcf)$nu.ker, silent=TRUE)
-      ## if(!inherits(nutmp, "try-error")) nu <- nutmp
-    nu <- resolve.vargamma.shape(nu.ker=dots$nu.ker,
-                                 nu.pcf=dots$nu.pcf, default = TRUE)$nu.ker
-  }
+  if(missing(nu))
+    nu <- resolve.vargamma.shape(..., allow.default = TRUE)$nu.ker
   check.1.real(nu)
   stopifnot(nu > -1/2)
 
