@@ -1,7 +1,7 @@
 #
 #   pcf.R
 #
-#   $Revision: 1.69 $   $Date: 2021/11/13 01:08:49 $
+#   $Revision: 1.70 $   $Date: 2022/03/23 08:06:28 $
 #
 #
 #   calculate pair correlation function
@@ -306,7 +306,7 @@ sewpcf <- function(d, w, denargs, lambda2area, divisor=c("r","d")) {
     #' weights are equal
     kden <- do.call.matched(density.default,
                             append(list(x=d), denargs))
-    wtot <- length(d)
+    wtot <- length(d) * w[1]
   } else {
     #' weighted 
     wtot <- sum(w)
