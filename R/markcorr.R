@@ -2,7 +2,7 @@
 ##
 ##     markcorr.R
 ##
-##     $Revision: 1.86 $ $Date: 2021/07/10 08:53:29 $
+##     $Revision: 1.87 $ $Date: 2022/03/24 01:16:53 $
 ##
 ##    Estimate the mark correlation function
 ##    and related functions 
@@ -731,20 +731,15 @@ sewsmod <- function(d, ff, wt, Ef, rvals, method="smrep", ..., nwtsteps=500) {
   wt <- as.vector(wt)
   switch(method,
          density={
-           fw <- ff * wt
-           sum.fw <- sum(fw)
-           sum.wt <- sum(wt)
            ## smooth estimate of kappa_f
-           est <- density(d, weights=fw/sum.fw,
-                          from=min(rvals), to=max(rvals), n=length(rvals),
-                          ...)$y
-           numerator <- est * sum.fw
+           Kf <- unnormdensity(d, weights=ff * wt,
+                               from=min(rvals), to=max(rvals), n=length(rvals),
+                               ...)$y
            ## smooth estimate of kappa_1
-           est0 <- density(d, weights=wt/sum.wt, 
-                          from=min(rvals), to=max(rvals), n=length(rvals),
-                          ...)$y
-           denominator <- est0 * Ef * sum.wt
-           result <- numerator/denominator
+           K1 <- unnormdensity(d, weights=wt, 
+                               from=min(rvals), to=max(rvals), n=length(rvals),
+                               ...)$y
+           result <- Kf/(Ef * K1)
          },
          sm={
            ## This is slow!

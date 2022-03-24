@@ -1,7 +1,7 @@
 #
 #   pcf.R
 #
-#   $Revision: 1.70 $   $Date: 2022/03/23 08:06:28 $
+#   $Revision: 1.71 $   $Date: 2022/03/24 01:27:25 $
 #
 #
 #   calculate pair correlation function
@@ -302,19 +302,9 @@ sewpcf <- function(d, w, denargs, lambda2area, divisor=c("r","d")) {
     }
     nw <- length(w)
   }
-  if(nw == 1) {
-    #' weights are equal
-    kden <- do.call.matched(density.default,
-                            append(list(x=d), denargs))
-    wtot <- length(d) * w[1]
-  } else {
-    #' weighted 
-    wtot <- sum(w)
-    kden <- do.call.matched(density.default,
-                            append(list(x=d, weights=w/wtot), denargs))
-  }
+  kden <- unnormdensity(x=d, weights=w, defaults=denargs)
   r <- kden$x
-  y <- kden$y * wtot
+  y <- kden$y 
   if(divisor == "r")
     y <- y/r
   g <- y/(2 * pi * lambda2area)
