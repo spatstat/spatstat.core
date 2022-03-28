@@ -64,7 +64,7 @@ reset.spatstat.options()
 #'                    and inhomogeneous summary functions
 #'                    and idw, adaptive.density, intensity
 #'
-#'  $Revision: 1.58 $  $Date: 2021/03/31 01:57:48 $
+#'  $Revision: 1.59 $  $Date: 2022/03/28 07:24:24 $
 #'
 
 if(!FULLTEST)
@@ -298,6 +298,12 @@ local({
     pants(case=2, at="points", relative=TRUE)
     pants(case=2, at="pixels", relative=FALSE)
     pants(case=2, at="points", relative=FALSE)
+  }
+  if(ALWAYS) {
+    ## underflow example from stackoverflow!
+    funky <- scanpp("funky.tab", owin(c(4, 38), c(0.3, 17)))
+    P <- relrisk(funky, 0.5)
+    R <- relrisk(funky, 0.5, relative=TRUE)
   }
   ## more than 2 types
   if(ALWAYS) {

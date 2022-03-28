@@ -3,7 +3,7 @@
 #
 #   Estimation of relative risk
 #
-#  $Revision: 1.51 $  $Date: 2022/01/04 05:30:06 $
+#  $Revision: 1.53 $  $Date: 2022/03/28 07:05:55 $
 #
 
 relrisk <- function(X, ...) UseMethod("relrisk")
@@ -61,6 +61,8 @@ relrisk.ppp <- local({
     SmoothPars <- resolve.defaults(list(sigma=sigma, varcov=varcov, at=at,
                                         edge=edge, diggle=diggle),
                                    list(...))
+    ## threshold for 0/0
+    tinythresh <- 8 * .Machine$double.eps
     ## 
     if(se) {
       ## determine other bandwidth for variance estimation
@@ -195,11 +197,13 @@ relrisk.ppp <- local({
       switch(at,
              pixels = {
                ## compute probability of case
-               pcase <- Deach[[icase]]/Dall
+               Dcase <- Deach[[icase]]
+               pcase <- Dcase/Dall
+               dodgy <- (Dall < tinythresh)
                ## correct small numerical errors
                pcase <- clamp01(pcase)
-               ## trap NaN values
-               nbg <- badvalues(pcase)
+               ## trap NaN values, and similar
+               nbg <- badvalues(pcase) | really(dodgy)
                if(any(nbg)) {
                  ## apply l'Hopital's rule:
                  ##     p(case) = 1{nearest neighbour is case}
@@ -234,10 +238,11 @@ relrisk.ppp <- local({
              points={
                ## compute probability of case
                pcase <- Deach[,icase]/Dall
+               dodgy <- (Dall < tinythresh)
                ## correct small numerical errors
                pcase <- clamp01(pcase)
                ## trap NaN values
-               if(any(nbg <- badvalues(pcase))) {
+               if(any(nbg <- badvalues(pcase) | really(dodgy))) {
                  ## apply l'Hopital's rule
                  nntype <- imarks[nnwhich(X)]
                  pcase[nbg] <- as.integer(nntype[nbg] == icase)
@@ -279,18 +284,20 @@ relrisk.ppp <- local({
              pixels={
                #' Ops.imagelist not yet working
                probs <- imagelistOp(Deach, Dall, "/")
+               dodgy <- (Dall < tinythresh)
                ## correct small numerical errors
                probs <- as.solist(lapply(probs, clamp01))
                ## trap NaN values
                nbg <- lapply(probs, badvalues)
                nbg <- Reduce("|", nbg)
+               nbg <- nbg | really(dodgy)
                if(any(nbg)) {
                  ## apply l'Hopital's rule
                  distX <- distmap(X, xy=Dall)
                  whichnn <- attr(distX, "index")
                  typenn <- eval.im(imarks[whichnn])
                  typennsub <- as.matrix(typenn)[nbg]
-                 for(k in seq_along(result)) 
+                 for(k in seq_along(probs)) 
                    probs[[k]][nbg] <- (typennsub == k)
                }
                if(!relative) {
@@ -324,17 +331,17 @@ relrisk.ppp <- local({
                    SE <- as.solist(SE)
                    names(SE) <- types
                    result <- list(estimate=risks, SE=SE)
-                   
                  }
                }
              },
              points = {
                probs <- Deach/Dall
+               dodgy <- (Dall < tinythresh)
                ## correct small numerical errors
                probs <- clamp01(probs)
                ## trap NaN values
-               bad <- badvalues(probs)
-               badrow <- matrowany(bad)
+               bad <- badvalues(probs) 
+               badrow <- matrowany(bad) | really(dodgy)
                if(any(badrow)) {
                  ## apply l'Hopital's rule
                  typenn <- imarks[nnwhich(X)]
@@ -376,6 +383,12 @@ relrisk.ppp <- local({
     return(!(is.finite(x) | is.na(x)))
   }
 
+  really <- function(x) {
+    if(is.im(x)) x <- as.matrix(x)
+    x[is.na(x)] <- FALSE
+    return(x)
+  }
+  
   reciprocal <- function(x) 1/x
 
   divideifpositive <- function(z, d) { eval.im(ifelse(d > 0, z/d, NA)) }

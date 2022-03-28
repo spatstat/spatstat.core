@@ -97,7 +97,7 @@ local({
 #
 #  tests/imageops.R
 #
-#   $Revision: 1.33 $   $Date: 2021/04/15 06:13:47 $
+#   $Revision: 1.34 $   $Date: 2022/03/24 03:21:55 $
 #
 
 
@@ -279,14 +279,17 @@ local({
 
   #' safelookup (including extrapolation case)
   Z <- as.im(function(x,y) { x - y }, letterR)
+  Zcut <- cut(Z, breaks=4)
   B <- grow.rectangle(Frame(letterR), 1)
   X <- superimpose(runifpoint(10,letterR),
                    runifpoint(20, setminus.owin(B, letterR)),
                    vertices(Frame(B)),
                    W=B)
   a <- safelookup(Z, X)
-  b <- safelookup(cut(Z, breaks=4), X)
-  aa <- lookup.im(Z, X)
+  aa <- safelookup(Z, X, factor=100)
+  b <- safelookup(Zcut, X)
+  bb <- safelookup(Zcut, X, factor=100)
+  cc <- lookup.im(Z, X)
   
   #' Smooth.im -> blur.im with sigma=NULL
   ZS <- Smooth(Z)

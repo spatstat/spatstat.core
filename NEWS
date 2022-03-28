@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-0.012
+        CHANGES IN spatstat.core VERSION 2.4-0.013
 
 OVERVIEW
 
@@ -43,6 +43,10 @@ SIGNIFICANT USER-VISIBLE CHANGES
     Can now calculate the Coeurjolly-Lavancier DPP approximation of intensity.
     [Code kindly contributed by Frederic Lavancier]
     New argument 'approx' specifies the choice of approximation.
+
+    o relrisk.ppp
+    Ratios which are close to 0/0 are handled more effectively,
+    reducing the likelihood of strange-looking plots when 'sigma' is very small.
 
 BUG FIXES
 
