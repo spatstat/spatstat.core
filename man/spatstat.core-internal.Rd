@@ -104,6 +104,7 @@
 \alias{flipxy.msr}
 \alias{forbid.logi}
 \alias{FormatFaspFormulae}
+\alias{formula.glmmPQL} 
 \alias{fvexprmap}
 \alias{fvlabels}
 \alias{fvlabels<-}
@@ -525,6 +526,7 @@ flatfname(x)
 \method{flipxy}{msr}(X)
 forbid.logi(object)
 FormatFaspFormulae(f, argname)
+\method{formula}{glmmPQL}(x, \dots)
 fvexprmap(x)
 fvlabels(x, expand=FALSE)
 fvlabels(x) <- value

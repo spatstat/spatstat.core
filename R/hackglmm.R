@@ -1,5 +1,5 @@
 # hackglmm.R
-#  $Revision: 1.9 $ $Date: 2022/01/04 05:30:06 $
+#  $Revision: 1.10 $ $Date: 2022/03/29 01:31:25 $
 
 hackglmmPQL <- 
 function (fixed, random, family, data, correlation, weights,
@@ -104,3 +104,6 @@ function (fixed, random, family, data, correlation, weights,
 }
 
 family.glmmPQL <- function(object, ...) { object$family }
+
+formula.glmmPQL <- function(x, ...) { x$call$fixed }
+
