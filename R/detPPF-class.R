@@ -67,7 +67,7 @@ dppparbounds <- function(model, name, ...){
     rslt <- matrix(0,length(name), 2, dimnames = list(name, c("lower", "upper")))
     for(nn in name){
         tmp <- try(do.call(fun, c(model$fixedpar[is.element(names(model$fixedpar),nam)], list(...), list(name=nn))), silent=TRUE)
-        if(class(tmp)=="try-error"){
+        if(inherits(tmp, "try-error")) {
             rslt[nn,] <- c(NA, NA)
         }else{
             rslt[nn,] <- tmp
@@ -91,7 +91,7 @@ dppspecdenrange <- function(model){
   if(is.null(fun))
     return(Inf)
   xx <- try(fun(model), silent = TRUE)
-  ifelse(class(xx)=="try-error", Inf, xx)
+  if(inherits(xx, "try-error")) Inf else xx
 }
 
 dppspecden <- function(model){
