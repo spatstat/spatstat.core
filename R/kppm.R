@@ -3,7 +3,7 @@
 #
 # kluster/kox point process models
 #
-# $Revision: 1.205 $ $Date: 2022/02/21 04:44:08 $
+# $Revision: 1.209 $ $Date: 2022/04/01 03:05:01 $
 #
 
 
@@ -152,15 +152,18 @@ kppm.ppp <- kppm.quad <-
                              control=control, stabilize=stabilize,
                              statistic=statistic,
                              statargs=statargs, rmax=rmax,
-                             algorithm=algorithm, ...),
+                             algorithm=algorithm,
+                             ...),
          clik2   = kppmComLik(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, stabilize=stabilize,
                              weightfun=weightfun, 
-                             rmax=rmax, algorithm=algorithm, ...),
+                             rmax=rmax, algorithm=algorithm,
+                             ...),
          palm   = kppmPalmLik(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, stabilize=stabilize,
                              weightfun=weightfun, 
-                             rmax=rmax, algorithm=algorithm, ...),
+                             rmax=rmax, algorithm=algorithm,
+                             ...),
          adapcl   = kppmCLadap(X=XX, Xname=Xname, po=po, clusters=clusters,
                              control=control, epsilon=epsilon, 
                              weightfun=weightfun, rmax=rmax,
@@ -192,7 +195,8 @@ kppm.ppp <- kppm.quad <-
 ## <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 kppmMinCon <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, statistic, statargs,
-                       algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
+                       algorithm="Nelder-Mead", DPP=NULL, ...,
+                       pspace=NULL) {
   # Minimum contrast fit
   stationary <- is.stationary(po)
   # compute intensity
@@ -474,7 +478,8 @@ clusterfit <- function(X, clusters, lambda = NULL, startpar = NULL,
 
 kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
                        weightfun, rmax, algorithm="Nelder-Mead",
-                       DPP=NULL, ..., pspace=NULL) {
+                       DPP=NULL, ..., 
+                       pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
     rmax <- rmax.rule("K", W, intensity(X))
@@ -746,7 +751,9 @@ kppmComLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE,
 
 
 kppmPalmLik <- function(X, Xname, po, clusters, control=list(), stabilize=TRUE, weightfun, rmax,
-                        algorithm="Nelder-Mead", DPP=NULL, ..., pspace=NULL) {
+                        algorithm="Nelder-Mead", DPP=NULL, ...,
+                        
+                        pspace=NULL) {
   W <- as.owin(X)
   if(is.null(rmax))
     rmax <- rmax.rule("K", W, intensity(X))
