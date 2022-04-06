@@ -1,7 +1,7 @@
 #
 # simulation of FITTED model
 #
-#  $Revision: 1.37 $ $Date: 2020/09/10 06:14:36 $
+#  $Revision: 1.38 $ $Date: 2022/04/06 07:23:19 $
 #
 #
 rmh.ppm <- function(model, start = NULL,
@@ -12,6 +12,11 @@ rmh.ppm <- function(model, start = NULL,
                     verbose=TRUE,
                     new.coef=NULL) {
   verifyclass(model, "ppm")
+
+  check.1.integer(nsim)
+  stopifnot(nsim >= 0)
+  if(nsim == 0) return(simulationresult(list()))
+  
   argh <- list(...)
 
   if(is.null(control)) {
@@ -61,7 +66,10 @@ simulate.ppm <- function(object, nsim=1, ...,
                          drop=FALSE) {
   verifyclass(object, "ppm")
   argh <- list(...)
-  if(nsim == 0) return(list())
+  
+  check.1.integer(nsim)
+  stopifnot(nsim >= 0)
+  if(nsim == 0) return(simulationresult(list()))
 
   starttime = proc.time()
   

@@ -3,7 +3,7 @@
 #'
 #'    simulate.kppm
 #'
-#'    $Revision: 1.6 $ $Date: 2021/04/16 11:06:37 $
+#'    $Revision: 1.9 $ $Date: 2022/04/06 08:51:41 $
 
 simulate.kppm <- function(object, nsim=1, seed=NULL, ...,
                           window=NULL, covariates=NULL,
@@ -11,6 +11,9 @@ simulate.kppm <- function(object, nsim=1, seed=NULL, ...,
                           verbose=TRUE, retry=10,
                           drop=FALSE) {
   starttime <- proc.time()
+  check.1.integer(nsim)
+  stopifnot(nsim >= 0)
+  if(nsim == 0) return(simulationresult(list()))
   verbose <- verbose && (nsim > 1)
   check.1.real(retry)
   # .... copied from simulate.lm ....
@@ -272,11 +275,8 @@ condSimCox <- function(object, nsim=1,
       break
     }
   }
-  if((nresults <- length(results))) {
-    results <- simulationresult(results, nresults, drop)
-  } else {
-    results <- solist()
-  }
+  nresults <- length(results)
+  results <- simulationresult(results, nresults, drop)
   attr(results, "history") <- data.frame(mu=mhistory, p=phistory)
   if(verbose && nresults == nsim)
     splat("Mean acceptance probability", signif(mean(phistory), 3))

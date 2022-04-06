@@ -3,7 +3,7 @@
 #
 #   computes simulation envelopes 
 #
-#   $Revision: 2.110 $  $Date: 2021/10/09 10:42:18 $
+#   $Revision: 2.112 $  $Date: 2022/04/06 02:11:50 $
 #
 
 envelope <- function(Y, fun, ...) {
@@ -432,7 +432,10 @@ envelopeEngine <-
   # ----------------------------------------------------------
   # Determine Simulation
   # ----------------------------------------------------------
-  
+
+  check.1.integer(nsim)
+  stopifnot(nsim > 1)
+
   # Identify class of patterns to be simulated, from data pattern X
   Xclass <- if(is.ppp(X)) "ppp" else
             if(is.pp3(X)) "pp3" else
@@ -674,6 +677,10 @@ envelopeEngine <-
   ## (one set of simulations to calculate the theoretical mean,
   ##  another independent set of simulations to obtain the critical point.)
   dual <- (global && !use.theory && !VARIANCE)
+  if(dual) {
+    check.1.integer(nsim2)
+    stopifnot(nsim2 >= 1)
+  }
   Nsim <- if(!dual) nsim else (nsim + nsim2)
 
   # if taking data from a list of point patterns,

@@ -56,6 +56,8 @@ hopskel.test <- function(X, ...,
          },
          MonteCarlo = {
            ## Monte Carlo p-value
+           check.1.integer(nsim)
+           stopifnot(nsim > 1)
            sims <- numeric(nsim)
            for(i in 1:nsim) {
              Xsim <- runifpoint(n, win=W)

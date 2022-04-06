@@ -6,7 +6,7 @@
 #'
 #'   GNU Public Licence >= 2
 #'
-#'   $Revision: 1.1 $ $Date: 2021/10/01 04:03:52 $
+#'   $Revision: 1.2 $ $Date: 2022/04/06 07:41:01 $
 #'
 #' 
 #' threshold selection
@@ -98,6 +98,8 @@ thresholdCI <- local({
   }
 
   simthresh <- function(F, G, ndata, nsim=100, parametric) {
+    check.1.integer(nsim)
+    stopifnot(nsim > 1)
     if(parametric) F <- Fpredicted(F, G)
     Finv <- inversefunction(F)
     zout <- sout <- numeric(nsim)

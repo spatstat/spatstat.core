@@ -3,7 +3,7 @@
 ##
 ##  Spatial scan statistics
 ##
-##  $Revision: 1.19 $  $Date: 2021/01/07 03:08:41 $
+##  $Revision: 1.20 $  $Date: 2022/04/06 07:34:54 $
 ##
 
 scanmeasure <- function(X, ...){
@@ -114,7 +114,8 @@ scanLRTS <- function(X, r, ...,
                        saveopt = FALSE,
                        Xmask=NULL) {
   stopifnot(is.ppp(X))
-  stopifnot(check.nvector(r))
+  check.nvector(r)
+  if(length(r) == 0) return(as.imlist(list(), check=FALSE))
   method <- match.arg(method)
   alternative <- match.arg(alternative)
   if(is.null(Xmask)) Xmask <- as.mask(as.owin(X), ...)

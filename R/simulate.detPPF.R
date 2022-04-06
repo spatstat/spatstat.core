@@ -1,5 +1,5 @@
 ##   simulate.detPPF.R
-##            $Revision: 1.9 $  $Date: 2021/11/18 01:28:27 $
+##            $Revision: 1.10 $  $Date: 2022/04/06 07:37:53 $
 ##
 ## This file contains functions to simulate DPP models.
 ## Two simulation functions are visible:
@@ -240,6 +240,7 @@ simulate.detpointprocfamily <- function(object, nsim = 1, seed = NULL, ..., W = 
   }
   # ..................................
 
+
   if(inherits(object, "dppm")){
       if(is.null(W))
           W <- Window(object$X)
@@ -251,9 +252,12 @@ simulate.detpointprocfamily <- function(object, nsim = 1, seed = NULL, ..., W = 
     stop(paste("The model to simulate must be completely specified. The following parameters are unspecified:", tmp))
   if(!valid(object))
     stop("The model is invalid. Please change parameter values to get a valid model")
-  if(!is.numeric(nsim)||nsim<1)
-    stop(paste(sQuote("nsim"), "must be a numeric greater than or equal to 1"))
+  
+  check.1.real(nsim)
   nsim <- floor(nsim)
+  stopifnot(nsim >= 0)
+  if(nsim == 0) return(simulationresult(list()))
+  
   dim <- dim(object)
   basis <- object$basis
   ####### BACKDOOR TO SPHERICAL CASE ########

@@ -3,7 +3,7 @@
 #'
 #'   Monte Carlo test of segregation for multitype patterns
 #'
-#'    $Revision: 1.5 $ $Date: 2021/09/26 08:59:09 $
+#'    $Revision: 1.6 $ $Date: 2022/04/06 07:35:46 $
 #'
 
 segregation.test <- function(X, ...) {
@@ -16,6 +16,8 @@ segregation.test.ppp <- function(X, ..., nsim=19, permute=TRUE,
     Xname <- short.deparse(substitute(X))
   stopifnot(is.ppp(X))
   stopifnot(is.multitype(X))
+  check.1.integer(nsim)
+  stopifnot(nsim > 1)
   verboten <- c("at", "relative", "se", "leaveoneout",
                 "casecontrol", "case", "control")
   if(any(nyet <- (verboten %in% names(list(...)))))

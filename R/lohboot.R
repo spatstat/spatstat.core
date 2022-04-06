@@ -77,6 +77,8 @@ lohboot <-
            type=7)
 {
   stopifnot(is.ppp(X))
+  check.1.integer(nsim)
+  stopifnot(nsim > 1)
   ## validate 'fun'
   fun.name <- short.deparse(substitute(fun))
   if(is.character(fun)) 

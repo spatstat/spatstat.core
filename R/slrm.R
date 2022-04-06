@@ -3,7 +3,7 @@
 #
 #  Spatial Logistic Regression
 #
-#  $Revision: 1.59 $   $Date: 2022/02/12 09:13:49 $
+#  $Revision: 1.60 $   $Date: 2022/04/06 07:40:12 $
 #
 
 slrm <- function(formula, ..., data=NULL, offset=TRUE, link="logit",
@@ -719,6 +719,10 @@ parameters.slrm <- function(model, ...) { list(trend=coef(model)) }
 simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
                           window=NULL, covariates=NULL, 
                           verbose=TRUE, drop=FALSE) {
+  check.1.integer(nsim)
+  stopifnot(nsim >= 0)
+  if(nsim == 0) return(simulationresult(list()))
+  
   # .... copied from simulate.lm ....
   if (!exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
     runif(1)
@@ -731,7 +735,7 @@ simulate.slrm <- function(object, nsim=1, seed=NULL, ...,
     on.exit(assign(".Random.seed", R.seed, envir = .GlobalEnv))
   }
   starttime <- proc.time()
-  
+
   # determine simulation window and compute intensity
   if(!is.null(window))
     stopifnot(is.owin(window))

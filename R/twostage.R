@@ -3,7 +3,7 @@
 ##
 ##  Two-stage Monte Carlo tests and envelopes
 ##
-##  $Revision: 1.17 $  $Date: 2019/10/09 04:52:11 $
+##  $Revision: 1.18 $  $Date: 2022/04/06 07:49:20 $
 ##
 
 bits.test <- function(X, ..., exponent=2, nsim=19,
@@ -25,7 +25,9 @@ dg.test <- function(X, ..., exponent=2, nsim=19, nsimsub=nsim-1,
                     reuse=TRUE, leaveout=1, interpolate=FALSE,
                     savefuns=FALSE, savepatterns=FALSE,
                     verbose=TRUE) {
-  if(!missing(nsimsub) && !relatively.prime(nsim, nsimsub))
+  check.1.integer(nsim)
+  stopifnot(nsim >= 2)
+  if(!missing(nsimsub) && (nsimsub < 1 || !relatively.prime(nsim, nsimsub)))
     stop("nsim and nsimsub must be relatively prime")
   twostage.test(X, ..., exponent=exponent,
                  nsim=nsim, nsimsub=nsimsub, reuse=reuse, 
@@ -46,6 +48,10 @@ twostage.test <- function(X, ..., exponent=2, nsim=19, nsimsub=nsim,
   alternative <- match.arg(alternative)
   env.here <- sys.frame(sys.nframe())
   Xismodel <- is.ppm(X) || is.kppm(X) || is.lppm(X) || is.slrm(X)
+  check.1.integer(nsim)
+  check.1.integer(nsimsub)
+  stopifnot(nsim >= 2)
+  stopifnot(nsimsub >= 2)
   ## first-stage p-value
   if(verbose) cat("Applying first-stage test to original data... ")
   tX <- envelopeTest(X, ...,
@@ -182,6 +188,10 @@ twostage.envelope <- function(X, ..., nsim=19, nsimsub=nsim,
   alternative <- match.arg(alternative)
   env.here <- sys.frame(sys.nframe())
   Xismodel <- is.ppm(X) || is.kppm(X) || is.lppm(X) || is.slrm(X)
+  check.1.integer(nsim)
+  check.1.integer(nsimsub)
+  stopifnot(nsim >= 2)
+  stopifnot(nsimsub >= 1)
   ##############  first stage   ##################################
   if(verbose) cat("Applying first-stage test to original data... ")
   tX <- envelopeTest(X, ...,

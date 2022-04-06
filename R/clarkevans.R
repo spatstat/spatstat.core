@@ -114,7 +114,7 @@ clarkevans.test <- function(X, ...,
   } else {
     # Monte Carlo p-value
     sims <- numeric(nsim)
-    for(i in 1:nsim) {
+    for(i in seq_len(nsim)) {
       Xsim <- runifpoint(nX, win=W)
       sims[i] <- clarkevansCalc(Xsim, correction=correction,
                                 clipregion=clipregion)

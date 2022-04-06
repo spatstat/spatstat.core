@@ -35,7 +35,7 @@ cdf.test.mppm <- local({
     Data <- eval(getCall(model)$data,
                  envir=environment(terms(model)))
     sim.pvals <- sim.stats <- numeric(nsim)    
-    for(isim in 1:nsim) {
+    for(isim in seq_len(nsim)) {
       Data[,Yname] <- Sims[,isim,drop=FALSE]
       modeli <- update(model, data=Data)
       Ai <- PoissonTest(modeli, covariate, test=test, ...,
