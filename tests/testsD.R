@@ -64,7 +64,7 @@ reset.spatstat.options()
 #'                    and inhomogeneous summary functions
 #'                    and idw, adaptive.density, intensity
 #'
-#'  $Revision: 1.59 $  $Date: 2022/03/28 07:24:24 $
+#'  $Revision: 1.61 $  $Date: 2022/04/17 00:54:34 $
 #'
 
 if(!FULLTEST)
@@ -353,15 +353,17 @@ local({
   }
   
   ## execute Smooth.ppp and Smoothfun.ppp in all cases
-  stroke <- function(..., Y = longleaf) {
+  stroke <- function(..., Y = longleaf, FUN=TRUE) {
     Z <- Smooth(Y, ..., at="pixels")
     Z <- Smooth(Y, ..., at="points", leaveoneout=TRUE)
     Z <- Smooth(Y, ..., at="points", leaveoneout=FALSE)
-    f <- Smoothfun(Y, ...)
-    f(120, 80)
-    f(Y[1:2])
-    f(Y[FALSE])
-    U <- as.im(f)
+    if(FUN) {
+      f <- Smoothfun(Y, ...)
+      f(120, 80)
+      f(Y[1:2])
+      f(Y[FALSE])
+      U <- as.im(f)
+    }
     return(invisible(NULL))
   }
   if(ALWAYS) {
@@ -382,6 +384,9 @@ local({
     stroke(5, Y=longleaf %mark% 1)
     stroke(5, Y=cut(longleaf,breaks=3))
     stroke(5, weights=Z, geometric=TRUE)
+    g <- function(x,y) { dnorm(x, sd=10) * dnorm(y, sd=10) }
+    stroke(kernel=g, cutoff=30, FUN=FALSE)
+    stroke(kernel=g, cutoff=30, scalekernel=TRUE, sigma=1, FUN=FALSE)
   }
   
   markmean(longleaf, 9)

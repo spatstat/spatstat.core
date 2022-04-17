@@ -3,7 +3,7 @@
 #
 #  Smooth the marks of a point pattern
 # 
-#  $Revision: 1.77 $  $Date: 2021/01/07 03:08:41 $
+#  $Revision: 1.79 $  $Date: 2022/04/17 00:09:56 $
 #
 
 # smooth.ppp <- function(X, ..., weights=rep(1, npoints(X)), at="pixels") {
@@ -597,7 +597,8 @@ smoothpointsEngine <- function(x, values, sigma, ...,
                                                leaveoneout=leaveoneout,
                                                sorted=sorted,
                                                kernel=kernel,
-                                               scalekernel=scalekernel),
+                                               scalekernel=scalekernel,
+                                               cutoff=cutoff),
                                           list(...),
                                           list(edge=FALSE)))
       denominator <- do.call(density.ppp,
@@ -607,7 +608,8 @@ smoothpointsEngine <- function(x, values, sigma, ...,
                                                    leaveoneout=leaveoneout,
                                                    sorted=sorted,
                                                    kernel=kernel,
-                                                   scalekernel=scalekernel),
+                                                   scalekernel=scalekernel,
+                                                   cutoff=cutoff),
                                               list(...),
                                               list(edge=FALSE)))
     } else {
@@ -621,7 +623,8 @@ smoothpointsEngine <- function(x, values, sigma, ...,
                                                  leaveoneout=leaveoneout,
                                                  sorted=sorted,
                                                  kernel=kernel,
-                                                 scalekernel=scalekernel),
+                                                 scalekernel=scalekernel,
+                                                 cutoff=cutoff),
                                             list(...),
                                             list(edge=FALSE)))
       denominator <- do.call(density.ppp,
@@ -632,7 +635,8 @@ smoothpointsEngine <- function(x, values, sigma, ...,
                                                    leaveoneout=leaveoneout,
                                                    sorted=sorted,
                                                    kernel=kernel,
-                                                   scalekernel=scalekernel),
+                                                   scalekernel=scalekernel,
+                                                   cutoff=cutoff),
                                               list(...),
                                               list(edge=FALSE)))
     }
@@ -677,6 +681,8 @@ bw.smoothppp <- function(X, nh=spatstat.options("n.bandwidth"),
                          kernel="gaussian") {
   stopifnot(is.ppp(X))
   stopifnot(is.marked(X))
+  if(is.function(kernel))
+    stop("Custom kernel functions are not yet supported in bw.smoothppp")
   X <- coerce.marks.numeric(X)
   # rearrange in ascending order of x-coordinate (for C code)
   X <- X[fave.order(X$x)]
@@ -712,8 +718,7 @@ bw.smoothppp <- function(X, nh=spatstat.options("n.bandwidth"),
   # compute cross-validation criterion
   for(i in seq_len(nh)) {
     yhat <- Smooth(X, sigma=h[i], at="points", leaveoneout=TRUE,
-                   kernel=kernel, 
-                   sorted=TRUE)
+                   kernel=kernel, sorted=TRUE)
     if(!is.null(dimmarx))
       yhat <- as.matrix(as.data.frame(yhat))
     cv[i] <- mean((marx - yhat)^2)

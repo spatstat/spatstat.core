@@ -97,7 +97,7 @@ local({
 #
 #  tests/imageops.R
 #
-#   $Revision: 1.34 $   $Date: 2022/03/24 03:21:55 $
+#   $Revision: 1.35 $   $Date: 2022/04/14 00:49:39 $
 #
 
 
@@ -263,6 +263,17 @@ local({
   CX <- eval.im(col2hex(IX+1L))
   plot(CX, valuesAreColours=TRUE)
   plot(CX, valuesAreColours=FALSE)
+
+  #' plot.im contour code logarithmic case
+  V0 <- setcov(owin())
+  V2 <- exp(2*V0+1)
+  plot(V2, log=TRUE, addcontour=TRUE, contourargs=list(col="white"))
+  plot(V2, log=TRUE, addcontour=TRUE, contourargs=list(col="white", nlevels=2))
+  plot(V2, log=TRUE, addcontour=TRUE, contourargs=list(col="white", nlevels=20))
+  V4 <- exp(4*V0+1)
+  plot(V4, log=TRUE, addcontour=TRUE, contourargs=list(col="white"))
+  plot(V4, log=TRUE, addcontour=TRUE, contourargs=list(col="white", nlevels=2))
+  plot(V4, log=TRUE, addcontour=TRUE, contourargs=list(col="white", nlevels=20))
 
   #' pairs.im 
   pairs(solist(Z))

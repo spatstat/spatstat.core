@@ -1,12 +1,18 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-2.002
+        CHANGES IN spatstat.core VERSION 2.4-2.003
 
 OVERVIEW
 
     o Minor changes to package information.
 
-    o Bug fixes and minor improvements
+    o Bug fixes and minor improvements.
     
+BUG FIXES
+
+    o Smooth.ppp
+    Crashed when 'kernel' was a function, 'at="points"' and 'scalekernel=FALSE'.
+    Fixed.
+
         CHANGES IN spatstat.core VERSION 2.4-2
 
 OVERVIEW

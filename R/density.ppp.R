@@ -3,7 +3,7 @@
 #
 #  Method for 'density' for point patterns
 #
-#  $Revision: 1.116 $    $Date: 2022/02/22 04:47:38 $
+#  $Revision: 1.118 $    $Date: 2022/04/17 00:52:03 $
 #
 
 # ksmooth.ppp <- function(x, sigma, ..., edge=TRUE) {
@@ -668,7 +668,9 @@ resolve.2D.kernel <- function(..., sigma=NULL, varcov=NULL, x, mindist=NULL,
   if(is.null(sigma) && is.null(varcov) && !is.null(bwfun)) {
     #' call bandwidth selection function
     force(x)
-    bw <- do.call.matched(bwfun, resolve.defaults(list(X=quote(x)), list(...)))
+    bw <- do.call.matched(bwfun,
+                          resolve.defaults(list(X=quote(x)),
+                                           list(...)))
     #' interpret the result as either sigma or varcov
     if(!is.numeric(bw))
       stop("bandwidth selector returned a non-numeric result")
