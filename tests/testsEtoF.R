@@ -17,7 +17,7 @@ cat(paste("--------- Executing",
 #
 #  Test validity of envelope data
 #
-#  $Revision: 1.24 $  $Date: 2020/11/02 06:53:20 $
+#  $Revision: 1.25 $  $Date: 2022/04/22 01:57:57 $
 #
 
 
@@ -140,6 +140,13 @@ local({
   UU <- envelope(kfit, nsim=7, simulate=expression(simulate(kfit, drop=TRUE)))
   VV <- envelope(kfit, nsim=7, weights=1:7)
   MM <- envelope(kfit, nsim=7, Kinhom, lambda=density(redwood3))
+
+  #' spotted by Art Stock - bugs in ratfv class support
+  BB <- envelope(redwood, Kinhom, nsim=5, sigma=bw.scott,              ratio=TRUE, correction="border")
+  CC <- envelope(redwood, Kinhom, nsim=5, sigma=bw.scott, global=TRUE, ratio=TRUE, correction="border")
+  DD <- envelope(redwood, Finhom, nsim=5, sigma=bw.scott,              ratio=TRUE, correction="trans")
+  EE <- envelope(redwood, Finhom, nsim=5, sigma=bw.scott, global=TRUE, ratio=TRUE, correction="trans")
+  
   #'  envelopes based on sample variance
   E <- envelope(cells, nsim=8, VARIANCE=TRUE)
   G <- envelope(cells, nsim=8, VARIANCE=TRUE,

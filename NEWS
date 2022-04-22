@@ -3,14 +3,28 @@
 
 OVERVIEW
 
-    o Minor changes to package information.
-
+    o We thank Art Stock for contributions.
+    
     o Bug fixes and minor improvements.
     
 BUG FIXES
 
     o Smooth.ppp
     Crashed when 'kernel' was a function, 'at="points"' and 'scalekernel=FALSE'.
+    Fixed.
+
+    o Finhom, Ginhom, Jinhom
+    Crashed when ratio=TRUE.
+    [Spotted by Art Stock.]
+    Fixed.
+    
+    o envelope
+    Crashed for some of the summary functions when ratio=TRUE.
+    [Spotted by Art Stock.]
+    Fixed.
+
+    o "[.rat"
+    Crashed in some cases.
     Fixed.
 
         CHANGES IN spatstat.core VERSION 2.4-2

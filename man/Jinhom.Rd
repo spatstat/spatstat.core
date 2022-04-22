@@ -10,7 +10,7 @@
 \usage{
   Jinhom(X, lambda = NULL, lmin = NULL, ...,
         sigma = NULL, varcov = NULL,
-        r = NULL, breaks = NULL,
+        r = NULL, breaks = NULL, ratio=FALSE, 
         update = TRUE, warn.bias=TRUE, savelambda=FALSE)
 }
 \arguments{
@@ -53,6 +53,12 @@
   }
   \item{breaks}{
 	This argument is for internal use only.
+  }
+  \item{ratio}{
+    Logical. 
+    If \code{TRUE}, the numerator and denominator of
+    the estimate will also be saved,
+    for use in analysing replicated point patterns.
   }
   \item{update}{
     Logical. If \code{lambda} is a fitted model

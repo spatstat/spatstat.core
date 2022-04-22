@@ -219,8 +219,8 @@ local({
   F0 <- Fest(redwood[FALSE], correction="all")
   Fh <- Fest(humberside, domain=erosion(Window(humberside), 100))
 
-  FIr <- Finhom(redwood, savelambda=TRUE)
-  JIr <- Jinhom(redwood, savelambda=TRUE)
+  FIr <- Finhom(redwood, savelambda=TRUE, ratio=TRUE)
+  JIr <- Jinhom(redwood, savelambda=TRUE, ratio=TRUE)
   
   Ga <- Gcross(amacrine, correction="all")
   Ia <- Iest(amacrine, correction="all")

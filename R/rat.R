@@ -5,7 +5,7 @@
 #
 #   Numerator and denominator are stored as attributes
 #
-#   $Revision: 1.13 $   $Date: 2020/11/30 09:43:44 $
+#   $Revision: 1.14 $   $Date: 2022/04/22 01:27:03 $
 #
 
 rat <- function(ratio, numerator, denominator, check=TRUE) {
@@ -58,7 +58,7 @@ tweak.ratfv.entry <- function(x, ...) {
    if(!is.fv(x)) stop("Not yet implemented for non-fv ratios")
    num <- attr(x, "numerator")
    den <- attr(x, "denominator")
-   class(x) <- "fv"
+   class(x) <- c("fv", "data.frame")
    x <- x[...]
    den <- den[...]
    num <- num[...]

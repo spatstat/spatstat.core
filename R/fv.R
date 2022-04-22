@@ -4,7 +4,7 @@
 ##
 ##    class "fv" of function value objects
 ##
-##    $Revision: 1.172 $   $Date: 2021/12/07 01:15:51 $
+##    $Revision: 1.173 $   $Date: 2022/04/22 01:46:51 $
 ##
 ##
 ##    An "fv" object represents one or more related functions
@@ -1454,15 +1454,18 @@ ratfv <- function(df, numer, denom, ..., ratio=TRUE) {
   ## make denominator an fv object
   if(is.data.frame(denom)) {
     den <- fv(denom, ...)
-  } else {
-    ## scalar
-    check.1.real(denom, "Unless it is a data frame,")
+  } else if(is.numeric(denom)) {
+    ## numeric scalar or vector
+    nd <- length(denom)
+    if(nd != 1 && nd != (ny <- nrow(y)))
+      stop(paste("Length of 'denom'", paren(paste0("=", nd)),
+                 "is not equal to length of numerator", paren(paste0("=", ny))))
     ## replicate it in all the data columns
     dendf <- as.data.frame(num)
     valuecols <- (names(num) != fvnames(num, ".x"))
     dendf[, valuecols] <- denom
     den <- fv(dendf, ...)
-  } 
+  } else stop("'denom' should be a data frame, a numeric constant, or a numeric vector")
   ## tweak the descriptions
   ok <- (names(y) != fvnames(y, ".x"))
   attr(num, "desc")[ok] <- paste("numerator of",   attr(num, "desc")[ok])

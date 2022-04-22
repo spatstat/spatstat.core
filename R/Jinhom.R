@@ -1,7 +1,7 @@
 #
 # Jinhom.R
 #
-#  $Revision: 1.14 $ $Date: 2022/01/04 05:30:06 $
+#  $Revision: 1.15 $ $Date: 2022/04/22 02:46:36 $
 #
 
 Ginhom <- function(X, lambda=NULL, lmin=NULL,
@@ -362,7 +362,7 @@ Finhom <- function(X, lambda=NULL, lmin=NULL,
 Jinhom <- function(X, lambda=NULL, lmin=NULL,
                    ...,
                    sigma=NULL, varcov=NULL,
-                   r=NULL, breaks=NULL, update = TRUE,
+                   r=NULL, breaks=NULL, ratio=FALSE, update = TRUE,
                    warn.bias=TRUE, savelambda=FALSE) {
   if(missing(update) & (is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)))
     warn.once(key="Jinhom.update",
@@ -385,11 +385,18 @@ Jinhom <- function(X, lambda=NULL, lmin=NULL,
                sigma=sigma, varcov=varcov, r=r, ratio=FALSE, update=update,
                warn.bias=FALSE, savelambda=FALSE)
   ## evaluate inhomogeneous J function
-  JX <- eval.fv((1-GX)/(1-FX))
-  # relabel the fv object
+  if(!ratio) {
+    JX <- eval.fv((1-GX)/(1-FX))
+  } else {
+    num <- eval.fv(1 - GX)
+    den <- eval.fv(1 - FX)
+    JX <- eval.fv(num/den)
+    JX <- rat(JX, num, den)
+  }
+  ## relabel the fv object
   JX <- rebadge.fv(JX, quote(J[inhom](r)), c("J","inhom"),
-                  names(JX), new.labl=attr(GX, "labl"))
-  # tack on extra info
+                   names(JX), new.labl=attr(GX, "labl"))
+  ## tack on extra info
   attr(JX, "G") <- GX
   attr(JX, "F") <- FX
   attr(JX, "dangerous") <- attr(GX, "dangerous")
