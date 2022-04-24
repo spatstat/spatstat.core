@@ -17,7 +17,7 @@ cat(paste("--------- Executing",
 #'
 #'   Various K and L functions and pcf
 #'
-#'   $Revision: 1.40 $  $Date: 2021/03/23 05:54:20 $
+#'   $Revision: 1.41 $  $Date: 2022/04/24 09:10:14 $
 #'
 #'   Assumes 'EveryStart.R' was run
 
@@ -138,6 +138,8 @@ local({
   if(FULLTEST) {
     #' ----  multitype ------
     K <- Kcross(Amacrine, correction=c("none", "bord.modif"))
+    K <- Kcross(Amacrine, correction=c("none", "bord", "bord.modif"),
+                          ratio=TRUE)
     #' inhomogeneous multitype
     fit <- ppm(Amacrine ~ marks)
     K1 <- Kcross.inhom(Amacrine, lambdaX=fit)

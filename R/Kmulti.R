@@ -4,7 +4,7 @@
 #	Compute estimates of cross-type K functions
 #	for multitype point patterns
 #
-#	$Revision: 5.56 $	$Date: 2022/02/12 09:09:31 $
+#	$Revision: 5.57 $	$Date: 2022/04/24 09:05:36 $
 #
 #
 # -------- functions ----------------------------------------
@@ -119,6 +119,7 @@ function(X, i, j, r=NULL, breaks=NULL,
                      correction=correction, ratio=ratio, ...)
   }
   result <- rebadge.as.crossfun(result, "K", NULL, i, j)
+  return(result)
 }
 
 "Kdot" <- 

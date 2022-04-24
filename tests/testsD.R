@@ -732,7 +732,7 @@ local({
 #'
 #'    Tests for determinantal point process models
 #' 
-#'    $Revision: 1.8 $ $Date: 2021/11/18 01:38:31 $
+#'    $Revision: 1.9 $ $Date: 2022/04/24 09:14:46 $
 
 local({
   if(ALWAYS) {
@@ -756,6 +756,14 @@ local({
     #' a user bug report - matrix dimension error
     set.seed(256)
     dat <- simulate( dppGauss(lambda = 8.5, alpha = 0.1, d = 2), nsim = 1)
+  }
+  if(FULLTEST) {
+    ## cover print.summary.dppm
+    jpines <- japanesepines[c(TRUE,FALSE,FALSE,FALSE)]
+    print(summary(dppm(jpines ~ 1, dppGauss)))
+    print(summary(dppm(jpines ~ 1, dppGauss, method="c")))
+    print(summary(dppm(jpines ~ 1, dppGauss, method="p")))
+    print(summary(dppm(jpines ~ 1, dppGauss, method="a")))
   }
   #' dppeigen code blocks
   if(ALWAYS) {

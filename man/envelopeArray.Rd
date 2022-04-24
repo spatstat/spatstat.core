@@ -74,7 +74,8 @@ envelopeArray(X, fun, \dots, dataname = NULL, verb = FALSE, reuse = TRUE)
   \code{\link{envelope}}, \code{\link{alltypes}}.
 }
 \examples{
-  A <- envelopeArray(finpines, markcrosscorr, nsim=9)
+  Nsim <- if(interactive()) 19 else 3
+  A <- envelopeArray(finpines, markcrosscorr, nsim=Nsim)
   plot(A)
 }
 \keyword{spatial}

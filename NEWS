@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-2.003
+        CHANGES IN spatstat.core VERSION 2.4-2.005
 
 OVERVIEW
 
@@ -27,6 +27,11 @@ BUG FIXES
     Crashed in some cases.
     Fixed.
 
+    o Kcross
+    The result of Kcross() was 'invisible',
+    i.e. it was not automatically printed.
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.4-2
 
 OVERVIEW
