@@ -3,7 +3,7 @@
 #'
 #'    Experimental
 #' 
-#'    $Revision: 1.2 $ $Date: 2022/03/09 02:36:48 $
+#'    $Revision: 1.3 $ $Date: 2022/04/26 07:56:22 $
 
 zgibbsmodel <- local({
 
@@ -118,7 +118,6 @@ intensity.zgibbsmodel <- function(X, ..., approx=c("Poisson","DPP")) {
   approx <- match.arg(approx)
   
   fint <- fakefii(X)
-  icoef <- coef(fint)
   beta <- X$beta
 
   lambda <- switch(approx,
