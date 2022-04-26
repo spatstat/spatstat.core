@@ -1,7 +1,7 @@
 #
 # anova.mppm.R
 #
-# $Revision: 1.23 $ $Date: 2021/12/29 08:18:13 $
+# $Revision: 1.25 $ $Date: 2022/04/26 07:20:39 $
 #
 
 anova.mppm <- local({
@@ -354,11 +354,6 @@ anova.mppm <- local({
     return(result)
   }
 
-  stripGLMM <- function(object) {
-    oldClass(object) <- setdiff(oldClass(object), "glmmPQL")
-    return(object)
-  }
-    
   anova.mppm
 })
 

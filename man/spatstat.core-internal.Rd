@@ -90,7 +90,7 @@
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
 \alias{fakefii}
-\alias{family.glmmPQL} 
+\alias{family.hackglmmPQL} 
 \alias{family.vblogit} 
 \alias{fasp}
 \alias{f3engine}
@@ -104,7 +104,7 @@
 \alias{flipxy.msr}
 \alias{forbid.logi}
 \alias{FormatFaspFormulae}
-\alias{formula.glmmPQL} 
+\alias{formula.hackglmmPQL} 
 \alias{fvexprmap}
 \alias{fvlabels}
 \alias{fvlabels<-}
@@ -338,6 +338,7 @@
 \alias{sp.foundclass}
 \alias{sp.foundclasses}
 \alias{strausscounts}
+\alias{stripGLMM}
 \alias{suffloc}
 \alias{suffstat.generic}
 \alias{suffstat.poisson}
@@ -512,7 +513,7 @@ expandDot(f, dotvars)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
 fakefii(model)
-\method{family}{glmmPQL}(object, \dots)
+\method{family}{hackglmmPQL}(object, \dots)
 \method{family}{vblogit}(object, \dots)
 fasp(fns, which, formulae, dataname, title, rowNames, colNames, checkfv)
 f3engine(x, y, z, box, vside, range, nval, correction)
@@ -526,7 +527,7 @@ flatfname(x)
 \method{flipxy}{msr}(X)
 forbid.logi(object)
 FormatFaspFormulae(f, argname)
-\method{formula}{glmmPQL}(x, \dots)
+\method{formula}{hackglmmPQL}(x, \dots)
 fvexprmap(x)
 fvlabels(x, expand=FALSE)
 fvlabels(x) <- value
@@ -851,6 +852,7 @@ splitHybridInteraction(coeffs, inte)
 sp.foundclass(cname, inlist, formalname, argsgiven)             
 sp.foundclasses(cnames, inlist, formalname, argsgiven)
 strausscounts(U,X,r,EqualPairs)
+stripGLMM(object)
 suffloc(object)
 suffstat.generic(model, X, callstring)
 suffstat.poisson(model, X, callstring)

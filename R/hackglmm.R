@@ -1,5 +1,5 @@
 # hackglmm.R
-#  $Revision: 1.10 $ $Date: 2022/03/29 01:31:25 $
+#  $Revision: 1.12 $ $Date: 2022/04/26 07:19:58 $
 
 hackglmmPQL <- 
 function (fixed, random, family, data, correlation, weights,
@@ -99,11 +99,15 @@ function (fixed, random, family, data, correlation, weights,
 #      attributes(fit$logLik) <- NULL
 #      fit$logLik <- as.numeric(NA)
 #    }
-    oldClass(fit) <- c("glmmPQL", oldClass(fit))
+    oldClass(fit) <- c("hackglmmPQL", "glmmPQL", oldClass(fit))
     fit
 }
 
-family.glmmPQL <- function(object, ...) { object$family }
+family.hackglmmPQL <- function(object, ...) { object$family }
 
-formula.glmmPQL <- function(x, ...) { x$call$fixed }
+formula.hackglmmPQL <- function(x, ...) { x$call$fixed }
 
+stripGLMM <- function(object) {
+  oldClass(object) <- setdiff(oldClass(object), c("hackglmmPQL", "glmmPQL"))
+  return(object)
+}
