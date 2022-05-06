@@ -485,7 +485,7 @@ resolve.lambda.cross <- function(X, I, J,
       lambdaI <- lambdaI(XI$x, XI$y)
     } else if(is.numeric(lambdaI) && is.vector(as.numeric(lambdaI))) {
       ## validate intensity vector
-      check.nvector(lambdaI, nI, things=Iexplain)
+      check.nvector(lambdaI, nI, things=Iexplain, vname="lambdaI")
     } else if(is.ppm(lambdaI) || is.kppm(lambdaI) || is.dppm(lambdaI)) {
       ## point process model provides intensity
       model <- lambdaI
@@ -521,7 +521,7 @@ resolve.lambda.cross <- function(X, I, J,
       lambdaJ <- lambdaJ(XJ$x, XJ$y)
     } else if(is.numeric(lambdaJ) && is.vector(as.numeric(lambdaJ))) {
       ## validate intensity vector
-      check.nvector(lambdaJ, nJ, things=Jexplain)
+      check.nvector(lambdaJ, nJ, things=Jexplain, vname="lambdaJ")
     } else if(is.ppm(lambdaJ) || is.kppm(lambdaJ) || is.dppm(lambdaJ)) {
       ## point process model provides intensity
       model <- lambdaJ

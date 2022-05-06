@@ -188,7 +188,7 @@ rhohatEngine <- function(model, covariate,
     else if(is.function(weights))
       weights <- weights(X$x, X$y)
     else if(is.numeric(weights) && is.vector(as.numeric(weights))) 
-      check.nvector(weights, npoints(X))
+      check.nvector(weights, npoints(X), vname="weights")
     else stop(paste(sQuote("weights"),
                     "should be a vector, a pixel image, or a function"))
   }

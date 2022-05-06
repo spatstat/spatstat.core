@@ -35,7 +35,7 @@ densityAdaptiveKernel.ppp <- function(X, bw, ...,
   }
 
   if(weighted <- !is.null(weights)) {
-    check.nvector(weights, nX, oneok=TRUE)
+    check.nvector(weights, nX, oneok=TRUE, vname="weights")
     if(length(weights) == 1) weights <- rep(weights, nX)
   } else weights <- rep(1,nX)
 
@@ -46,7 +46,7 @@ densityAdaptiveKernel.ppp <- function(X, bw, ...,
                                            list(...)),
                           extrargs=names(args(as.mask)))
   } else if(is.numeric(bw)) {
-    check.nvector(bw, nX, oneok=TRUE)
+    check.nvector(bw, nX, oneok=TRUE, vname="bw")
     if(length(bw) == 1) bw <- rep(bw, nX)
   } else if(is.im(bw)) {
     bw <- safelookup(bw, X, warn=FALSE)

@@ -64,8 +64,8 @@ Ginhom <- function(X, lambda=NULL, lmin=NULL,
         } else if(is.function(lambda)) 
       lambdaX <- lambda(X$x, X$y)
     else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
+      check.nvector(lambda, npts, vname="lambda")
       lambdaX <- lambda
-      check.nvector(lambdaX, npts)
     } else stop(paste(sQuote("lambda"),
                       "should be a vector, a pixel image, or a function"))
     # negative values are illegal
@@ -239,8 +239,8 @@ Finhom <- function(X, lambda=NULL, lmin=NULL,
         } else if(is.function(lambda)) 
       lambdaX <- lambda(X$x, X$y)
     else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
+      check.nvector(lambda, npts, vname="lambda")
       lambdaX <- lambda
-      check.nvector(lambdaX, npts)
     } else stop(paste(sQuote("lambda"),
                       "should be a vector, a pixel image, or a function"))
     # negative values are illegal

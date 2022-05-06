@@ -237,7 +237,7 @@ max.ssf <- function(x, ...) max(marks(x), ...)
 
 integral.ssf <- function(f, domain=NULL, ..., weights=attr(f, "weights")) {
   if(!is.null(weights)) {
-    check.nvector(weights, npoints(f), oneok=TRUE)
+    check.nvector(weights, npoints(f), oneok=TRUE, vname="weights")
     if(length(weights) == 1) weights <- rep(weights, npoints(f))
   }
   if(is.tess(domain)) {

@@ -114,7 +114,7 @@ scanLRTS <- function(X, r, ...,
                        saveopt = FALSE,
                        Xmask=NULL) {
   stopifnot(is.ppp(X))
-  check.nvector(r)
+  check.nvector(r, vname="r")
   if(length(r) == 0) return(as.imlist(list(), check=FALSE))
   method <- match.arg(method)
   alternative <- match.arg(alternative)

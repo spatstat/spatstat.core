@@ -163,7 +163,7 @@ pcfmulti.inhom <- function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ...,
   } else {
     # lambda values provided
     if(is.vector(lambdaI)) 
-      check.nvector(lambdaI, nI)
+      check.nvector(lambdaI, nI, vname="lambdaI")
     else if(is.im(lambdaI)) 
       lambdaI <- safelookup(lambdaI, XI)
     else if(is.function(lambdaI)) 
@@ -180,7 +180,7 @@ pcfmulti.inhom <- function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ...,
   } else {
     # lambda values provided
     if(is.vector(lambdaJ)) 
-      check.nvector(lambdaJ, nJ)
+      check.nvector(lambdaJ, nJ, vname="lambdaJ")
     else if(is.im(lambdaJ)) 
       lambdaJ <- safelookup(lambdaJ, XJ)
     else if(is.function(lambdaJ)) 

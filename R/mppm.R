@@ -43,7 +43,7 @@ mppm <- local({
     if(is.null(weights)) {
       weights <- rep(1, npat)
     } else {
-      check.nvector(weights, npat, things="rows of data", oneok=TRUE)
+      check.nvector(weights, npat, things="rows of data", oneok=TRUE, vname="weights")
       if(length(weights) == 1L) weights <- rep(weights, npat)
     } 
     

@@ -38,7 +38,7 @@ pool.fv <- local({
     template <- vanilla.fv(argh[[1]])
     ## compute products
     if(!is.null(weights)) {
-      check.nvector(weights, narg, things="Functions")
+      check.nvector(weights, narg, things="Functions", vname="weights")
       Y <- Map(Cmul, argh, weights)
       XY <- Map(Cmul, argh, weights^2)
       sumX <- sum(weights)
@@ -143,7 +143,7 @@ pool.rat <- local({
     templateY <- vanilla.fv(Y[[1]])
     ## compute products
     if(!is.null(weights)) {
-      check.nvector(weights, narg, things="Functions")
+      check.nvector(weights, narg, things="Functions", vname="weights")
       X <- Map(Mul, X, weights)
       Y <- Map(Mul, Y, weights)
     } 

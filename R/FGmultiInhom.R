@@ -67,9 +67,9 @@ GmultiInhom <- function(X, I, J,
   
   if(lamIJ.given) {
     #' lambdaI and lambdaJ given
-    check.nvector(lambdaI, nI, things="points of X[I]")
+    check.nvector(lambdaI, nI, things="points of X[I]", vname="lambdaI")
     stopifnot(all(lambdaI > 0))
-    check.nvector(lambdaJ, nJ, things="points of X[J]")
+    check.nvector(lambdaJ, nJ, things="points of X[J]", vname="lambdaJ")
     stopifnot(all(lambdaJ > 0))
     if(is.null(lambdamin)){
       stop(paste("Supply lambdamin - a single positive number which is",
@@ -81,7 +81,7 @@ GmultiInhom <- function(X, I, J,
     stopifnot(lambdamin <= min(lambdaJ))
   } else {
     #' lambda given
-    check.nvector(lambda, nX, things="points of X")
+    check.nvector(lambda, nX, things="points of X", vname="lambda")
     stopifnot(all(lambda > 0))
     lambdaI <- lambda[I]
     lambdaJ <- lambda[J]
@@ -233,12 +233,12 @@ FmultiInhom <- function(X, J,
   check.1.real(lambdamin)
   
   if(!is.null(lambda)) {
-    check.nvector(lambda, nX)
+    check.nvector(lambda, nX, vname="lambda")
     stopifnot(all(lambda > 0))
     stopifnot(lambdamin <= min(lambda[J]))
     lambdaJ <- lambda[J]
   } else {
-    check.nvector(lambdaJ, nJ)
+    check.nvector(lambdaJ, nJ, vname="lambdaJ")
     stopifnot(all(lambdaJ > 0))
     stopifnot(lambdamin <= min(lambdaJ))
   }

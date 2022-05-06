@@ -81,7 +81,7 @@ pcfinhom <- function(X, lambda=NULL, ..., r=NULL,
     else if(is.function(reciplambda))
       reciplambda <- reciplambda(X$x, X$y)
     else if(is.numeric(reciplambda) && is.vector(as.numeric(reciplambda)))
-      check.nvector(reciplambda, npts)
+      check.nvector(reciplambda, npts, vname="reciplambda")
     else stop(paste(sQuote("reciplambda"),
                     "should be a vector, a pixel image, or a function"))
   } else {
@@ -106,7 +106,7 @@ pcfinhom <- function(X, lambda=NULL, ..., r=NULL,
     } else if(is.function(lambda)) 
       lambda <- lambda(X$x, X$y)
     else if(is.numeric(lambda) && is.vector(as.numeric(lambda)))
-      check.nvector(lambda, npts)
+      check.nvector(lambda, npts, vname="lambda")
     else stop(paste(sQuote("lambda"),
          "should be a vector, a pixel image, a function, or a fitted model"))
     # evaluate reciprocal

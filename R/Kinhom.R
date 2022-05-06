@@ -159,7 +159,7 @@
         else if(is.function(reciplambda))
           reciplambda <- reciplambda(X$x, X$y)
         else if(is.numeric(reciplambda) && is.vector(as.numeric(reciplambda)))
-          check.nvector(reciplambda, npts)
+          check.nvector(reciplambda, npts, vname="reciplambda")
         else stop(paste(sQuote("reciplambda"),
                         "should be a vector, a pixel image, or a function"))
         validate.weights(reciplambda, recip=TRUE)
@@ -186,7 +186,7 @@
         } else if(is.function(lambda)) 
           lambda <- lambda(X$x, X$y)
         else if(is.numeric(lambda) && is.vector(as.numeric(lambda)))
-          check.nvector(lambda, npts)
+          check.nvector(lambda, npts, vname="lambda")
         else stop(paste(sQuote("lambda"),
                           "should be a vector, a pixel image, or a function"))
         validate.weights(lambda)
@@ -516,7 +516,7 @@ resolve.lambda <- function(X, lambda=NULL, ...,
   } else if(is.function(lambda)) {
     lambda <- lambda(X$x, X$y)
   } else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
-    check.nvector(lambda, npoints(X))
+    check.nvector(lambda, npoints(X), vname="lambda")
   } else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
     model <- lambda
     if(!update) {

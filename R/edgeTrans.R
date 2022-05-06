@@ -48,8 +48,8 @@ edge.Trans <- function(X, Y=X, W=Window(X), exact=FALSE, paired=FALSE,
     ## dx, dy given
     if(paired) {
       ## dx, dy are vectors
-      check.nvector(dx)
-      check.nvector(dy)
+      check.nvector(dx, vname="dx")
+      check.nvector(dy, vname="dy")
       stopifnot(length(dx) == length(dy))
     } else {
       ## dx, dy are matrices

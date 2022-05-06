@@ -20,7 +20,7 @@ rose.default <- local({
       main <- short.deparse(substitute(x))
     stopifnot(is.numeric(x))
     if(!is.null(weights))
-      check.nvector(weights, length(x), things="observations")
+      check.nvector(weights, length(x), things="observations", vname="weights")
     #' determine units
     missu <- missing(unit)
     unit <- match.arg(unit)

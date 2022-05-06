@@ -475,7 +475,7 @@ vcalcGibbsGeneral <- function(model,
                              matwt=matwt))
   if(reweighting) {
     ## each column of the model matrix is multiplied by 'matwt'
-    check.nvector(matwt, nrow(mall), things="quadrature points")
+    check.nvector(matwt, nrow(mall), things="quadrature points", vname="matwt")
     mall.orig <- mall
     mall      <- mall * matwt
   }

@@ -27,7 +27,7 @@ Smoothfun.ppp <- function(X, sigma=NULL, ...,
       weightsgiven <- FALSE
   }
   if(weightsgiven) {
-    check.nvector(weights, npoints(X))
+    check.nvector(weights, npoints(X), vname="weights")
   } else weights <- NULL
   ## 
   X <- coerce.marks.numeric(X)

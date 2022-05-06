@@ -24,8 +24,8 @@ msr <- function(qscheme, discrete, density, check=TRUE) {
       density <- rep.int(density, nquad)
     # check lengths
     if(check) {
-      check.nvector(discrete, ndata, things="data points", naok=TRUE)
-      check.nvector(density,  nquad, things="quadrature points", naok=TRUE)
+      check.nvector(discrete, ndata, things="data points", naok=TRUE, vname="discrete")
+      check.nvector(density,  nquad, things="quadrature points", naok=TRUE, vname="density")
     }
     discretepad <- numeric(nquad)
     discretepad[Z] <- discrete

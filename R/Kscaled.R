@@ -66,7 +66,7 @@
     else if(!is.numeric(lambda) || !is.null(dim(lambda)))
       stop(paste(sQuote("lambda"),
                  "should be a vector, a pixel image, a function or a ppm"))
-    check.nvector(lambda, npts)
+    check.nvector(lambda, npts, vname="lambda")
   }
 
   if(renormalise) {

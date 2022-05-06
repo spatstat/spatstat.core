@@ -1043,7 +1043,7 @@ hardcoredist.ppm <- function(x, ..., epsilon=0) {
 tweak.coefs <- function(model, new.coef) {
   if(is.null(new.coef)) return(model)
   co <- coef(model)
-  check.nvector(new.coef, length(co), things="coefficients")
+  check.nvector(new.coef, length(co), things="coefficients", vname="new.coef")
   model$coef.orig <- co
   model$coef <- new.coef
   return(model)

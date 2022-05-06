@@ -1328,7 +1328,7 @@ envelope.matrix <- function(Y, ...,
     ## validate weights
     if(use.weights && !gaveup) 
       check.nvector(weights, ncol(simvals), 
-                    things="simulated functions", naok=TRUE)
+                    things="simulated functions", naok=TRUE, vname="weights")
 
     ## determine numbers of columns used
     Ncol <- if(!gaveup) ncol(simvals) else Inf
@@ -1370,7 +1370,7 @@ envelope.matrix <- function(Y, ...,
     ## validate weights
     if(use.weights) 
       check.nvector(weights, nsim,
-                    things="simulations", naok=TRUE)
+                    things="simulations", naok=TRUE, vname="weights")
     restrict.columns <- FALSE
     dual <- FALSE
   }

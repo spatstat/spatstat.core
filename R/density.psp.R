@@ -14,7 +14,7 @@ density.psp <- function(x, sigma, ..., weights=NULL, edge=TRUE,
   w <- x$window
   n <- x$n
   if(length(weights)) {
-    check.nvector(weights, n, things="segments", oneok=TRUE)
+    check.nvector(weights, n, things="segments", oneok=TRUE, vname="weights")
     if(length(weights) == 1) weights <- rep(weights, n)
   } else weights <- NULL
   len <- lengths_psp(x)

@@ -359,7 +359,7 @@ dppeigen <- function(model, trunc, Wscale, stationary = FALSE){
     if(stationary && dim!=2)
         stop("Stationarity can only be exploited in dimension 2 at the moment.")
     Wscale <- as.numeric(Wscale)
-    check.nvector(Wscale, dim, things="dimensions")
+    check.nvector(Wscale, dim, things="dimensions", vname="Wscale")
     ## Calculate expected number of points if the intensity is a parameter
     expnum <- NULL
     lambdaname <- model$intensity

@@ -820,7 +820,7 @@ Krect.engine <- function(X, rmax, nr=100,
   if(weighted <- !is.null(weights)) {
     ## coerce weights to a vector
     if(is.numeric(weights)) {
-      check.nvector(weights, npts)
+      check.nvector(weights, npts, vname="weights")
     } else {
       wim <- as.im(weights, W)
       weights <- wim[X, drop=FALSE]

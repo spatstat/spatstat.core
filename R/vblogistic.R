@@ -80,7 +80,7 @@ vblogit <- local({
         m0 <- prior.mean
     if(!is.null(prior.var <- list(...)$prior.var))
         S0 <- prior.var
-    check.nvector(m0, K, things="parameters")
+    check.nvector(m0, K, things="parameters", vname="m0")
     stopifnot(is.matrix(S0))
     if(missing(S0i)) S0i <- solve(S0)
     #' Constants:

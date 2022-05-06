@@ -73,7 +73,7 @@ bw.pcf <- function(X, rmax=NULL, lambda=NULL, divisor="r",
   } else {
     # inhomogeneous case: lambda is assumed to be a numeric vector giving
     # the intensity at the points of the point pattern X
-    check.nvector(lambda, nX)
+    check.nvector(lambda, nX, vname="lambda")
     lambda2area <- lambda[cp$i] * lambda[cp$j] * areaW
     pcfargs <- list(X=X, lambda=lambda, r=rs,
                     divisor=divisor, kernel=kernel, correction="translate",

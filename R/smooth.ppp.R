@@ -1000,7 +1000,7 @@ ExpSmoothLog <- function(X, ..., at=c("pixels", "points"), weights=NULL) {
   verifyclass(X, "ppp")
   at <- match.arg(at)
   if(!is.null(weights)) 
-    check.nvector(weights, npoints(X))
+    check.nvector(weights, npoints(X), vname="weights")
   X <- coerce.marks.numeric(X)
   marx <- marks(X)
   d <- dim(marx)
