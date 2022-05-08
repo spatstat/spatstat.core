@@ -78,6 +78,7 @@
 \alias{equalpairs}          
 \alias{evalCovar}
 \alias{evalCovar.ppm}
+\alias{evalCovar.ppp}
 \alias{evalCovar.slrm}
 \alias{evalCovariate}
 \alias{evalInteraction}
@@ -495,6 +496,9 @@ envelopeTest(X, \dots, exponent, alternative,
 equalpairs(U, X, marked=FALSE)
 evalCovar(model, covariate, \dots)
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
+\method{evalCovar}{ppp}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset) 
 \method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
