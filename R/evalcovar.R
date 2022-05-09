@@ -3,7 +3,7 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.37 $ $Date: 2022/05/08 10:03:20 $
+#' $Revision: 1.38 $ $Date: 2022/05/09 02:43:52 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
@@ -229,14 +229,19 @@ evalCovar.ppm <- local({
   pixelvalues <- function(z) { as.data.frame(z)[,3L] }
   getxy <- function(z) { z[,c("x","y")] }
 
+  ## Function caller used for marked locations (x,y,m) only.
   functioncaller <- function(x,y,m,f,...) {
     nf <- length(names(formals(f)))
     if(nf < 2) stop("Covariate function must have at least 2 arguments")
-    value <- if(nf == 2) f(x,y) else if(nf == 3) f(x,y,m) else f(x,y,m,...)
+    if(nf == 2) return(f(x,y))
+    if(nf == 3) return(f(x,y,m))
+    argh <- list(...)
+    extra <- intersect(names(argh),
+                       names(formals(f))[-(1:3)])
+    value <- do.call(f, append(list(x,y,m), argh[extra]))
     return(value)
   }
             
-  
   evalCovar.ppm
 })
 
@@ -457,10 +462,16 @@ evalCovar.ppp <- local({
   pixelvalues <- function(z) { as.data.frame(z)[,3L] }
   getxy <- function(z) { z[,c("x","y")] }
 
+  ## Function caller used for marked locations (x,y,m) only.
   functioncaller <- function(x,y,m,f,...) {
     nf <- length(names(formals(f)))
     if(nf < 2) stop("Covariate function must have at least 2 arguments")
-    value <- if(nf == 2) f(x,y) else if(nf == 3) f(x,y,m) else f(x,y,m,...)
+    if(nf == 2) return(f(x,y))
+    if(nf == 3) return(f(x,y,m))
+    argh <- list(...)
+    extra <- intersect(names(argh),
+                       names(formals(f))[-(1:3)])
+    value <- do.call(f, append(list(x,y,m), argh[extra]))
     return(value)
   }
             
