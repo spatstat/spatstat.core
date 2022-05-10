@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.98 $  $Date: 2021/06/28 03:45:18 $
+#'  $Revision: 1.100 $  $Date: 2022/05/10 07:55:58 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -30,20 +30,24 @@ rhohat.ppp <- rhohat.quad <-
   callstring <- short.deparse(sys.call())
   smoother <- match.arg(smoother)
   method <- match.arg(method)
+  X <- if(is.ppp(object)) object else object$data
   if(missing(positiveCI))
     positiveCI <- (smoother == "local")
   if(missing(covname)) 
     covname <- sensiblevarname(short.deparse(substitute(covariate)), "X")
   if(is.null(adjust))
     adjust <- 1
-  # validate model
+  ## validate model
   if(is.null(baseline)) {
-    model <- ppm(object ~1)
+    ## Uniform intensity
+    ## WAS: model <- ppm(object ~1)
+    model <- X
     reference <- "Lebesgue"
   } else {
+    ## Intensity proportional to baseline
     model <- ppm(object ~ offset(log(baseline)))
     reference <- "baseline"
-  } 
+  }
   modelcall <- NULL
 
   if(is.character(covariate) && length(covariate) == 1) {
@@ -57,12 +61,12 @@ rhohat.ppp <- rhohat.quad <-
            },
            stop("Unrecognised covariate name")
          )
-    covunits <- unitname(data.ppm(model))
+    covunits <- unitname(X)
   } else {
     covunits <- NULL
   }
 
-  W <- Window(data.ppm(model))
+  W <- Window(X)
   if(!is.null(subset)) W <- W[subset, drop=FALSE]
   areaW <- area(W)
   
@@ -182,7 +186,7 @@ rhohatEngine <- function(model, covariate,
   lambda  <- values$lambda
     ## weights
   if(!is.null(weights)) {
-    X <- data.ppm(model)
+    X <- as.ppp(stuff$X)
     if(is.im(weights)) 
       weights <- safelookup(weights, X)
     else if(is.function(weights))

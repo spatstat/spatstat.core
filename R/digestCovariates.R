@@ -1,7 +1,7 @@
 #'
 #'    digestCovariates.R
 #'
-#'     $Revision: 1.4 $  $Date: 2018/05/03 08:33:44 $
+#'     $Revision: 1.5 $  $Date: 2022/05/10 04:18:15 $
 #' 
 
 is.scov <- function(x) {
@@ -36,29 +36,30 @@ digestCovariates <- function(..., W = NULL) {
 
   if(any(needW <- !sapply(covs, is.sob))) {
     if(is.null(W)){
+      if(all(needW))
+        stop("Unable to determine spatial domain for covariates", call.=FALSE)
       boxes <- lapply(covs[!needW], Frame)
       W <- do.call(boundingbox, boxes)
     } else stopifnot(is.owin(W))
   }
   
-  covunits <- vector("list", length(covs))
-  # Now covs is a list of valid covariates we can loop through
+  #' Now covs is a list of valid covariates we can loop through
+  covunits <- lapply(covs, unitname)
   for(i in seq_along(covs)){
     covar <- covs[[i]]
-    if(inherits(covar, "distfun"))
-      covunits[[i]] <- unitname(covar)
     if(is.character(covar) && length(covar) == 1 && (covar %in% c("x", "y"))) {
       covar <- if(covar == "x"){
-        function(x,y) { x }
-      } else{
-        function(x,y) { y }
-      }
-      covunits[[i]] <- unitname(W)
+                 function(x,y) { x }
+               } else{
+                 function(x,y) { y }
+               }
     }
-    if(is.function(covar) && !inherits(covar, "funxy")){
-      covar <- funxy(f = covar, W = W)
+    if(is.function(covar)) {
+      if(!inherits(covar, "funxy"))
+        covar <- funxy(f = covar, W = W)
+      covs[[i]] <- covar
+      covunits[[i]] <- unitname(covar)
     }
-    covs[[i]] <- covar
   }
   covs <- as.solist(covs)
   attr(covs, "covunits") <- covunits

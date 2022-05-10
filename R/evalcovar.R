@@ -3,7 +3,7 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.38 $ $Date: 2022/05/09 02:43:52 $
+#' $Revision: 1.41 $ $Date: 2022/05/10 07:51:27 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
@@ -218,7 +218,7 @@ evalCovar.ppm <- local({
                    weights     = pixelarea,
                    ZX          = ZX,
                    type        = type)
-    return(list(values=values, info=info))
+    return(list(values=values, info=info, X=X)) # X is possibly a subset of original
   }
 
   xcoordfun <- function(x,y,m){x}
@@ -451,7 +451,7 @@ evalCovar.ppp <- local({
                    weights     = pixelarea,
                    ZX          = ZX,
                    type        = type)
-    return(list(values=values, info=info))
+    return(list(values=values, info=info, X=X)) # X is possibly a subset of original
   }
 
   xcoordfun <- function(x,y,m){x}
