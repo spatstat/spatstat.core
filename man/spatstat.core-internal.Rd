@@ -497,10 +497,10 @@ equalpairs(U, X, marked=FALSE)
 evalCovar(model, covariate, \dots)
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
-          modelname, covname, dataname, subset) 
+          modelname, covname, dataname, subset, clip.predict) 
 \method{evalCovar}{ppp}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
-          modelname, covname, dataname, subset) 
+          modelname, covname, dataname, subset, clip.predict) 
 \method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
           jitter, jitterfactor,
           modelname, covname, dataname, subset) 

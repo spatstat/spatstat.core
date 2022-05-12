@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.102 $  $Date: 2022/05/12 01:10:29 $
+#'  $Revision: 1.103 $  $Date: 2022/05/12 04:08:19 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -79,6 +79,7 @@ rhohat.ppp <- rhohat.quad <-
                horvitz=horvitz,
                smoother=smoother,
                resolution=list(dimyx=dimyx, eps=eps),
+               evalCovarArgs=list(clip.predict=FALSE),
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence,
@@ -143,6 +144,7 @@ rhohat.ppm <- function(object, covariate, ...,
                horvitz=horvitz,
                smoother=smoother,
                resolution=list(dimyx=dimyx, eps=eps),
+               evalCovarArgs=list(clip.predict=FALSE),
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence, positiveCI=positiveCI,
@@ -168,7 +170,7 @@ rhohatEngine <- function(model, covariate,
                          breaks=NULL,
                          modelcall=NULL, callstring="rhohat") {
   reference <- match.arg(reference)
-  # evaluate the covariate at data points and at pixels
+  #' evaluate the covariate at data points and at pixels
   stuff <- do.call(evalCovar,
                    c(list(model=model,
                           covariate=covariate,

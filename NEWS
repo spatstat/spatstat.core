@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-3.005
+        CHANGES IN spatstat.core VERSION 2.4-3.006
 
 OVERVIEW
 
@@ -9,8 +9,8 @@ BUG FIXES
 
     o rhohat.ppp
     The argument 'subset' was not handled correctly in the internal data.
-    The estimated function 'rho' was correct
-    but the results of 'predict.rhohat' may have been incorrect.
+    The estimated function 'rho' was correct, but if 'predict.rhohat' was applied,
+    predictions were computed only in the 'subset', and were possibly incorrect values.
     Fixed.
 
         CHANGES IN spatstat.core VERSION 2.4-3

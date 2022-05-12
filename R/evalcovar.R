@@ -3,7 +3,7 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.41 $ $Date: 2022/05/10 07:51:27 $
+#' $Revision: 1.44 $ $Date: 2022/05/12 04:08:30 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
@@ -18,7 +18,7 @@ evalCovar.ppm <- local({
                             interpolate=TRUE,
                             jitter=TRUE, jitterfactor=1,
                             modelname=NULL, covname=NULL,
-                            dataname=NULL, subset=NULL) {
+                            dataname=NULL, subset=NULL, clip.predict=TRUE) {
     lambdatype <- match.arg(lambdatype)
     #' evaluate covariate values at data points and at pixels
     ispois <- is.poisson(model)
@@ -44,11 +44,17 @@ evalCovar.ppm <- local({
     if(!is.null(dimyx) || !is.null(eps))
       W <- as.mask(W, dimyx=dimyx, eps=eps)
 
+    Wfull <- Zfull <- NULL
+    
     if(!is.null(subset)) {
-      #' restrict to subset if required
+      #' restrict to subset
+      if(!clip.predict) {
+        ## use original window for prediction
+        Wfull <- W
+      }
       X <- X[subset]
       W <- W[subset, drop=FALSE]
-    }
+    } 
     
     #' evaluate covariate 
     if(is.character(covariate)) {
@@ -79,8 +85,10 @@ evalCovar.ppm <- local({
           if(any(uhoh <- is.na(ZX)))
             ZX[uhoh] <- safelookup(covariate, X[uhoh])
         }
-        #' covariate values for pixels inside window
+        #' covariate values for pixels inside window (for calculation)
         Z <- covariate[W, drop=FALSE]
+        #' covariate values for pixels inside window (for prediction)
+        if(!is.null(Wfull)) Zfull <- covariate[Wfull, drop=FALSE] 
         #' corresponding mask
         W <- as.owin(Z)
       } else if(is.function(covariate)) {
@@ -93,6 +101,7 @@ evalCovar.ppm <- local({
         W <- as.mask(W)
         #' covariate in window
         Z <- as.im(covariate, W=W)
+        if(!is.null(Wfull)) Zfull <- as.im(covariate, W=Wfull)
         #' collapse function body to single string
         covname <- singlestring(covname)
       } else if(is.null(covariate)) {
@@ -146,6 +155,7 @@ evalCovar.ppm <- local({
         }
         #' restrict covariate images to window 
         Z <- solapply(covariate, "[", i=W, drop=FALSE)
+        if(!is.null(Wfull)) Zfull <- solapply(covariate, "[", i=Wfull, drop=FALSE)
         #' extract pixel locations and pixel values
         Zframes <- lapply(Z, as.data.frame)
         #' covariate values at each pixel inside window
@@ -172,6 +182,12 @@ evalCovar.ppm <- local({
         for(k in seq_along(possmarks))
           Z[[k]] <- as.im(functioncaller, m=possmarks[k], f=covariate, W=W, ...)
         Zvalues <- unlist(lapply(Z, pixelvalues))
+        #' covariate in original window, for prediction
+        if(!is.null(Wfull)) {
+          Zfull <- list()
+          for(k in seq_along(possmarks))
+            Zfull[[k]] <- as.im(functioncaller, m=possmarks[k], f=covariate, W=Wfull, ...)
+        }
         #' corresponding fitted [conditional] intensity values
         lambda <- predict(model, locations=W, type=lambdatype)
         lambda <- unlist(lapply(lambda, pixelvalues))
@@ -207,10 +223,10 @@ evalCovar.ppm <- local({
     lambdaX <- predict(model, locations=X, type=lambdatype)
 
     #' lambda image(s)
-    lambdaimage <- predict(model, locations=W, type=lambdatype)
+    lambdaimage <- predict(model, locations=Wfull %orifnull% W, type=lambdatype)
     
     #' wrap up 
-    values <- list(Zimage      = Z,
+    values <- list(Zimage      = Zfull %orifnull% Z,
                    lambdaimage = lambdaimage,
                    Zvalues     = Zvalues,
                    lambda      = lambda,
@@ -253,7 +269,7 @@ evalCovar.ppp <- local({
                             interpolate=TRUE,
                             jitter=TRUE, jitterfactor=1,
                             modelname=NULL, covname=NULL,
-                            dataname=NULL, subset=NULL) {
+                            dataname=NULL, subset=NULL, clip.predict=TRUE) {
     lambdatype <- match.arg(lambdatype)
     dont.complain.about(lambdatype)
     if(is.null(modelname)) modelname <- "CSR"
@@ -276,8 +292,14 @@ evalCovar.ppp <- local({
     if(!is.null(dimyx) || !is.null(eps))
       W <- as.mask(W, dimyx=dimyx, eps=eps)
 
+    Wfull <- Zfull <- NULL
+    
     if(!is.null(subset)) {
-      #' restrict to subset if required
+      #' restrict to subset
+      if(!clip.predict) {
+        #' use original window for prediction
+        Wfull <- W
+      }
       X <- X[subset]
       W <- W[subset, drop=FALSE]
     }
@@ -313,6 +335,7 @@ evalCovar.ppp <- local({
         }
         #' covariate values for pixels inside window
         Z <- covariate[W, drop=FALSE]
+        if(!is.null(Wfull)) Zfull <- covariate[Wfull, drop=FALSE]
         #' corresponding mask
         W <- as.owin(Z)
       } else if(is.function(covariate)) {
@@ -325,6 +348,7 @@ evalCovar.ppp <- local({
         W <- as.mask(W)
         #' covariate in window
         Z <- as.im(covariate, W=W)
+        if(!is.null(Wfull)) Zfull <- as.im(covariate, W=Wfull)
         #' collapse function body to single string
         covname <- singlestring(covname)
       } else if(is.null(covariate)) {
@@ -343,7 +367,7 @@ evalCovar.ppp <- local({
       #' lambda values at data points
       lambdaX <- rep.int(LambdaBar, npoints(X))
       #' lambda image
-      lambdaimage <- as.im(LambdaBar, W)
+      lambdaimage <- as.im(LambdaBar, Wfull %orifnull% W)
     } else {
       #' ...................  marked .......................
       if(!is.multitype(X))
@@ -381,6 +405,7 @@ evalCovar.ppp <- local({
         }
         #' restrict covariate images to window 
         Z <- solapply(covariate, "[", i=W, drop=FALSE)
+        if(!is.null(Wfull)) Z <- solapply(covariate, "[", i=Wfull, drop=FALSE)
         #' extract pixel locations and pixel values
         Zframes <- lapply(Z, as.data.frame)
         #' covariate values at each pixel inside window
@@ -406,6 +431,12 @@ evalCovar.ppp <- local({
         Z <- list()
         for(k in seq_along(possmarks))
           Z[[k]] <- as.im(functioncaller, m=possmarks[k], f=covariate, W=W, ...)
+        #' covariate in original window, for prediction
+        if(!is.null(Wfull)) {
+          Zfull <- list()
+          for(k in seq_along(possmarks))
+            Zfull[[k]] <- as.im(functioncaller, m=possmarks[k], f=covariate, W=Wfull, ...)
+        }
         Zpixvalues <- lapply(Z, pixelvalues)
         Zvalues <- unlist(Zpixvalues)
         #' corresponding fitted [conditional] intensity values
@@ -427,7 +458,7 @@ evalCovar.ppp <- local({
       #' lambda values at data points
       lambdaX <- LambdaBar[as.integer(marks(X))]
       #' lambda images
-      lambdaimage <- solapply(LambdaBar, as.im, W=W)
+      lambdaimage <- solapply(LambdaBar, as.im, W=Wfull %orifnull% W)
       names(lambdaimage) <- possmarks
     }    
     #' ..........................................................
@@ -443,7 +474,7 @@ evalCovar.ppp <- local({
     check.finite(Zvalues, xname="the covariate", usergiven=TRUE)
 
     #' wrap up 
-    values <- list(Zimage      = Z,
+    values <- list(Zimage      = Zfull %orifnull% Z,
                    lambdaimage = lambdaimage,
                    Zvalues     = Zvalues,
                    lambda      = lambda,
