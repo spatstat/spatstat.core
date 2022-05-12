@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.100 $  $Date: 2022/05/10 07:55:58 $
+#'  $Revision: 1.102 $  $Date: 2022/05/12 01:10:29 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -37,15 +37,17 @@ rhohat.ppp <- rhohat.quad <-
     covname <- sensiblevarname(short.deparse(substitute(covariate)), "X")
   if(is.null(adjust))
     adjust <- 1
-  ## validate model
+  ## Determine reference model (and validate arguments)
   if(is.null(baseline)) {
     ## Uniform intensity
-    ## WAS: model <- ppm(object ~1)
+    ## WAS: model <- ppm(object ~1, subset=subset)
     model <- X
     reference <- "Lebesgue"
   } else {
     ## Intensity proportional to baseline
-    model <- ppm(object ~ offset(log(baseline)))
+    model <- eval(substitute(
+      ppm(object ~ offset(log(baseline)), subset=SUBSET),
+      list(SUBSET=subset)))
     reference <- "baseline"
   }
   modelcall <- NULL

@@ -1,9 +1,17 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-3.004
+        CHANGES IN spatstat.core VERSION 2.4-3.005
 
 OVERVIEW
 
-    o Internal improvements.
+    o Bug fixes and minor improvements.
+
+BUG FIXES
+
+    o rhohat.ppp
+    The argument 'subset' was not handled correctly in the internal data.
+    The estimated function 'rho' was correct
+    but the results of 'predict.rhohat' may have been incorrect.
+    Fixed.
 
         CHANGES IN spatstat.core VERSION 2.4-3
 
