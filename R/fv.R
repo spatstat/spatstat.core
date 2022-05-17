@@ -4,7 +4,7 @@
 ##
 ##    class "fv" of function value objects
 ##
-##    $Revision: 1.173 $   $Date: 2022/04/22 01:46:51 $
+##    $Revision: 1.175 $   $Date: 2022/05/17 07:42:06 $
 ##
 ##
 ##    An "fv" object represents one or more related functions
@@ -365,14 +365,18 @@ fvlabels <- function(x, expand=FALSE) {
   lab <- attr(x, "labl")
   if(expand && !is.null(fname <- attr(x, "fname"))) {
     ## expand plot labels using function name
-    nstrings <- max(substringcount("%s", lab))
-    ## pad with blanks
-    nextra <- nstrings - length(fname)
-    if(nextra > 0) 
-      fname <- c(fname, rep("", nextra))
-    ## render
-    if(nstrings > 0)
-      lab <- do.call(sprintf, append(list(lab), as.list(fname)))
+    nwanted <- substringcount("%s", lab)
+    ngiven <- length(fname)
+    if(any(0 < nwanted & nwanted < ngiven))
+      warning("Internal error: fvlabels truncated the function name", call.=FALSE)
+    nlacking <- max(nwanted) - ngiven
+    if(nlacking > 0) {
+      ## pad with blanks
+      fname <- c(fname, rep("", nlacking))
+    }
+    fnamelist <- as.list(fname)
+    for(i in which(nwanted > 0)) 
+      lab[i] <- do.call(sprintf, append(list(lab[i]), fnamelist[1:nwanted[i]]))
   }
   ## remove empty space
   lab <- gsub(" ", "", lab)
@@ -383,7 +387,7 @@ fvlabels <- function(x, expand=FALSE) {
 "fvlabels<-" <- function(x, value) {
   stopifnot(is.fv(x))
   stopifnot(is.character(value))
-  stopifnot(length(value) == length(fvlabels(x)))
+  stopifnot(length(value) == ncol(x))
   attr(x, "labl") <- value
   return(x)
 }

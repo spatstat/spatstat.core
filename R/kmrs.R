@@ -9,7 +9,7 @@
 #	reduced.sample()
 #       km.rs()
 #
-#	$Revision: 3.26 $	$Date: 2013/06/27 08:59:16 $
+#	$Revision: 3.28 $	$Date: 2022/05/17 07:11:07 $
 #
 #	The functions in this file produce vectors `km' and `rs'
 #	where km[k] and rs[k] are estimates of F(breaks[k+1]),
@@ -157,7 +157,8 @@ function(o, cc, d, breaks, KM=TRUE, RS=TRUE) {
 
 censtimeCDFest <- function(o, cc, d, breaks, ...,
                            KM=TRUE, RS=TRUE, HAN=TRUE, RAW=TRUE,
-                           han.denom=NULL, tt=NULL, pmax=0.9) {
+                           han.denom=NULL, tt=NULL, pmax=0.9,
+                           fname="CDF", fexpr=quote(CDF(r))) {
 # Histogram-based estimation of cumulative distribution function
 # of lifetimes subject to censoring.
 #	o: censored lifetimes min(T_i,C_i)
@@ -202,8 +203,13 @@ censtimeCDFest <- function(o, cc, d, breaks, ...,
   nama <-  c("r",  "km", "hazard", "han", "rs", "raw")
   avail <- c(TRUE,  KM,  KM,       HAN,   RS,   RAW)
   iscdf <- c(FALSE, TRUE, FALSE,   TRUE,  TRUE, TRUE)
-  labl <- c("r", "hat(%s)[km](r)", "lambda(r)", "hat(%s)[han](r)",
-            "hat(%s)[bord](r)", "hat(%s)[raw](r)")[avail]
+  labl <- c("r",
+            makefvlabel(NULL, "hat", fname, "km"),
+            "hat(lambda)(r)",
+            makefvlabel(NULL, "hat", fname, "han"),
+            makefvlabel(NULL, "hat", fname, "bord"),
+            makefvlabel(NULL, "hat", fname, "raw")
+            )[avail]
   desc <- c("distance argument r",
             "Kaplan-Meier estimate of %s",
             "Kaplan-Meier estimate of hazard function lambda(r)",
@@ -211,8 +217,8 @@ censtimeCDFest <- function(o, cc, d, breaks, ...,
             "border corrected estimate of %s",
             "uncorrected estimate of %s")[avail]
   df <- df[, nama[avail]]
-  Z <- fv(df, "r", substitute(CDF(r), NULL), bestest, . ~ r, alim, labl, desc,
-          fname="CDF")
+  Z <- fv(df, "r", fexpr, bestest, . ~ r, alim, labl, desc,
+          fname=fname)
   fvnames(Z, ".") <- nama[iscdf & avail]
   return(Z)
 }

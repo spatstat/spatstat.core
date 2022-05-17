@@ -413,7 +413,7 @@ calc.SIR(COV, z)
 calc.TSE(COV, z, pos, Dim1, Dim2)
 cannot.update(\dots)
 censtimeCDFest(o, cc, d, breaks, \dots,
-     KM, RS, HAN, RAW, han.denom, tt, pmax)
+     KM, RS, HAN, RAW, han.denom, tt, pmax, fname, fexpr)
 check.separable(dmat, covname, isconstant, fatal)
 check.testfun(f, f1, X)
 circticks(R, at, unit, start, clockwise, labels)

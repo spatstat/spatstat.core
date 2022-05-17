@@ -1,5 +1,5 @@
 
-        CHANGES IN spatstat.core VERSION 2.4-3.006
+        CHANGES IN spatstat.core VERSION 2.4-3.007
 
 OVERVIEW
 
@@ -13,6 +13,10 @@ BUG FIXES
     predictions were computed only in the 'subset', and were possibly incorrect values.
     Fixed.
 
+    o Gfox, Jfox
+    Warnings were issued about text formatting errors (mentioning 'sprintf' or 'fmt').
+    Fixed.
+    
         CHANGES IN spatstat.core VERSION 2.4-3
 
 OVERVIEW

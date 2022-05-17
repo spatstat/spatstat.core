@@ -3,7 +3,7 @@
 #
 #  Foxall G-function and J-function
 #
-#  $Revision: 1.11 $   $Date: 2020/02/20 02:32:21 $
+#  $Revision: 1.13 $   $Date: 2022/05/17 07:48:43 $
 #
 Gfox <- function(X, Y, r=NULL, breaks=NULL,
                  correction=c("km", "rs", "han"),
@@ -51,9 +51,11 @@ Gfox <- function(X, Y, r=NULL, breaks=NULL,
                       HAN=corx$han,
                       RAW=corx$none,
                       han.denom=if(corx$han) eroded.areas(Window(X), rval) else NULL,
-                      tt=dist)
+                      tt=dist,
+                      fname=c("G", "fox"),
+                      fexpr=quote(G[fox](r))
+                      )
   ## relabel
-  Z <- rebadge.fv(Z, quote(G[fox](r)), c("G", "fox"))
   unitname(Z) <- unitname(Y)
   return(Z)
 }
@@ -74,9 +76,10 @@ Jfox <- function(X, Y, r=NULL, breaks=NULL,
   if("hazard" %in% names(J))
     J$hazard <- G$hazard - H$hazard
   ## base labels on 'J' rather than full expression
-  attr(J, "labl") <- attr(H, "labl")
+  attr(J, "labl") <- attr(G, "labl")
   ## add column of 1's
-  J <- bind.fv(J, data.frame(theo=rep.int(1, nrow(J))), "%s[theo](r)",
+  J <- bind.fv(J, data.frame(theo=rep.int(1, nrow(J))),
+               "{%s[%s]^{theo}}(r)",
                "theoretical value of %s for independence")
   ## rename 
   J <- rebadge.fv(J, quote(J[fox](r)), c("J", "fox"))
