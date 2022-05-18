@@ -1,7 +1,7 @@
 #
 #   pcfmulti.inhom.R
 #
-#   $Revision: 1.15 $   $Date: 2016/09/21 07:28:42 $
+#   $Revision: 1.17 $   $Date: 2022/05/18 06:56:19 $
 #
 #   inhomogeneous multitype pair correlation functions
 #
@@ -90,10 +90,12 @@ function(X, i, lambdaI=NULL, lambdadot=NULL, ...,
 
 
 pcfmulti.inhom <- function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ...,
+                           lambdaX=NULL,
                            r=NULL, breaks=NULL, 
                            kernel="epanechnikov", bw=NULL, stoyan=0.15,
                            correction=c("translate", "Ripley"),
                            sigma=NULL, varcov=NULL,
+                           update=TRUE, leaveoneout=TRUE,
                            Iname="points satisfying condition I",
                            Jname="points satisfying condition J")
 {
@@ -152,45 +154,19 @@ pcfmulti.inhom <- function(X, I, J, lambdaI=NULL, lambdaJ=NULL, ...,
   
   ########## intensity values #########################
 
-  dangerous <- c("lambdaI", "lambdaJ")
-  dangerI <- dangerJ <- TRUE
-  
-  if(is.null(lambdaI)) {
-      # Estimate density by leave-one-out kernel smoothing
-    dangerI <- FALSE
-    lambdaI <- density(XI, ..., sigma=sigma, varcov=varcov,
-                      at="points", leaveoneout=TRUE)
-  } else {
-    # lambda values provided
-    if(is.vector(lambdaI)) 
-      check.nvector(lambdaI, nI, vname="lambdaI")
-    else if(is.im(lambdaI)) 
-      lambdaI <- safelookup(lambdaI, XI)
-    else if(is.function(lambdaI)) 
-      lambdaI <- lambdaI(XI$x, XI$y)
-    else stop(paste(sQuote("lambdaI"),
-                    "should be a vector, a pixel image, or a function"))
-  }
+  a <- resolve.lambda.cross(X=X, I=I, J=J,
+                            lambdaI=lambdaI,
+                            lambdaJ=lambdaJ,
+                            lambdaX=lambdaX,
+                            ...,
+                            sigma=sigma, varcov=varcov,
+                            leaveoneout=leaveoneout, update=update,
+                            Iexplain=Iname, Jexplain=Jname)
+  lambdaI <- a$lambdaI
+  lambdaJ <- a$lambdaJ
+  danger    <- a$danger
+  dangerous <- a$dangerous
 
-  if(is.null(lambdaJ)) {
-      # Estimate density by leave-one-out kernel smoothing
-    dangerJ <- FALSE
-    lambdaJ <- density(XJ, ..., sigma=sigma, varcov=varcov,
-                      at="points", leaveoneout=TRUE)
-  } else {
-    # lambda values provided
-    if(is.vector(lambdaJ)) 
-      check.nvector(lambdaJ, nJ, vname="lambdaJ")
-    else if(is.im(lambdaJ)) 
-      lambdaJ <- safelookup(lambdaJ, XJ)
-    else if(is.function(lambdaJ)) 
-      lambdaJ <- lambdaJ(XJ$x, XJ$y)
-    else stop(paste(sQuote("lambdaJ"),
-                    "should be a vector, a pixel image, or a function"))
-  }
-
-  danger <- dangerI || dangerJ
-  
   ########## r values ############################
   # handle arguments r and breaks 
 

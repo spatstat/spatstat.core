@@ -3,7 +3,7 @@
 #'
 #'     original by Ege Rubak
 #' 
-#'     $Revision: 1.15 $ $Date: 2020/12/19 05:25:06 $
+#'     $Revision: 1.16 $ $Date: 2022/05/18 05:41:49 $
 
 "localLcross" <- function(X, from, to, ..., rmax = NULL, correction = "Ripley") {
   localKcross(X, from, to, ..., rmax = rmax, correction = correction, wantL = TRUE)
@@ -91,8 +91,6 @@ function(X, from, ..., rmax = NULL, correction="Ripley", verbose=TRUE, rvalue=NU
     verifyclass(X, "ppp")
     if(!is.multitype(X, dfok=FALSE))
       stop("Point pattern must be multitype")
-    miss.update <- missing(update)
-    miss.leave <- missing(leaveoneout)
     marx <- marks(X)
     if(missing(from))
       from <- levels(marx)[1]
@@ -110,8 +108,7 @@ function(X, from, ..., rmax = NULL, correction="Ripley", verbose=TRUE, rvalue=NU
                            correction=correction,
                            sigma=sigma, varcov=varcov,
                            lambdaX=lambdaX, update=update,
-                           leaveoneout=leaveoneout,
-                           miss.update=miss.update, miss.leave=miss.leave)
+                           leaveoneout=leaveoneout)
     attr(K, "indices") <- list(from=from, to=to)
     return(K)
   }
@@ -129,9 +126,7 @@ localLcross.inhom <- function(X, from, to, lambdaFrom = NULL, lambdaTo = NULL, .
            Iexplain="points satisfying condition I",
            Jexplain="points satisfying condition J",
            Ikey="I",
-           Jkey="J",
-           miss.update=missing(update),
-           miss.leave=missing(leaveoneout))
+           Jkey="J")
   {
     npts <- npoints(X)
     W <- Window(X)
@@ -163,10 +158,7 @@ localLcross.inhom <- function(X, from, to, lambdaFrom = NULL, lambdaTo = NULL, .
                                       leaveoneout = leaveoneout,
                                       update = update,
                                       Iexplain=Iexplain,
-                                      Jexplain=Jexplain,
-                                      miss.update=miss.update,
-                                      miss.leave=miss.leave,
-                                      caller = "localKcrossEngine")
+                                      Jexplain=Jexplain)
       lambdaFrom <- lambdas$lambdaI
       lambdaTo <- lambdas$lambdaJ
     }
@@ -369,198 +361,3 @@ localLcross.inhom <- function(X, from, to, lambdaFrom = NULL, lambdaTo = NULL, .
     return(K)
   }
 
-resolve.lambda.cross <- function(X, I, J,
-                                 lambdaI=NULL, lambdaJ=NULL,
-                                 ...,
-                                 lambdaX=NULL,
-                                 sigma=NULL, varcov=NULL,
-                                 leaveoneout=TRUE, update=TRUE,
-                                 lambdaIJ=NULL,
-                                 Iexplain="points satisfying condition I",
-                                 Jexplain="points satisfying condition J",
-                                 miss.update=missing(update),
-                                 miss.leave=missing(leaveoneout),
-                                 caller="direct"){
-  dangerous <- c("lambdaI", "lambdaJ")
-  dangerI <- dangerJ <- TRUE
-  XI <- X[I]
-  XJ <- X[J]
-  nI <- npoints(XI)
-  nJ <- npoints(XJ)
-
-  lamIname <- short.deparse(substitute(lambdaI))
-  lamJname <- short.deparse(substitute(lambdaJ))
-  bothnames <- c(lamIname, lamJname)
-  givenI <- !is.null(lambdaI)
-  givenJ <- !is.null(lambdaJ)
-  givenX <- !is.null(lambdaX)
-
-  if(givenI != givenJ) {
-    givenone <- bothnames[c(givenI, givenJ)]
-    missedone <- setdiff(bothnames, givenone)
-    stop(paste("If", givenone, "is given, then",
-               missedone, "should also be given"),
-         call.=FALSE)
-  }
-  if(givenX && givenI && givenJ)
-    warning(paste(paste(sQuote(bothnames), collapse=" and "),
-                  "were ignored because", sQuote("lambdaX"),
-                  "was given"),
-            call.=FALSE)
-
-  if(givenX) {
-    ## Intensity values for all points of X
-    if(is.im(lambdaX)) {
-      ## Look up intensity values
-      lambdaI <- safelookup(lambdaX, XI)
-      lambdaJ <- safelookup(lambdaX, XJ)
-    } else if(is.imlist(lambdaX) &&
-              is.multitype(X) &&
-              length(lambdaX) == length(levels(marks(X)))) {
-      ## Look up intensity values
-      Y <- split(X)
-      lamY <- mapply("[", x=lambdaX, i=Y, SIMPLIFY=FALSE)
-      lamX <- unsplit(lamY, marks(X))
-      lambdaI <- lamX[I]
-      lambdaJ <- lamX[J]
-    } else if(is.function(lambdaX)) {
-      ## evaluate function at locations
-      if(!is.marked(X) || length(formals(lambdaX)) == 2) {
-        lambdaI <- lambdaX(XI$x, XI$y)
-        lambdaJ <- lambdaX(XJ$x, XJ$y)
-      } else {
-        lambdaI <- lambdaX(XI$x, XI$y, marks(XI))
-        lambdaJ <- lambdaX(XJ$x, XJ$y, marks(XJ))
-      }
-    } else if(is.numeric(lambdaX) && is.vector(as.numeric(lambdaX))) {
-      ## vector of intensity values
-      if(length(lambdaX) != npoints(X))
-        stop(paste("The length of", sQuote("lambdaX"),
-                   "should equal the number of points of X"))
-      lambdaI <- lambdaX[I]
-      lambdaJ <- lambdaX[J]
-    } else if(is.ppm(lambdaX) || is.kppm(lambdaX) || is.dppm(lambdaX)) {
-      ## point process model provides intensity
-      model <- lambdaX
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaI <- predict(model, locations=XI, type="trend")
-        lambdaJ <- predict(model, locations=XJ, type="trend")
-      } else {
-        ## re-fit model to data X
-        if(is.ppm(model)) {
-          model <- update(model, Q=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        } else {
-          model <- update(model, X=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        }
-        lambdaI <- lambdaX[I]
-        lambdaJ <- lambdaX[J]
-        dangerI <- dangerJ <- FALSE
-        dangerous <- "lambdaIJ"
-        if(miss.update & caller == "Kmulti.inhom") 
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else stop(paste("Argument lambdaX is not understood:",
-                      "it should be a numeric vector,",
-                      "an image, a function(x,y)",
-                      "or a fitted point process model (ppm, kppm or dppm)"))
-  } else {
-    ## lambdaI, lambdaJ expected
-    if(!givenI) {
-      ## estimate intensity
-      dangerI <- FALSE
-      dangerous <- setdiff(dangerous, "lambdaI")
-      lambdaI <- density(XI, ..., sigma=sigma, varcov=varcov,
-                         at="points", leaveoneout=leaveoneout)
-    } else if(is.im(lambdaI)) {
-      ## look up intensity values
-      lambdaI <- safelookup(lambdaI, XI)
-    } else if(is.function(lambdaI)) {
-      ## evaluate function at locations
-      lambdaI <- lambdaI(XI$x, XI$y)
-    } else if(is.numeric(lambdaI) && is.vector(as.numeric(lambdaI))) {
-      ## validate intensity vector
-      check.nvector(lambdaI, nI, things=Iexplain, vname="lambdaI")
-    } else if(is.ppm(lambdaI) || is.kppm(lambdaI) || is.dppm(lambdaI)) {
-      ## point process model provides intensity
-      model <- lambdaI
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaI <- predict(model, locations=XI, type="trend")
-      } else {
-        ## re-fit model to data X
-        model <- if(is.ppm(model)) update(model, Q=X) else update(model, X=X)
-        lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        lambdaI <- lambdaX[I]
-        dangerI <- FALSE
-        dangerous <- setdiff(dangerous, "lambdaI")
-        if(miss.update && caller == "Kmulti.inhom")
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else stop(paste(sQuote("lambdaI"), "should be a vector or an image"))
-    
-    if(!givenJ) {
-      ## estimate intensity
-      dangerJ <- FALSE
-      dangerous <- setdiff(dangerous, "lambdaJ")
-      lambdaJ <- density(XJ, ..., sigma=sigma, varcov=varcov,
-                         at="points", leaveoneout=leaveoneout)
-    } else if(is.im(lambdaJ)) {
-      ## look up intensity values
-      lambdaJ <- safelookup(lambdaJ, XJ)
-    } else if(is.function(lambdaJ)) {
-      ## evaluate function at locations
-      lambdaJ <- lambdaJ(XJ$x, XJ$y)
-    } else if(is.numeric(lambdaJ) && is.vector(as.numeric(lambdaJ))) {
-      ## validate intensity vector
-      check.nvector(lambdaJ, nJ, things=Jexplain, vname="lambdaJ")
-    } else if(is.ppm(lambdaJ) || is.kppm(lambdaJ) || is.dppm(lambdaJ)) {
-      ## point process model provides intensity
-      model <- lambdaJ
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaJ <- predict(model, locations=XJ, type="trend")
-      } else {
-        ## re-fit model to data X
-        model <- if(is.ppm(model)) update(model, Q=X) else update(model, X=X)
-        lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        lambdaJ <- lambdaX[J]
-        dangerJ <- FALSE
-        dangerous <- setdiff(dangerous, "lambdaJ")
-        if(miss.update & caller == "Kmulti.inhom")
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else 
-      stop(paste(sQuote("lambdaJ"), "should be a vector or an image"))
-  }
-  
-  ## Weight for each pair
-  if(!is.null(lambdaIJ)) {
-    dangerIJ <- TRUE
-    dangerous <- union(dangerous, "lambdaIJ")
-    if(!is.matrix(lambdaIJ))
-      stop("lambdaIJ should be a matrix")
-    if(nrow(lambdaIJ) != nI)
-      stop(paste("nrow(lambdaIJ) should equal the number of", Iexplain))
-    if(ncol(lambdaIJ) != nJ)
-      stop(paste("ncol(lambdaIJ) should equal the number of", Jexplain))
-  } else {
-    dangerIJ <- FALSE
-  }
-    
-  danger <- dangerI || dangerJ || dangerIJ
-    
-  return(list(lambdaI = lambdaI, lambdaJ = lambdaJ, lambdaIJ=lambdaIJ,
-                danger = danger, dangerous = dangerous))
-}

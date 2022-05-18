@@ -295,6 +295,7 @@
 \alias{resolveEinfo}
 \alias{resolve.foxall.window}
 \alias{resolve.lambda}
+\alias{resolve.reciplambda}
 \alias{resolve.lambda.cross}
 \alias{rhohatEngine}
 \alias{rhohatCalc}
@@ -605,7 +606,7 @@ localKmultiEngine(X, from, to,
            lambdaFrom, lambdaTo, \dots, rmax, wantL,
            correction, verbose, rvalue, sigma, varcov,
            lambdaX, update, leaveoneout,
-           Iexplain, Jexplain, Ikey, Jkey, miss.update, miss.leave)
+           Iexplain, Jexplain, Ikey, Jkey)
 localpcfengine(X, \dots, delta, rmax, nr, stoyan, lambda, rvalue)
 localpcfmatrix(X, i, \dots, lambda, delta, rmax, nr, stoyan)
 logi.engine(Q, trend, interaction, \dots, 
@@ -682,13 +683,10 @@ printStatus(x, errors.only)
 printStatusList(stats)
 partialModelMatrix(X,D,model,callstring,\dots)
 pcf3engine(x, y, z, box, rmax, nrval, correction, delta)
-pcfmulti.inhom(X, I, J, lambdaI = NULL, lambdaJ = NULL, \dots,
-               r = NULL, breaks = NULL,
-               kernel = "epanechnikov", bw = NULL, stoyan = 0.15,
-               correction = c("translate", "Ripley"),
-               sigma = NULL, varcov = NULL,
-               Iname = "points satisfying condition I",
-               Jname = "points satisfying condition J")
+pcfmulti.inhom(X, I, J, lambdaI, lambdaJ, \dots,
+               lambdaX, r, breaks, kernel, bw, stoyan, correction,
+               sigma, varcov, update, leaveoneout, 
+               Iname, Jname)
 \method{pcfmodel}{slrm}(model, \dots)
 ploterodewin(W1, W2, col.edge, col.inside, do.plot, \dots)
 ploterodeimage(W, Z, \dots, Wcol, rangeZ, colsZ, do.plot)
@@ -774,11 +772,13 @@ rename.fv(x, fname, ylab, yexp)
 \method{rescale}{msr}(X, s, unitname)
 resolveEinfo(x, what, fallback, warn, atomic)
 resolve.foxall.window(X, Y, W, warn.trim)
-resolve.lambda(X, lambda, \dots, sigma, varcov, leaveoneout, update)
+resolve.lambda(X, lambda, \dots,
+               sigma, varcov, leaveoneout, update, check)
+resolve.reciplambda(X, lambda, reciplambda, \dots,
+                    sigma, varcov, leaveoneout, update, check)
 resolve.lambda.cross(X, I, J, lambdaI, lambdaJ, \dots, lambdaX,
                      sigma, varcov, leaveoneout, update, lambdaIJ,
-                     Iexplain, Jexplain, miss.update, miss.leave,
-                     caller)
+                     Iexplain, Jexplain)
 roseContinuous(ang, rad, unit, \dots,
                start, clockwise, main, labels, at, do.plot)
 \method{rotate}{msr}(X, angle, \dots, centre)

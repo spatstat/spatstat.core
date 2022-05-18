@@ -1,7 +1,7 @@
 #
 #	Kmulti.inhom.S		
 #
-#	$Revision: 1.53 $	$Date: 2020/08/05 02:50:32 $
+#	$Revision: 1.54 $	$Date: 2022/05/18 06:43:35 $
 #
 #
 # ------------------------------------------------------------------------
@@ -198,163 +198,31 @@ function(X, I, J, lambdaI=NULL, lambdaJ=NULL,
   if(nI == 0) stop(paste("There are no", Iname))
   if(nJ == 0) stop(paste("There are no", Jname))
 
-  # r values 
+  ## r values 
   rmaxdefault <- rmax.rule("K", W, nJ/areaW)
   breaks <- handle.r.b.args(r, breaks, W, rmaxdefault=rmaxdefault)
   r <- breaks$r
   rmax <- breaks$max
 
-  dangerous <- c("lambdaI", "lambdaJ")
-  dangerI <- dangerJ <- TRUE
-
-  ## intensity data
-  if(!is.null(lambdaX)) {
-    ## Intensity values for all points of X
-    if(!is.null(lambdaI))
-      warning("lambdaI was ignored, because lambdaX was given", call.=FALSE)
-    if(!is.null(lambdaJ))
-      warning("lambdaJ was ignored, because lambdaX was given", call.=FALSE)
-    if(is.im(lambdaX)) {
-      ## Look up intensity values
-      lambdaI <- safelookup(lambdaX, X[I])
-      lambdaJ <- safelookup(lambdaX, X[J])
-    } else if(is.function(lambdaX)) {
-      ## evaluate function at locations
-      lambdaI <- lambdaX(XI$x, XI$y)
-      lambdaJ <- lambdaX(XJ$x, XJ$y)
-    } else if(is.numeric(lambdaX) && is.vector(as.numeric(lambdaX))) {
-      ## vector of intensity values
-      if(length(lambdaX) != npts)
-        stop(paste("The length of", sQuote("lambdaX"),
-                   "should equal the number of points of X"))
-      lambdaI <- lambdaX[I]
-      lambdaJ <- lambdaX[J]
-    } else if(is.ppm(lambdaX) || is.kppm(lambdaX) || is.dppm(lambdaX)) {
-      ## point process model provides intensity
-      model <- lambdaX
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaI <- predict(model, locations=XI, type="trend")
-        lambdaJ <- predict(model, locations=XJ, type="trend")
-      } else {
-        ## re-fit model to data X
-        if(is.ppm(model)) {
-          model <- update(model, Q=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        } else {
-          model <- update(model, X=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        }
-        lambdaI <- lambdaX[I]
-        lambdaJ <- lambdaX[J]
-        dangerI <- dangerJ <- FALSE
-        dangerous <- "lambdaIJ"
-        if(miss.update) 
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else stop(paste("Argument lambdaX is not understood:",
-                      "it should be a numeric vector,",
-                      "an image, a function(x,y)",
-                      "or a fitted point process model (ppm, kppm or dppm)"))
-  } else {
-    ## lambdaI, lambdaJ expected
-    if(is.null(lambdaI)) {
-      ## estimate intensity
-      dangerI <- FALSE
-      dangerous <- setdiff(dangerous, "lambdaI")
-      lambdaI <- density(X[I], ..., sigma=sigma, varcov=varcov,
-                         at="points", leaveoneout=leaveoneout)
-    } else if(is.im(lambdaI)) {
-      ## look up intensity values
-      lambdaI <- safelookup(lambdaI, X[I])
-    } else if(is.function(lambdaI)) {
-      ## evaluate function at locations
-      lambdaI <- lambdaI(XI$x, XI$y)
-    } else if(is.numeric(lambdaI) && is.vector(as.numeric(lambdaI))) {
-      ## validate intensity vector
-      if(length(lambdaI) != nI)
-        stop(paste("The length of", sQuote("lambdaI"),
-                   "should equal the number of", Iname))
-    } else if(is.ppm(lambdaI) || is.kppm(lambdaI) || is.dppm(lambdaI)) {
-      ## point process model provides intensity
-      model <- lambdaI
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaI <- predict(model, locations=XI, type="trend")
-      } else {
-        ## re-fit model to data X
-        if(is.ppm(model)) {
-          model <- update(model, Q=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        } else {
-          #' kppm or dppm
-          model <- update(model, X=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        }
-        lambdaI <- lambdaX[I]
-        dangerI <- FALSE
-        dangerous <- setdiff(dangerous, "lambdaI")
-        if(miss.update) 
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else stop(paste(sQuote("lambdaI"), "should be a vector or an image"))
-
-    if(is.null(lambdaJ)) {
-      ## estimate intensity
-      dangerJ <- FALSE
-      dangerous <- setdiff(dangerous, "lambdaJ")
-      lambdaJ <- density(X[J], ..., sigma=sigma, varcov=varcov,
-                         at="points", leaveoneout=leaveoneout)
-    } else if(is.im(lambdaJ)) {
-      ## look up intensity values
-      lambdaJ <- safelookup(lambdaJ, X[J])
-    } else if(is.function(lambdaJ)) {
-      ## evaluate function at locations
-      XJ <- X[J]
-      lambdaJ <- lambdaJ(XJ$x, XJ$y)
-    } else if(is.numeric(lambdaJ) && is.vector(as.numeric(lambdaJ))) {
-      ## validate intensity vector
-      if(length(lambdaJ) != nJ)
-        stop(paste("The length of", sQuote("lambdaJ"),
-                   "should equal the number of", Jname))
-    } else if(is.ppm(lambdaJ) || is.kppm(lambdaJ) || is.dppm(lambdaJ)) {
-      ## point process model provides intensity
-      model <- lambdaJ
-      if(!update) {
-        ## just use intensity of fitted model
-        lambdaJ <- predict(model, locations=XJ, type="trend")
-      } else {
-        ## re-fit model to data X
-        if(is.ppm(model)) {
-          model <- update(model, Q=X)
-          if(leaveoneout && !miss.leave)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        } else {
-          model <- update(model, X=X)
-          lambdaX <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        }
-        lambdaJ <- lambdaX[J]
-        dangerJ <- FALSE
-        dangerous <- setdiff(dangerous, "lambdaJ")
-        if(miss.update) 
-          warn.once(key="Kmulti.inhom.update",
-                    "The behaviour of Kmulti.inhom when lambda is a ppm object",
-                    "has changed (in spatstat 1.45-3 and later).",
-                    "See help(Kmulti.inhom)")
-      }
-    } else 
-      stop(paste(sQuote("lambdaJ"), "should be a vector or an image"))
-  }
+  ## lambda values
+  a <- resolve.lambda.cross(X=X, I=I, J=J,
+                            lambdaI=lambdaI,
+                            lambdaJ=lambdaJ,
+                            lambdaX=lambdaX,
+                            lambdaIJ=lambdaIJ,
+                            ...,
+                            sigma=sigma, varcov=varcov,
+                            leaveoneout=leaveoneout, update=update,
+                            Iexplain=Iname, Jexplain=Jname)
+  lambdaI <- a$lambdaI
+  lambdaJ <- a$lambdaJ
+  lambdaIJ <- a$lambdaIJ
+  danger    <- a$danger
+  dangerous <- a$dangerous
 
   ## Weight for each pair
   if(!is.null(lambdaIJ)) {
-    dangerIJ <- TRUE
+    danger <- TRUE
     dangerous <- union(dangerous, "lambdaIJ")
     if(!is.matrix(lambdaIJ))
       stop("lambdaIJ should be a matrix")
@@ -362,11 +230,7 @@ function(X, I, J, lambdaI=NULL, lambdaJ=NULL,
       stop(paste("nrow(lambdaIJ) should equal the number of", Iname))
     if(ncol(lambdaIJ) != nJ)
       stop(paste("ncol(lambdaIJ) should equal the number of", Jname))
-  } else {
-    dangerIJ <- FALSE
   }
-
-  danger <- dangerI || dangerJ || dangerIJ
 
   # Recommended range of r values
   alim <- c(0, min(rmax, rmaxdefault))

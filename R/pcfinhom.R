@@ -1,7 +1,7 @@
 #
 #   pcfinhom.R
 #
-#   $Revision: 1.24 $   $Date: 2021/10/26 07:12:24 $
+#   $Revision: 1.26 $   $Date: 2022/05/18 06:40:29 $
 #
 #   inhomogeneous pair correlation function of point pattern 
 #
@@ -60,58 +60,13 @@ pcfinhom <- function(X, lambda=NULL, ..., r=NULL,
 
   ########## intensity values #########################
 
-  dangerous <- c("lambda", "reciplambda")
-  danger <- TRUE
-
-  if(npts == 0) {
-    lambda <- reciplambda <- numeric(0)
-    danger <- FALSE
-  } else if(missing(lambda) && is.null(reciplambda)) {
-    # No intensity data provided
-    danger <- FALSE
-    # Estimate density by leave-one-out kernel smoothing
-    lambda <- density(X, ..., sigma=sigma, varcov=varcov,
-                      at="points", leaveoneout=TRUE)
-    lambda <- as.numeric(lambda)
-    reciplambda <- 1/lambda
-  } else if(!is.null(reciplambda)) {
-    # 1/lambda values provided
-    if(is.im(reciplambda)) 
-      reciplambda <- safelookup(reciplambda, X)
-    else if(is.function(reciplambda))
-      reciplambda <- reciplambda(X$x, X$y)
-    else if(is.numeric(reciplambda) && is.vector(as.numeric(reciplambda)))
-      check.nvector(reciplambda, npts, vname="reciplambda")
-    else stop(paste(sQuote("reciplambda"),
-                    "should be a vector, a pixel image, or a function"))
-  } else {
-    # lambda values provided
-    if(is.im(lambda)) 
-      lambda <- safelookup(lambda, X)
-    else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
-      model <- lambda
-      if(!update) {
-        ## just use intensity of fitted model
-        lambda <- predict(model, locations=X, type="trend")
-      } else {
-        if(is.ppm(model)) {
-          model <- update(model, Q=X)
-          lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        } else {
-          model <- update(model, X=X)
-          lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-        }
-        danger <- FALSE
-      }
-    } else if(is.function(lambda)) 
-      lambda <- lambda(X$x, X$y)
-    else if(is.numeric(lambda) && is.vector(as.numeric(lambda)))
-      check.nvector(lambda, npts, vname="lambda")
-    else stop(paste(sQuote("lambda"),
-         "should be a vector, a pixel image, a function, or a fitted model"))
-    # evaluate reciprocal
-    reciplambda <- 1/lambda
-  }
+  a <- resolve.reciplambda(X, lambda=lambda, reciplambda=reciplambda,
+                           ..., sigma=sigma, varcov=varcov,
+                           leaveoneout=leaveoneout, update=update, check=TRUE)
+  reciplambda <- a$reciplambda
+  lambda      <- a$lambda
+  danger      <- a$danger
+  dangerous   <- a$dangerous
   
   # renormalise
   if(renormalise && npts > 0) {

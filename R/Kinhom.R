@@ -1,7 +1,7 @@
 #
 #	Kinhom.S	Estimation of K function for inhomogeneous patterns
 #
-#	$Revision: 1.100 $	$Date: 2021/10/26 07:12:00 $
+#	$Revision: 1.102 $	$Date: 2022/05/18 06:40:21 $
 #
 #	Kinhom()	compute estimate of K_inhom
 #
@@ -134,7 +134,7 @@
         reciplambda2 <- 1/lambda2
       }
       # renormalise
-      if(renormalise) {
+      if(renormalise && npts > 0) {
         check.1.real(normpower)
         stopifnot(normpower %in% 1:2)
 	rlam2 <- reciplambda2
@@ -142,59 +142,15 @@
 	renorm.factor <- (areaW^2/sum(rlam2))^(normpower/2)
       } 
     } else {
-      # Vector lambda or reciplambda is required
-      if(missing(lambda) && is.null(reciplambda)) {
-        # No intensity data provided
-        danger <- FALSE
-        # Estimate density by leave-one-out kernel smoothing
-        lambda <- density(X, ..., sigma=sigma, varcov=varcov,
-                            at="points", leaveoneout=leaveoneout)
-        lambda <- as.numeric(lambda)
-        validate.weights(lambda, how="density estimation")
-        reciplambda <- 1/lambda
-      } else if(!is.null(reciplambda)) {
-        # 1/lambda values provided
-        if(is.im(reciplambda)) 
-          reciplambda <- safelookup(reciplambda, X)
-        else if(is.function(reciplambda))
-          reciplambda <- reciplambda(X$x, X$y)
-        else if(is.numeric(reciplambda) && is.vector(as.numeric(reciplambda)))
-          check.nvector(reciplambda, npts, vname="reciplambda")
-        else stop(paste(sQuote("reciplambda"),
-                        "should be a vector, a pixel image, or a function"))
-        validate.weights(reciplambda, recip=TRUE)
-      } else {
-        # lambda values provided
-        if(is.im(lambda)) 
-          lambda <- safelookup(lambda, X)
-        else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
-          model <- lambda
-          if(!update) {
-            ## just use intensity of fitted model
-            lambda <- predict(model, locations=X, type="trend")
-          } else {
-            ## re-fit model to data X
-            if(is.ppm(model)) {
-              model <- update(model, Q=X)
-              lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-            } else {
-              model <- update(model, X=X)
-              lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-            }
-            danger <- FALSE
-          }
-        } else if(is.function(lambda)) 
-          lambda <- lambda(X$x, X$y)
-        else if(is.numeric(lambda) && is.vector(as.numeric(lambda)))
-          check.nvector(lambda, npts, vname="lambda")
-        else stop(paste(sQuote("lambda"),
-                          "should be a vector, a pixel image, or a function"))
-        validate.weights(lambda)
-        # evaluate reciprocal
-        reciplambda <- 1/lambda
-      }
+      ## Vector lambda or reciplambda is required
+      a <- resolve.reciplambda(X, lambda=lambda, reciplambda=reciplambda,
+                               ..., sigma=sigma, varcov=varcov,
+                               leaveoneout=leaveoneout, update=update, check=TRUE)
+      reciplambda <- a$reciplambda
+      danger      <- a$danger
+      dangerous   <- a$dangerous
       # renormalise
-      if(renormalise) {
+      if(renormalise && npts > 0) {
         check.1.real(normpower)
         stopifnot(normpower %in% 1:2)
         if(!diagonal && normpower == 2) {
@@ -481,57 +437,4 @@ Kwtsum <- function(dIJ, bI, wIJ, b, w, breaks, fatal=TRUE) {
   return(list(numerator=numerator, denominator=denominator, ratio=ratio))
 }
 
-validate.weights <- function(x, recip=FALSE, how = NULL,
-                             allowzero = recip,
-                             allowinf  = !recip) {
-  xname <- deparse(substitute(x))
-  ra <- range(x)
-  offence <-
-    if(!allowinf && !all(is.finite(ra)))  "infinite" else
-    if(ra[1] < 0)                         "negative" else
-    if(!allowzero && ra[1] == 0)          "zero" else NULL
-  if(!is.null(offence)) {
-    offenders <- paste(offence, "values of", sQuote(xname))
-    if(is.null(how))
-      stop(paste(offenders, "are not allowed"), call.=FALSE)
-    stop(paste(how, "yielded", offenders), call.=FALSE)
-  }
-  return(TRUE)
-}
 
-resolve.lambda <- function(X, lambda=NULL, ...,
-                           sigma=NULL, varcov=varcov,
-                           leaveoneout=TRUE, update=TRUE) {
-  dangerous <- "lambda"
-  danger <- TRUE
-  if(is.null(lambda)) {
-    ## No intensity data provided
-    ## Estimate density by leave-one-out kernel smoothing
-    lambda <- density(X, ..., sigma=sigma, varcov=varcov,
-                      at="points", leaveoneout=leaveoneout)
-    lambda <- as.numeric(lambda)
-    danger <- FALSE
-  } else if(is.im(lambda)) {
-    lambda <- safelookup(lambda, X)
-  } else if(is.function(lambda)) {
-    lambda <- lambda(X$x, X$y)
-  } else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
-    check.nvector(lambda, npoints(X), vname="lambda")
-  } else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
-    model <- lambda
-    if(!update) {
-      ## use intensity of model
-      lambda <- predict(model, locations=X, type="trend")
-    } else {
-      ## re-fit model to data X
-      model <- if(is.ppm(model)) update(model, Q=X) else update(model, X=X)
-      lambda <- fitted(model, dataonly=TRUE, leaveoneout=leaveoneout)
-      danger <- FALSE
-    }
-  } else stop(paste(sQuote("lambda"),
-                    "should be a vector, a pixel image,",
-                    "a fitted model, or a function"))
-  return(list(lambda=lambda,
-              danger=danger,
-              dangerous=if(danger) dangerous else NULL))
-}
