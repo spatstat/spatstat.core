@@ -3,7 +3,7 @@
 #
 # added variable plot
 #
-#   $Revision: 1.13 $  $Date: 2022/01/19 00:49:17 $
+#   $Revision: 1.14 $  $Date: 2022/05/20 04:12:31 $
 #
 
 
@@ -84,7 +84,7 @@ addvar <- function(model, covariate, ...,
     if(covname %in% fitted.covars)
       stop(paste("covariate named", dQuote(covname),
                  "is already used in model"))
-    covvalues <- evalCovariate(covariate, quadpoints)
+    covvalues <- evaluateCovariate(covariate, quadpoints)
     # validate covvalues
     if(is.null(covvalues))
       stop("Unable to extract covariate values")

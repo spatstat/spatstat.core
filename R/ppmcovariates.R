@@ -1,28 +1,10 @@
-#
-# covariates.R
-#
-# evaluate covariates
-#
-#   $Revision: 1.4 $  $Date: 2022/01/04 05:30:06 $
-#
+#'
+#'   ppmcovariates.R
+#'
+#'   Utilities for wrangling covariates in ppm
+#'
+#'   $Revision: 1.1 $ $Date: 2022/05/20 03:59:14 $
 
-evalCovariate <- function(covariate, locations) {
-  # evaluate covariate of any kind at specified locations
-  covvalues <-
-    if(is.im(covariate)) 
-      safelookup(covariate, locations)
-    else if(is.function(covariate)) 
-      covariate(locations$x, locations$y)
-    else if(is.numeric(covariate) || is.factor(covariate)) {
-      if(length(covariate) == 1L)
-        rep.int(covariate, length(locations$x))
-      else if(length(covariate) == length(locations$x))
-        covariate
-      else stop("Inappropriate length for covariate vector")
-    } else
-  stop("Covariate should be an image, a function or a factor/numeric vector")
-  return(covvalues)
-}
 
 ppmCovariates <- function(model) {
   # generate list of all covariates in ppm (excluding marks)

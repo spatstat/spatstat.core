@@ -3,7 +3,7 @@
 #
 # code to plot transformation diagnostic
 #
-#   $Revision: 1.16 $  $Date: 2020/11/17 03:47:24 $
+#   $Revision: 1.17 $  $Date: 2022/05/20 04:11:49 $
 #
 
 parres <- function(model, covariate, ...,
@@ -77,7 +77,7 @@ parres <- function(model, covariate, ...,
     # Covariate is some kind of data, treated as external covariate
     covtype <- "external"
     beta <- 0
-    covvalues <- evalCovariate(covariate, quadpoints)
+    covvalues <- evaluateCovariate(covariate, quadpoints)
   } else {
     # Argument is name of covariate
     covname <- covariate
@@ -93,7 +93,7 @@ parres <- function(model, covariate, ...,
     if(covname %in% orig.covars) {
       # one of the original covariates
       covtype <- "original"
-      covvalues <- evalCovariate(findCovariate(covname, model), quadpoints)
+      covvalues <- evaluateCovariate(findCovariate(covname, model), quadpoints)
     } else if(covname %in% canon.covars) {
       # one of the canonical covariates
       covtype <- "canonical"
@@ -115,7 +115,7 @@ parres <- function(model, covariate, ...,
       # must be an external covariate (i.e. not used in fitted model)
       covtype <- "external"
       beta <- 0
-      covvalues <- evalCovariate(findCovariate(covname, model), quadpoints)
+      covvalues <- evaluateCovariate(findCovariate(covname, model), quadpoints)
     }
   }
   # validate covvalues

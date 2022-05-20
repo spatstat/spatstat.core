@@ -37,7 +37,7 @@ local({
 #
 # additional test of parres
 #
-#  $Revision: 1.7 $  $Date: 2020/05/02 01:32:58 $
+#  $Revision: 1.8 $  $Date: 2022/05/20 06:59:59 $
 #
 
 if(FULLTEST) {
@@ -80,8 +80,8 @@ parres(mod5)
 parres(copfit)
 
 #' infrastructure
-ltuae <- evalCovariate(42, cells)
-LTUAE <- evalCovariate(ltuae, cells)
+ltuae <- evaluateCovariate(42, cells)
+LTUAE <- evaluateCovariate(ltuae, cells)
 
 fit <- ppm(amacrine ~ x * marks, nd=16)
 dmat <- model.depends(fit)

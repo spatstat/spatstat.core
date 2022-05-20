@@ -77,10 +77,10 @@
 \alias{envelope.matrix}
 \alias{equalpairs}          
 \alias{evalCovar}
+\alias{evalCovar.exactppm}
 \alias{evalCovar.ppm}
 \alias{evalCovar.ppp}
 \alias{evalCovar.slrm}
-\alias{evalCovariate}
 \alias{evalInteraction}
 \alias{evalInterEngine}
 \alias{evalPairPotential}
@@ -496,6 +496,9 @@ envelopeTest(X, \dots, exponent, alternative,
   savefuns, check, Yname, do.pwrong, weights, precomputed, gaveup)
 equalpairs(U, X, marked=FALSE)
 evalCovar(model, covariate, \dots)
+\method{evalCovar}{exactppm}(model, covariate, \dots, lambdatype,
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset, clip.predict) 
 \method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset, clip.predict) 
@@ -505,7 +508,6 @@ evalCovar(model, covariate, \dots)
 \method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
           jitter, jitterfactor,
           modelname, covname, dataname, subset) 
-evalCovariate(covariate, locations)
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
                 precomputed,savecomputed)
 evalInterEngine(X,P,E,interaction,correction,splitInf,\dots,
