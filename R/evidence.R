@@ -1,9 +1,9 @@
 #'
-#' evalcovar.R
+#' evidence.R
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.46 $ $Date: 2022/05/20 07:53:33 $
+#' $Revision: 1.47 $ $Date: 2022/05/20 10:12:33 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
