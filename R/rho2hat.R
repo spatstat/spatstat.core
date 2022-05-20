@@ -3,7 +3,7 @@
 #
 #   Relative risk for pairs of covariate values
 #
-#   $Revision: 1.27 $   $Date: 2020/12/19 05:25:06 $
+#   $Revision: 1.28 $   $Date: 2022/05/20 07:38:20 $
 #
 
 rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
@@ -101,8 +101,8 @@ rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
       cov2 <- as.im(cov2, W=cov1)
     }
     # evaluate each covariate at data points and at pixels
-    stuff1 <- evalCovar(model, cov1)
-    stuff2 <- evalCovar(model, cov2)
+    stuff1 <- spatialCovariateEvidence(model, cov1)
+    stuff2 <- spatialCovariateEvidence(model, cov2)
     # unpack
     values1 <- stuff1$values
     values2 <- stuff2$values

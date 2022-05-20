@@ -58,7 +58,7 @@ rhohat.slrm <- function(object, covariate, ...,
   areaW <- area(W)
   
   rhohatEngine(model, covariate, reference, areaW, ...,
-               evalCovarArgs=list(lambdatype="intensity"),
+               spatCovarArgs=list(lambdatype="intensity"),
                weights=weights,
                method=method,
                horvitz=horvitz,

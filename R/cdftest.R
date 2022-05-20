@@ -252,7 +252,7 @@ spatialCDFtestCalc <- function(fra, test=c("ks", "cvm", "ad"), ...,
 
 spatialCDFframe <- function(model, covariate, ..., jitter=TRUE) {
   # evaluate CDF of covariate values at data points and at pixels
-  stuff <- evalCovar(model, covariate, ..., jitter=jitter)
+  stuff <- spatialCovariateEvidence(model, covariate, ..., jitter=jitter)
   # extract 
   values <- stuff$values
 #  info   <- stuff$info

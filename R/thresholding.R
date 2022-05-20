@@ -6,7 +6,7 @@
 #'
 #'   GNU Public Licence >= 2
 #'
-#'   $Revision: 1.3 $ $Date: 2022/05/09 01:45:28 $
+#'   $Revision: 1.4 $ $Date: 2022/05/20 07:39:55 $
 #'
 #' 
 #' threshold selection
@@ -18,7 +18,7 @@ thresholdSelect <- function(X, Z, method=c("Y", "LL", "AR", "t", "C"), Zname) {
   if(!is.ppp(X)) stop("X should be a point pattern (class ppp)")
   if(missing(Zname)) Zname <- short.deparse(substitute(Z))
   method <- match.arg(method)
-  a <- evalCovar(X, Z, jitter=FALSE)$values
+  a <- spatialCovariateEvidence(X, Z, jitter=FALSE)$values
   FF <- ecdf(a$ZX)
   GG <- ecdf(a$Zvalues)
   n <- npoints(X)
@@ -54,7 +54,7 @@ thresholdCI <- local({
   thresholdCI <- function(X, Z, confidence=0.95, nsim=1000, parametric=FALSE) {
     #' bootstrap confidence interval for Youden estimate only.
     if(!is.ppp(X)) stop("X should be a point pattern (class ppp)")
-    a <- evalCovar(X, Z, jitter=FALSE)$values
+    a <- spatialCovariateEvidence(X, Z, jitter=FALSE)$values
     FF <- ecdf(a$ZX)
     GG <- ecdf(a$Zvalues)
     est <- Youden(FF,GG)

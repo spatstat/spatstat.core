@@ -3,16 +3,21 @@
 #'
 #'   evaluate covariate values at data points and at pixels
 #'
-#' $Revision: 1.44 $ $Date: 2022/05/12 04:08:30 $
+#' $Revision: 1.46 $ $Date: 2022/05/20 07:53:33 $
 #'
 
 evalCovar <- function(model, covariate, ...) {
-  UseMethod("evalCovar")
+  .Deprecated("spatialCovariateEvidence", "spatstat.core")
+  spatialCovariateEvidence(model, covariate, ...)
 }
 
-evalCovar.ppm <- local({
+spatialCovariateEvidence <- function(model, covariate, ...) {
+  UseMethod("spatialCovariateEvidence")
+}
 
-  evalCovar.ppm <- function(model, covariate, ...,
+spatialCovariateEvidence.ppm <- local({
+
+  spatialCovariateEvidence.ppm <- function(model, covariate, ...,
                             lambdatype=c("cif", "trend", "intensity"),
                             dimyx=NULL, eps=NULL,
                             interpolate=TRUE,
@@ -258,12 +263,12 @@ evalCovar.ppm <- local({
     return(value)
   }
             
-  evalCovar.ppm
+  spatialCovariateEvidence.ppm
 })
 
-evalCovar.ppp <- local({
+spatialCovariateEvidence.ppp <- local({
 
-  evalCovar.ppp <- function(model, covariate, ...,
+  spatialCovariateEvidence.ppp <- function(model, covariate, ...,
                             lambdatype=c("cif", "trend", "intensity"),
                             dimyx=NULL, eps=NULL,
                             interpolate=TRUE,
@@ -507,13 +512,13 @@ evalCovar.ppp <- local({
   }
             
   
-  evalCovar.ppp
+  spatialCovariateEvidence.ppp
 })
 
 
-evalCovar.exactppm <- local({
+spatialCovariateEvidence.exactppm <- local({
 
-  evalCovar.exactppm <- function(model, covariate, ...,
+  spatialCovariateEvidence.exactppm <- function(model, covariate, ...,
                                  lambdatype=c("cif", "trend", "intensity"),
                                  dimyx=NULL, eps=NULL,
                                  interpolate=TRUE,
@@ -758,6 +763,6 @@ evalCovar.exactppm <- local({
     return(value)
   }
             
-  evalCovar.exactppm
+  spatialCovariateEvidence.exactppm
 })
 

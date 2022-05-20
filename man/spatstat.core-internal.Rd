@@ -76,11 +76,11 @@
 \alias{envelope.hasenvelope}
 \alias{envelope.matrix}
 \alias{equalpairs}          
-\alias{evalCovar}
-\alias{evalCovar.exactppm}
-\alias{evalCovar.ppm}
-\alias{evalCovar.ppp}
-\alias{evalCovar.slrm}
+\alias{spatialCovariateEvidence}
+\alias{spatialCovariateEvidence.exactppm}
+\alias{spatialCovariateEvidence.ppm}
+\alias{spatialCovariateEvidence.ppp}
+\alias{spatialCovariateEvidence.slrm}
 \alias{evalInteraction}
 \alias{evalInterEngine}
 \alias{evalPairPotential}
@@ -495,17 +495,17 @@ envelopeTest(X, \dots, exponent, alternative,
   type, alternative, scale, clamp, csr, use.theory, nrank, ginterval, nSD,
   savefuns, check, Yname, do.pwrong, weights, precomputed, gaveup)
 equalpairs(U, X, marked=FALSE)
-evalCovar(model, covariate, \dots)
-\method{evalCovar}{exactppm}(model, covariate, \dots, lambdatype,
+spatialCovariateEvidence(model, covariate, \dots)
+\method{spatialCovariateEvidence}{exactppm}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset, clip.predict) 
-\method{evalCovar}{ppm}(model, covariate, \dots, lambdatype,
+\method{spatialCovariateEvidence}{ppm}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset, clip.predict) 
-\method{evalCovar}{ppp}(model, covariate, \dots, lambdatype,
+\method{spatialCovariateEvidence}{ppp}(model, covariate, \dots, lambdatype,
           dimyx, eps, interpolate, jitter, jitterfactor,
           modelname, covname, dataname, subset, clip.predict) 
-\method{evalCovar}{slrm}(model, covariate, \dots, lambdatype,
+\method{spatialCovariateEvidence}{slrm}(model, covariate, \dots, lambdatype,
           jitter, jitterfactor,
           modelname, covname, dataname, subset) 
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
@@ -800,7 +800,7 @@ resolve.2D.kernel(\dots,
             sigma, varcov, x, mindist, adjust, bwfun, allow.zero)
 rhohatEngine(model, covariate, reference, volume, \dots,
                subset, weights, method, horvitz, smoother,
-               resolution, evalCovarArgs,
+               resolution, spatCovarArgs,
                n, bw, adjust, from, to, 
                bwref, covname, covunits, confidence,
                breaks,

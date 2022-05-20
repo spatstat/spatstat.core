@@ -1,11 +1,11 @@
 #'
 #'   evalcovarslrm.R
 #'
-#'   method for 'evalCovar' for class 'slrm'
+#'   method for 'spatialCovariateEvidence' for class 'slrm'
 #'
-#'   $Revision: 1.4 $ $Date: 2021/06/28 05:56:35 $
+#'   $Revision: 1.5 $ $Date: 2022/05/20 07:37:53 $
 
-evalCovar.slrm <- function(model, covariate, ...,
+spatialCovariateEvidence.slrm <- function(model, covariate, ...,
                            lambdatype=c("probabilities", "intensity"),
                            jitter=TRUE, jitterfactor=1,
                            modelname=NULL, covname=NULL,

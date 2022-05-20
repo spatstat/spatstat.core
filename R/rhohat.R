@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.103 $  $Date: 2022/05/12 04:08:19 $
+#'  $Revision: 1.104 $  $Date: 2022/05/20 07:38:56 $
 #'
 #'  Non-parametric estimation of a transformation rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -79,7 +79,7 @@ rhohat.ppp <- rhohat.quad <-
                horvitz=horvitz,
                smoother=smoother,
                resolution=list(dimyx=dimyx, eps=eps),
-               evalCovarArgs=list(clip.predict=FALSE),
+               spatCovarArgs=list(clip.predict=FALSE),
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence,
@@ -144,7 +144,7 @@ rhohat.ppm <- function(object, covariate, ...,
                horvitz=horvitz,
                smoother=smoother,
                resolution=list(dimyx=dimyx, eps=eps),
-               evalCovarArgs=list(clip.predict=FALSE),
+               spatCovarArgs=list(clip.predict=FALSE),
                n=n, bw=bw, adjust=adjust, from=from, to=to,
                bwref=bwref, covname=covname, covunits=covunits,
                confidence=confidence, positiveCI=positiveCI,
@@ -164,19 +164,19 @@ rhohatEngine <- function(model, covariate,
                                     "decreasing", "increasing",
                                     "piecewise"),
                          resolution=list(),
-                         evalCovarArgs=list(),
+                         spatCovarArgs=list(),
                          n=512, bw="nrd0", adjust=1, from=NULL, to=NULL, 
                          bwref=bw, covname, covunits=NULL, confidence=0.95,
                          breaks=NULL,
                          modelcall=NULL, callstring="rhohat") {
   reference <- match.arg(reference)
   #' evaluate the covariate at data points and at pixels
-  stuff <- do.call(evalCovar,
+  stuff <- do.call(spatialCovariateEvidence,
                    c(list(model=model,
                           covariate=covariate,
                           subset=subset),
                      resolution,
-                     evalCovarArgs))
+                     spatCovarArgs))
   # unpack
   values <- stuff$values
   # values at each data point
