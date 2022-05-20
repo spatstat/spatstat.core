@@ -76,17 +76,16 @@
 \alias{envelope.hasenvelope}
 \alias{envelope.matrix}
 \alias{equalpairs}          
-\alias{spatialCovariateEvidence}
-\alias{spatialCovariateEvidence.exactppm}
-\alias{spatialCovariateEvidence.ppm}
-\alias{spatialCovariateEvidence.ppp}
-\alias{spatialCovariateEvidence.slrm}
+\alias{evaluateCovariate}
+\alias{evaluateCovariateAtPoints}
+\alias{evaluateCovariateAtPixels}
 \alias{evalInteraction}
 \alias{evalInterEngine}
 \alias{evalPairPotential}
 \alias{evalPairwiseTerm}
 \alias{evaluate2Dkernel}
 \alias{ExpSmoothLog}
+\alias{exactppm}
 \alias{expandDot}
 \alias{extractAIC.slrm}
 \alias{extractAtomicQtests}
@@ -230,6 +229,7 @@
 \alias{ppmCovariates}
 \alias{ppmDerivatives}
 \alias{ppmInfluenceEngine}
+\alias{predict.exactppm}
 \alias{predict.profilepl}
 \alias{predict.vblogit}
 \alias{prefixfv}
@@ -244,6 +244,7 @@
 \alias{print.detpointprocfamily}
 \alias{print.detpointprocfamilyfun}
 \alias{print.envelope}
+\alias{print.exactppm}
 \alias{print.fasp}       
 \alias{print.fv}       
 \alias{print.fvfun}       
@@ -335,6 +336,11 @@
 \alias{spatialCDFframe}
 \alias{spatialCDFtest}
 \alias{spatialCDFtestCalc}
+\alias{spatialCovariateEvidence}
+\alias{spatialCovariateEvidence.exactppm}
+\alias{spatialCovariateEvidence.ppm}
+\alias{spatialCovariateEvidence.ppp}
+\alias{spatialCovariateEvidence.slrm}
 \alias{sphere.volume}
 \alias{splitHybridInteraction}
 \alias{sp.foundclass}
@@ -495,19 +501,9 @@ envelopeTest(X, \dots, exponent, alternative,
   type, alternative, scale, clamp, csr, use.theory, nrank, ginterval, nSD,
   savefuns, check, Yname, do.pwrong, weights, precomputed, gaveup)
 equalpairs(U, X, marked=FALSE)
-spatialCovariateEvidence(model, covariate, \dots)
-\method{spatialCovariateEvidence}{exactppm}(model, covariate, \dots, lambdatype,
-          dimyx, eps, interpolate, jitter, jitterfactor,
-          modelname, covname, dataname, subset, clip.predict) 
-\method{spatialCovariateEvidence}{ppm}(model, covariate, \dots, lambdatype,
-          dimyx, eps, interpolate, jitter, jitterfactor,
-          modelname, covname, dataname, subset, clip.predict) 
-\method{spatialCovariateEvidence}{ppp}(model, covariate, \dots, lambdatype,
-          dimyx, eps, interpolate, jitter, jitterfactor,
-          modelname, covname, dataname, subset, clip.predict) 
-\method{spatialCovariateEvidence}{slrm}(model, covariate, \dots, lambdatype,
-          jitter, jitterfactor,
-          modelname, covname, dataname, subset) 
+evaluateCovariate(covariate, locations, \dots)
+evaluateCovariateAtPixels(covariate, locations, \dots, types, eps, dimyx)
+evaluateCovariateAtPoints(covariate, locations, \dots, allow.column)
 evalInteraction(X,P,E,interaction,correction,splitInf,\dots,
                 precomputed,savecomputed)
 evalInterEngine(X,P,E,interaction,correction,splitInf,\dots,
@@ -516,6 +512,7 @@ evalPairPotential(X,P,E,pairpot,potpars,R)
 evalPairwiseTerm(fint, d)
 evaluate2Dkernel(kernel, x, y, sigma, varcov, \dots, scalekernel)
 ExpSmoothLog(X, \dots, at, weights)
+exactppm(X, baseline, \dots, subset, eps, dimyx)
 expandDot(f, dotvars)
 \method{extractAIC}{slrm}(fit, scale = 0, k = 2, \dots)
 extractAtomicQtests(x)
@@ -716,6 +713,7 @@ ppmInfluenceEngine(fit, what, \dots, iScore, iHessian, iArgs,
               fitname, multitypeOK, entrywise, matrix.action,
               dimyx, eps,
               geomsmooth)
+\method{predict}{exactppm}(object, locations, \dots, eps, dimyx)
 \method{predict}{vblogit}(object, newdata, type, se.fit, dispersion,
                           terms, na.action, \dots)
 \method{predict}{profilepl}(object, \dots)
@@ -729,6 +727,7 @@ prefixfv(x, tagprefix, descprefix, lablprefix, whichtags)
 \method{print}{detpointprocfamily}(x, \dots)
 \method{print}{detpointprocfamilyfun}(x, \dots)
 \method{print}{envelope}(x, \dots)
+\method{print}{exactppm}(x, \dots)
 \method{print}{fasp}(x, \dots)
 \method{print}{fv}(x, \dots, tight)
 \method{print}{fvfun}(x, \dots)
@@ -853,6 +852,19 @@ spatialCDFtest(model, covariate, test, \dots,
          dimyx, eps, interpolate, jitter,
          nsim, verbose, modelname, covname, dataname)
 spatialCDFtestCalc(fra, test, \dots, details)
+spatialCovariateEvidence(model, covariate, \dots)
+\method{spatialCovariateEvidence}{exactppm}(model, covariate, \dots, lambdatype,
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset, clip.predict) 
+\method{spatialCovariateEvidence}{ppm}(model, covariate, \dots, lambdatype,
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset, clip.predict) 
+\method{spatialCovariateEvidence}{ppp}(model, covariate, \dots, lambdatype,
+          dimyx, eps, interpolate, jitter, jitterfactor,
+          modelname, covname, dataname, subset, clip.predict) 
+\method{spatialCovariateEvidence}{slrm}(model, covariate, \dots, lambdatype,
+          jitter, jitterfactor,
+          modelname, covname, dataname, subset) 
 sphere.volume(range, nval = 10)
 splitHybridInteraction(coeffs, inte)
 sp.foundclass(cname, inlist, formalname, argsgiven)             
