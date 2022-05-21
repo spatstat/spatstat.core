@@ -3,7 +3,7 @@
 #
 #   Relative risk for pairs of covariate values
 #
-#   $Revision: 1.28 $   $Date: 2022/05/20 07:38:20 $
+#   $Revision: 1.29 $   $Date: 2022/05/21 03:31:21 $
 #
 
 rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
@@ -13,12 +13,14 @@ rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
   method <- match.arg(method)
   # validate model
   if(is.ppp(object) || is.quad(object)) {
-    model <- ppm(object, ~1, forcefit=TRUE)
+    model <- exactppm(object)
     reference <- "area"
+    X <- object
     modelcall <- NULL
   } else if(is.ppm(object)) {
     model <- object
     reference <- "model"
+    X <- data.ppm(model)
     modelcall <- model$call
     if(is.null(getglmfit(model)))
       model <- update(model, forcefit=TRUE)
@@ -44,7 +46,6 @@ rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
     # spatial relative risk
     isxy <- TRUE
     needflip <- (cov1name == "y" && cov2name == "x")
-    X <- data.ppm(model)
     if(needflip) X <- flipxy(X)
     
     switch(method,
@@ -124,7 +125,7 @@ rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
     # normalising constants
 #    nX   <- length(Z1X)
     npixel <- length(lambda)
-    areaW <- area(Window(model))
+    areaW <- area(Window(X))
     pixelarea <- areaW/npixel
     baseline <- if(reference == "area") rep.int(1, npixel) else lambda
     wts <- baseline * pixelarea

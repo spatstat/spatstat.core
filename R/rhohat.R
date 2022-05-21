@@ -1,14 +1,14 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.105 $  $Date: 2022/05/21 02:49:58 $
+#'  $Revision: 1.106 $  $Date: 2022/05/21 02:52:35 $
 #'
-#'  Non-parametric estimation of a transformation rho(z) determining
+#'  Non-parametric estimation of a function rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
 #'  spatial covariate Z(u) through lambda(u) = rho(Z(u)).
 #'  More generally allows offsets etc.
 
-#' Copyright (c) Adrian Baddeley 2015-2021
+#' Copyright (c) Adrian Baddeley 2015-2022
 #' GNU Public Licence GPL >= 2.0
 
 rhohat <- function(object, covariate, ...) {
