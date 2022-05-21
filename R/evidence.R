@@ -2,8 +2,9 @@
 #' evidence.R
 #'
 #'   evaluate covariate values at data points and at pixels
+#'   together with intensity of null/reference model
 #'
-#' $Revision: 1.47 $ $Date: 2022/05/20 10:12:33 $
+#' $Revision: 1.48 $ $Date: 2022/05/21 04:33:00 $
 #'
 
 evalCovar <- function(model, covariate, ...) {

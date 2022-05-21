@@ -3,12 +3,12 @@
 ##
 ##  Calculate ROC curve or area under it
 ##
-## $Revision: 1.11 $ $Date: 2022/02/12 09:13:11 $
+## $Revision: 1.12 $ $Date: 2022/05/21 05:09:26 $
 
 roc <- function(X, ...) { UseMethod("roc") }
 
 roc.ppp <- function(X, covariate, ..., high=TRUE) {
-  nullmodel <- ppm(X)
+  nullmodel <- exactppm(X)
   result <- rocData(covariate, nullmodel, ..., high=high)
   return(result)
 }
@@ -101,7 +101,7 @@ rocModel <- function(lambda, nullmodel, ..., high) {
 auc <- function(X, ...) { UseMethod("auc") }
 
 auc.ppp <- function(X, covariate, ..., high=TRUE) {
-  d <- spatialCDFframe(ppm(X), covariate, ...)
+  d <- spatialCDFframe(exactppm(X), covariate, ...)
   U <- d$values$U
   EU <- mean(U)
   result <- if(high) EU else (1 - EU) 
