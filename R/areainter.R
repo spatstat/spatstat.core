@@ -2,7 +2,7 @@
 #
 #    areainter.R
 #
-#    $Revision: 1.50 $	$Date: 2021/02/06 03:45:20 $
+#    $Revision: 1.51 $	$Date: 2022/05/21 08:53:38 $
 #
 #    The area interaction
 #

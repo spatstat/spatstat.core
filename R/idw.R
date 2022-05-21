@@ -3,7 +3,7 @@
 #
 #  Inverse-distance weighted smoothing
 #
-#  $Revision: 1.13 $ $Date: 2021/01/07 03:08:41 $
+#  $Revision: 1.14 $ $Date: 2022/05/21 08:53:38 $
 
 idw <- function(X, power=2, at=c("pixels", "points"), ..., se=FALSE) {
   stopifnot(is.ppp(X) && is.marked(X))

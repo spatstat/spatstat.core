@@ -1,5 +1,5 @@
 #
-#	$Revision: 1.28 $	$Date: 2021/01/07 03:08:41 $
+#	$Revision: 1.29 $	$Date: 2022/05/21 08:53:38 $
 #
 #	Estimates of F, G and K for three-dimensional point patterns
 #

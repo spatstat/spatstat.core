@@ -3,7 +3,7 @@
 ##
 ##  Spatial scan statistics
 ##
-##  $Revision: 1.20 $  $Date: 2022/04/06 07:34:54 $
+##  $Revision: 1.21 $  $Date: 2022/05/21 08:53:38 $
 ##
 
 scanmeasure <- function(X, ...){

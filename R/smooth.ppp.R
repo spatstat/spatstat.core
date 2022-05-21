@@ -3,7 +3,7 @@
 #
 #  Smooth the marks of a point pattern
 # 
-#  $Revision: 1.79 $  $Date: 2022/04/17 00:09:56 $
+#  $Revision: 1.80 $  $Date: 2022/05/21 08:53:38 $
 #
 
 # smooth.ppp <- function(X, ..., weights=rep(1, npoints(X)), at="pixels") {

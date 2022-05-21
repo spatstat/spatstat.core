@@ -1,7 +1,7 @@
 #
 #     dg.S
 #
-#    $Revision: 1.24 $	$Date: 2022/03/07 02:05:33 $
+#    $Revision: 1.25 $	$Date: 2022/05/21 08:53:38 $
 #
 #     Diggle-Gratton pair potential
 #
