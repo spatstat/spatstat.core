@@ -3,7 +3,7 @@
 #
 #   Relative risk for pairs of covariate values
 #
-#   $Revision: 1.29 $   $Date: 2022/05/21 03:31:21 $
+#   $Revision: 1.30 $   $Date: 2022/05/22 01:42:58 $
 #
 
 rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
@@ -17,7 +17,7 @@ rho2hat <- function(object, cov1, cov2, ..., method=c("ratio", "reweight")) {
     reference <- "area"
     X <- object
     modelcall <- NULL
-  } else if(is.ppm(object)) {
+  } else if(inherits(object, "ppm")) {
     model <- object
     reference <- "model"
     X <- data.ppm(model)

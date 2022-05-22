@@ -1,7 +1,7 @@
 \name{berman.test} 
 \alias{berman.test}
-\alias{berman.test.ppm}
 \alias{berman.test.ppp}
+\alias{berman.test.ppm}
 \title{Berman's Tests for Point Process Model} 
 \description{
   Tests the goodness-of-fit of a Poisson point process model
@@ -175,6 +175,9 @@ berman.test(...)
    # test of CSR
    berman.test(X, D)
    berman.test(X, D, "Z2")
+   # test of fitted model
+   fit <- ppm(X ~ x+y)
+   berman.test(fit, D)
 }
 \keyword{htest}
 \keyword{spatial}

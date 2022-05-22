@@ -1,7 +1,7 @@
 \name{cdf.test} 
 \alias{cdf.test}
-\alias{cdf.test.ppm}
 \alias{cdf.test.ppp}
+\alias{cdf.test.ppm}
 \alias{cdf.test.slrm}
 \title{Spatial Distribution Test for Point Pattern or Point Process Model} 
 \description{
@@ -18,13 +18,16 @@ cdf.test(...)
 
 \method{cdf.test}{ppp}(X, covariate, test=c("ks", "cvm", "ad"), \dots,
                        interpolate=TRUE, jitter=TRUE)
+%#%^endif
 
 \method{cdf.test}{ppm}(model, covariate,  test=c("ks", "cvm", "ad"), \dots,
           interpolate=TRUE, jitter=TRUE, nsim=99, verbose=TRUE)
 
-
 \method{cdf.test}{slrm}(model, covariate,  test=c("ks", "cvm", "ad"), \dots,
           modelname=NULL, covname=NULL)
+%#%^endif
+
+
 }
 \arguments{
   \item{X}{

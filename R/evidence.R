@@ -4,8 +4,9 @@
 #'   evaluate covariate values at data points and at pixels
 #'   together with intensity of null/reference model
 #'
-#' $Revision: 1.48 $ $Date: 2022/05/21 04:33:00 $
+#' $Revision: 1.49 $ $Date: 2022/05/22 00:52:15 $
 #'
+
 
 evalCovar <- function(model, covariate, ...) {
   .Deprecated("spatialCovariateEvidence", "spatstat.core")
@@ -15,6 +16,8 @@ evalCovar <- function(model, covariate, ...) {
 spatialCovariateEvidence <- function(model, covariate, ...) {
   UseMethod("spatialCovariateEvidence")
 }
+
+
 
 spatialCovariateEvidence.ppm <- local({
 
@@ -266,6 +269,8 @@ spatialCovariateEvidence.ppm <- local({
             
   spatialCovariateEvidence.ppm
 })
+
+
 
 spatialCovariateEvidence.ppp <- local({
 

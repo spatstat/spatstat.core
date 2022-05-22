@@ -9,7 +9,8 @@
 }
 \description{
   Compute the AUC (area under the Receiver Operating Characteristic
-  curve) for a fitted point process model.
+  curve) for
+  an observed point pattern or fitted point process model.
 }
 \usage{
 auc(X, \dots)

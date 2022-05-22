@@ -1,8 +1,9 @@
 #
 #   quadrattest.R
 #
-#   $Revision: 1.65 $  $Date: 2021/06/29 02:21:01 $
+#   $Revision: 1.66 $  $Date: 2022/05/22 01:34:04 $
 #
+
 
 quadrat.test <- function(X, ...) {
    UseMethod("quadrat.test")
@@ -44,6 +45,9 @@ quadrat.test.splitppp <- function(X, ..., df=NULL, df.est=NULL, Xname=NULL)
                    df=df, df.est=df.est, Xname=Xname)
 }
 
+
+
+
 quadrat.test.slrm <- quadrat.test.ppm <-
   function(X, nx=5, ny=nx,
            alternative = c("two.sided", "regular", "clustered"),      
@@ -75,6 +79,9 @@ quadrat.test.slrm <- quadrat.test.ppm <-
                            list(...),
                            list(Xname=dataname, fitname=fitname)))
 }
+
+
+
 
 quadrat.test.quadratcount <-
   function(X,
@@ -569,3 +576,4 @@ shift.quadrattest <- function(X, ...) {
   }
   return(X)
 }
+

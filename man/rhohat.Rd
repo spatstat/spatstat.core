@@ -1,4 +1,4 @@
-\name{rhohat}  
+\name{rhohat} 
 \alias{rhohat}
 \alias{rhohat.ppp}
 \alias{rhohat.quad}

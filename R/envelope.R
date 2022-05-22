@@ -3,8 +3,9 @@
 #
 #   computes simulation envelopes 
 #
-#   $Revision: 2.112 $  $Date: 2022/04/06 02:11:50 $
+#   $Revision: 2.113 $  $Date: 2022/05/22 00:47:39 $
 #
+
 
 envelope <- function(Y, fun, ...) {
   UseMethod("envelope")
@@ -192,6 +193,8 @@ envelope.ppp <-
                  maxnerr=maxnerr, rejectNA=rejectNA, silent=silent,
                  cl=cl, envir.user=envir.user, do.pwrong=do.pwrong)
 }
+
+
 
 envelope.ppm <- 
   function(Y, fun=Kest, nsim=99, nrank=1, ..., 
@@ -382,6 +385,9 @@ envelope.slrm <-
                  cl=cl, envir.user=envir.user, do.pwrong=do.pwrong)
 
 }
+
+
+
 
 ## .................................................................
 ##   Engine for simulating and computing envelopes
@@ -2219,3 +2225,4 @@ as.data.frame.envelope <- function(x, ..., simfuns=FALSE) {
   } 
   NextMethod("as.data.frame")
 }
+

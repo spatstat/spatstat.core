@@ -3,7 +3,7 @@
 ##
 ##  Spatial scan statistics
 ##
-##  $Revision: 1.21 $  $Date: 2022/05/21 08:53:38 $
+##  $Revision: 1.22 $  $Date: 2022/05/22 04:11:59 $
 ##
 
 scanmeasure <- function(X, ...){
@@ -124,7 +124,7 @@ scanLRTS <- function(X, r, ...,
            Y <- X
            if(is.null(baseline)) {
              mu <- as.im(Xmask, value=1)
-           } else if(is.ppm(baseline)) {
+           } else if(inherits(baseline, "ppm")) {
              if(is.marked(baseline))
                stop("baseline is a marked point process: not supported")
              mu <- predict(baseline, locations=Xmask)
@@ -238,7 +238,7 @@ scan.test <- function(X, r, ...,
              lambda <- intensity(X)
              simexpr <- expression(runifpoispp(lambda, Xwin))
              dont.complain.about(lambda)
-           } else if(is.ppm(baseline)) {
+           } else if(inherits(baseline, "ppm")) {
              nullname <- baseline$callstring
              rmhstuff <- rmh(baseline, preponly=TRUE, verbose=FALSE)
              simexpr <- expression(rmhEngine(rmhstuff))

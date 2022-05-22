@@ -3,9 +3,10 @@
 #
 # Test statistics from Berman (1986)
 #
-#  $Revision: 1.23 $  $Date: 2020/12/19 05:25:06 $
+#  $Revision: 1.24 $  $Date: 2022/05/22 02:23:18 $
 #
 #
+
 
 berman.test <- function(...) {
   UseMethod("berman.test")
@@ -23,7 +24,7 @@ berman.test.ppp <-
     which <- match.arg(which)
     alternative <- match.arg(alternative)
 
-    fitcsr <- ppm(X)
+    fitcsr <- exactppm(X)
     dont.complain.about(fitcsr)
     
     do.call(bermantestEngine,
@@ -34,6 +35,7 @@ berman.test.ppp <-
                              list(modelname="CSR",
                                   covname=covname, dataname=Xname)))
 }
+
 
 berman.test.ppm <- function(model, covariate,
                            which=c("Z1", "Z2"),
@@ -58,6 +60,7 @@ berman.test.ppm <- function(model, covariate,
                                 covname=covname,
                                 dataname=model$Qname)))
 }
+
 
 
 bermantestEngine <- function(model, covariate,
@@ -259,6 +262,4 @@ plot.bermantest <-
   options(op)
   return(invisible(NULL))
 }
-
-
 

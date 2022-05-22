@@ -1,7 +1,7 @@
 #
 # Jinhom.R
 #
-#  $Revision: 1.16 $ $Date: 2022/05/21 08:53:38 $
+#  $Revision: 1.17 $ $Date: 2022/05/22 01:28:59 $
 #
 
 Ginhom <- function(X, lambda=NULL, lmin=NULL,
@@ -44,7 +44,7 @@ Ginhom <- function(X, lambda=NULL, lmin=NULL,
     # lambda values provided
     if(is.im(lambda)) 
       lambdaX <- safelookup(lambda, X)
-    else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
+    else if(inherits(lambda, c("ppm", "kppm", "dppm", "slrm"))) {
           model <- lambda
           if(!update) {
             ## just use intensity of fitted model
@@ -219,7 +219,7 @@ Finhom <- function(X, lambda=NULL, lmin=NULL,
     # lambda values provided
     if(is.im(lambda)) 
       lambdaX <- safelookup(lambda, X)
-    else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
+    else if(inherits(lambda, c("ppm", "kppm", "dppm", "slrm"))) {
           model <- lambda
           if(!update) {
             ## just use intensity of fitted model

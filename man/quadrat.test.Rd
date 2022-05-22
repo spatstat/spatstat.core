@@ -1,9 +1,9 @@
-\name{quadrat.test}
+\name{quadrat.test} 
 \alias{quadrat.test}
 \alias{quadrat.test.ppp}
+\alias{quadrat.test.quadratcount}
 \alias{quadrat.test.ppm}
 \alias{quadrat.test.slrm}
-\alias{quadrat.test.quadratcount}
 \title{Dispersion Test for Spatial Point Pattern Based on
        Quadrat Counts}
 \description{
@@ -25,6 +25,13 @@ quadrat.test(X, ...)
                            ...,
                            xbreaks=NULL, ybreaks=NULL, tess=NULL,
                            nsim=1999)
+\method{quadrat.test}{quadratcount}(X,
+                          alternative=c("two.sided", "regular", "clustered"),
+                          method=c("Chisq", "MonteCarlo"),
+                          conditional=TRUE, CR=1,
+                          lambda=NULL, df.est=NULL,
+                          ...,
+                          nsim=1999)
 
 \method{quadrat.test}{ppm}(X, nx=5, ny=nx, 
                           alternative=c("two.sided", "regular", "clustered"),
@@ -41,14 +48,6 @@ quadrat.test(X, ...)
                            ..., 
                            xbreaks=NULL, ybreaks=NULL, tess=NULL,
                            nsim=1999)
-
-\method{quadrat.test}{quadratcount}(X,
-                          alternative=c("two.sided", "regular", "clustered"),
-                          method=c("Chisq", "MonteCarlo"),
-                          conditional=TRUE, CR=1,
-                          lambda=NULL, df.est=NULL,
-                          ...,
-                          nsim=1999)
 }
 \arguments{
   \item{X}{
@@ -291,7 +290,6 @@ quadrat.test(X, ...)
   qB <- quadrat.test(simdat, tess=B)
   plot(simdat, main="quadrat.test(simdat, tess=B)", pch="+")
   plot(qB, add=TRUE, col="red", lwd=2, cex=1.2)
-
 }
 \author{\adrian
   and \rolf

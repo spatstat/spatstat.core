@@ -85,6 +85,12 @@ print.exactppm <- function(x, ...) {
   return(invisible(NULL))
 }
 
+is.poisson.exactppm <- function(x) { TRUE }
+
+is.stationary.exactppm <- function(x) {
+  is.null(x$baseline) || is.numeric(x$baseline)
+}
+
 predict.exactppm <- function(object, locations=NULL, ..., eps=NULL, dimyx=NULL) {
   X        <- object$X
   beta     <- object$beta # numeric

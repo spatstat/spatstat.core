@@ -23,6 +23,7 @@
   maxnerr=nsim, rejectNA=FALSE, silent=FALSE,
   do.pwrong=FALSE, envir.simul=NULL)
 
+
   \method{envelope}{ppm}(Y, fun=Kest, nsim=99, nrank=1, \dots, 
   funargs=list(), funYargs=funargs,
   simulate=NULL, fix.n=FALSE, fix.marks=FALSE,
@@ -683,6 +684,7 @@
   summary(E)
  }
 
+
  # Envelope of K function for simulations from Gibbs model 
  if(online) {
    fit <- ppm(cells ~1, Strauss(0.05))
@@ -702,6 +704,7 @@
  } else {
   E <- envelope(fit, Gest, correction="rs", nsim=Nsim, global=TRUE, nrep=100)
  }
+
 
  # Envelope of G function under CSR
  if(online) {
@@ -773,7 +776,7 @@ nsim=Nsim, global=TRUE))
  plot(envelope(amacrine, Kcross, i="on", j="off",
               simulate=expression(rshift(amacrine, radius=0.1, edge="erode"))))
  }
-  
+
  # Envelope of INHOMOGENEOUS K-function with fitted trend
 
  # The following is valid.

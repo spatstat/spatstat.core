@@ -8,7 +8,7 @@
 #'    resolve.lambda.cross
 #'    validate.weights
 #'
-#' $Revision: 1.6 $ $Date: 2022/05/18 07:03:13 $
+#' $Revision: 1.9 $ $Date: 2022/05/22 06:11:20 $
 
 resolve.lambda <- function(X, lambda=NULL, ...,
                            sigma=NULL, varcov=NULL,
@@ -33,7 +33,7 @@ resolve.lambda <- function(X, lambda=NULL, ...,
     lambda <- lambda(X$x, X$y)
   } else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
     check.nvector(lambda, npoints(X), vname="lambda")
-  } else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
+  } else if(inherits(lambda, c("ppm", "kppm", "dppm", "slrm"))) {
     model <- lambda
     if(!update) {
       ## use intensity of model
@@ -97,7 +97,7 @@ resolve.reciplambda <- function(X, lambda=NULL, reciplambda=NULL,
     } else if(is.numeric(lambda) && is.vector(as.numeric(lambda))) {
       check.nvector(lambda, npoints(X), vname="lambda")
       if(check) validate.weights(lambda)
-    } else if(is.ppm(lambda) || is.kppm(lambda) || is.dppm(lambda)) {
+    } else if(inherits(lambda, c("ppm", "kppm", "dppm", "slrm"))) {
       model <- lambda
       if(!update) {
         ## use intensity of model
@@ -188,7 +188,7 @@ resolve.lambda.cross <- function(X, I, J,
                    "should equal the number of points of X"))
       lambdaI <- lambdaX[I]
       lambdaJ <- lambdaX[J]
-    } else if(is.ppm(lambdaX) || is.kppm(lambdaX) || is.dppm(lambdaX)) {
+    } else if(inherits(lambdaX, c("ppm", "kppm", "dppm", "slrm"))) {
       ## point process model provides intensity
       model <- lambdaX
       if(!update) {
@@ -230,7 +230,7 @@ resolve.lambda.cross <- function(X, I, J,
     } else if(is.numeric(lambdaI) && is.vector(as.numeric(lambdaI))) {
       ## validate intensity vector
       check.nvector(lambdaI, nI, things=Iexplain, vname="lambdaI")
-    } else if(is.ppm(lambdaI) || is.kppm(lambdaI) || is.dppm(lambdaI)) {
+    } else if(inherits(lambdaI, c("ppm", "kppm", "dppm", "slrm"))) {
       ## point process model provides intensity
       model <- lambdaI
       if(!update) {
@@ -261,7 +261,7 @@ resolve.lambda.cross <- function(X, I, J,
     } else if(is.numeric(lambdaJ) && is.vector(as.numeric(lambdaJ))) {
       ## validate intensity vector
       check.nvector(lambdaJ, nJ, things=Jexplain, vname="lambdaJ")
-    } else if(is.ppm(lambdaJ) || is.kppm(lambdaJ) || is.dppm(lambdaJ)) {
+    } else if(inherits(lambdaJ, c("ppm", "kppm", "dppm", "slrm"))) {
       ## point process model provides intensity
       model <- lambdaJ
       if(!update) {

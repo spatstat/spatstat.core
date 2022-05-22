@@ -1,7 +1,7 @@
 #'
 #'  rhohat.R
 #'
-#'  $Revision: 1.106 $  $Date: 2022/05/21 02:52:35 $
+#'  $Revision: 1.107 $  $Date: 2022/05/22 01:39:21 $
 #'
 #'  Non-parametric estimation of a function rho(z) determining
 #'  the intensity function lambda(u) of a point process in terms of a
@@ -10,6 +10,7 @@
 
 #' Copyright (c) Adrian Baddeley 2015-2022
 #' GNU Public Licence GPL >= 2.0
+
 
 rhohat <- function(object, covariate, ...) {
   UseMethod("rhohat")
@@ -85,7 +86,9 @@ rhohat.ppp <- rhohat.quad <-
                positiveCI=positiveCI,
                breaks=breaks,
                modelcall=modelcall, callstring=callstring)
-}
+  }
+
+
 
 rhohat.ppm <- function(object, covariate, ...,
                        weights=NULL,
@@ -150,6 +153,10 @@ rhohat.ppm <- function(object, covariate, ...,
                breaks=breaks,
                modelcall=modelcall, callstring=callstring)
 }
+
+
+
+
 
 rhohatEngine <- function(model, covariate,
                          reference=c("Lebesgue", "model", "baseline"),
@@ -813,3 +820,4 @@ simulate.rhohat <- function(object, nsim=1, ..., drop=TRUE) {
   }
   return(result)
 }
+
