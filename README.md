@@ -1,5 +1,13 @@
 # spatstat.core
 
+## This package is marked for deletion!
+
+The package `spatstat.core` will be replaced by two packages,
+`spatstat.explore` and `spatstat.model`.
+
+The following information is now out-of-date.
+This repository will be deleted soon.
+
 ## Statistical analysis and modelling of spatial data for the spatstat family
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/spatstat.core)](http://cran.r-project.org/web/packages/spatstat.core) 
