@@ -1,104 +1,11 @@
 # spatstat.core
 
-## This package is marked for deletion!
+## This package is DEFUNCT!
 
-The package `spatstat.core` will be replaced by two packages,
-`spatstat.explore` and `spatstat.model`.
+The package `spatstat.core` has been replaced by two packages,
+[spatstat.explore](https://github.com/spatstat/spatstat.explore)
+and
+[spatstat.model](https://github.com/spatstat/spatstat.model).
 
-The following information is now out-of-date.
-This repository will be deleted soon.
-
-## Statistical analysis and modelling of spatial data for the spatstat family
-
-[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/spatstat.core)](http://cran.r-project.org/web/packages/spatstat.core) 
-[![GitHub R package version](https://img.shields.io/github/r-package/v/spatstat/spatstat.core)](https://github.com/spatstat/spatstat.core)
-
-The original `spatstat` package has been split into
-several sub-packages (See [spatstat/spatstat](https://github.com/spatstat/spatstat))
-
-This package `spatstat.core` is one of the
-sub-packages. It contains all the main user-level functions that perform
-statistical analysis and modelling of spatial data,
-with the exception of data on linear networks.
-
-Most of the functionality is for spatial point patterns in two dimensions.
-There is a very modest amount of functionality for 3D and higher dimensional patterns
-and space-time patterns.
-
-### Overview 
-
-`spatstat.core` supports
-
-- exploratory analysis (quadrat counting test, kernel smoothing, K-function, pair correlation function)
-- nonparametric estimation (resource selection function, prospectivity)
-- parametric modelling (fitting models to point pattern data, model selection, model prediction)
-- formal inference (hypothesis tests, confidence intervals)
-- informal validation (model diagnostics)
-
-
-### Detailed contents
-
-For a full list of functions, see the help file for `spatstat.core-package`.
-
-#### Exploratory analysis 
-
-- Clark-Evans index, Hopkins-Skellam index
-- quadrat counting estimates of intensity, quadrat counting test
-- Fry plot
-- Morisita plot
-- scan statistic
-- cluster detection (Allard-Fraley cluster set, Byers-Raftery cleaning)
-
-#### Nonparametric estimation
-
-- kernel estimation of intensity of a point pattern
-- kernel smoothing of mark values attached to point locations
-- kernel estimation of relative risk
-- kernel smoothing of a line segment pattern
-- bandwidth selection
-- nonparametric estimation of intensity as a function of a covariate
-- ROC curve, AUC
-- summary functions (K-function, pair correlation function,
-empty space function, nearest neighbour distance function, J-function, etc)
-and multi-type versions of these functions
-- mark correlation function, mark independence diagnostoc
-- local summary functions (LISA)
-- simulation envelopes of summary functions
-- manipulation of summary functions (plot, evaluate, differentiate, smooth etc)
-- spatial bootstrap
-
-#### Parametric modelling 
-- fitting Poisson point process models to point pattern data (`ppm`)
-- fitting spatial logistic regression models to point pattern data (`slrm`)
-- fitting Cox point process models to point pattern data (`kppm`)
-- fitting Neyman-Scott cluster process models to point pattern data (`kppm`)
-- fitting Gibbs point process models to point pattern data (`ppm`)
-- class support for fitted models (update, summary, predict, plot, coef, vcov)
-- minimum contrast estimation
-- simulation of fitted point process models
-
-#### Formal inference
-
-- hypothesis tests (quadrat test, Clark-Evans test, Berman test, Diggle-Cressie-Loosmore-Ford test, scan test, studentised permutation test, segregation test, ANOVA tests of fitted models, adjusted composite
-likelihood ratio test, envelope tests, Dao-Genton test, balanced independent two-stage test)
-- confidence intervals for parameters of a model
-- prediction intervals for point counts
-
-#### Informal validation
-
-- leverage
-- influence
-- partial residuals
-- added variable plot
-- diagnostic plots
-- pseudoscore residual plots
-- model compensators
-- Q-Q plots
-
-#### Data manipulation
-
-- image blurring
-- Choi-Hall data sharpening of point locations
-- transects of an image along a line or curve
-- programming tools
-
+See the new structure of the `spatstat` package family at the
+[spatstat](https://github.com/spatstat/spatstat) GitHub page.
